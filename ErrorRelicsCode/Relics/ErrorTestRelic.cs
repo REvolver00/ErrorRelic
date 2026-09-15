@@ -8,10 +8,11 @@ using BaseLib.Utils;
 using ErrorRelics.ErrorRelicsCode.Extensions;
 
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Models.Powers;
-using MegaCrit.Sts2.Core.Rooms;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.ValueProps;
 
 namespace ErrorRelics.ErrorRelicsCode.Relics;
 
@@ -25,8 +26,8 @@ public sealed class ErrorTestRelic : ErrorRelicsRelic
     public override List<(string, string)>? Localization =>
         new RelicLoc(
             "ERROR TEST",
-            "When entering combat, gain 1 Strength.",
-            "The first ERROR relic test."
+            "At the start of your turn, deal 3 damage to ALL enemies.",
+            "Mercury Hourglass hook test."
         );
 
     public override string PackedIconPath =>
@@ -38,38 +39,36 @@ public sealed class ErrorTestRelic : ErrorRelicsRelic
     protected override string BigIconPath =>
         "relic.png".BigRelicImagePath();
 
-    // Vajra 原版使用的触发位置：
-    // 进入房间以后进行检查。
-    public override async Task AfterRoomEntered(AbstractRoom room)
+    protected override IEnumerable<DynamicVar> CanonicalVars
     {
-        // 不是战斗房间，就什么也不做。
-        if (room is not CombatRoom)
+        get
+        {
+            return new DynamicVar[]
+            {
+                new DamageVar(3M, ValueProp.Unpowered)
+            };
+        }
+    }
+
+    public override async Task AfterPlayerTurnStart(
+        PlayerChoiceContext choiceContext,
+        Player player)
+    {
+        var owner = Owner;
+
+        if (owner is null)
             return;
 
-        var owner = Owner;
-        if (owner is null)
+        if (player != owner)
             return;
 
         Flash();
 
-        // 触发效果。
-        await RunEffect();
-    }
-
-    // 目前我们的第一个 Effect：
-    // 获得 1 点力量。
-    private async Task RunEffect()
-    {
-        var owner = Owner;
-        if (owner is null)
-            return;
-
-        await PowerCmd.Apply<StrengthPower>(
-            new ThrowingPlayerChoiceContext(),
-            owner.Creature,
-            1,
-            owner.Creature,
-            null
+        await CreatureCmd.Damage(
+            choiceContext,
+            player.Creature.CombatState.HittableEnemies,
+            DynamicVars.Damage,
+            owner.Creature
         );
     }
 }
