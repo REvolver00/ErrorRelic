@@ -30,7 +30,7 @@ public sealed class ErrorTestRelic : ErrorRelicsRelic
         ErrorHookId.H001_EnterCombat;
 
     private const ErrorEffectId CurrentEffect =
-        ErrorEffectId.E001_GainStrength1;
+        ErrorEffectId.E003_DamageAllEnemies3;
 
 
     public override RelicRarity Rarity => RelicRarity.Common;
