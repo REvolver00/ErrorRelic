@@ -16,10 +16,11 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     // 子遗物只需要告诉系统：
     // 我要哪个 H？
     // 我要哪个 E？
-    protected abstract ErrorHookId HookId { get; }
+    protected abstract ErrorDefinition Definition { get; }
 
-    protected abstract ErrorEffectId EffectId { get; }
+    protected ErrorHookId HookId => Definition.HookId;
 
+    protected ErrorEffectId EffectId => Definition.EffectId;
 
     public override bool ShouldReceiveCombatHooks => true;
 
