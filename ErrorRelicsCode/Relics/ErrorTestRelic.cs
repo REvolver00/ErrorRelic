@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using BaseLib.Extensions;
 using BaseLib.Utils;
+using ErrorRelics.ErrorRelicsCode.Fragments;
 
 using ErrorRelics.ErrorRelicsCode.Extensions;
 
@@ -241,19 +242,3 @@ public sealed class ErrorTestRelic : ErrorRelicsRelic
 // Hook Registry 第一版
 // =============================================================
 
-public enum ErrorHookId
-{
-    H001_EnterCombat,
-    H002_PlayerTurnStart
-}
-
-
-// =============================================================
-// Effect Registry 第一版
-// =============================================================
-
-public enum ErrorEffectId
-{
-    E001_GainStrength1,
-    E003_DamageAllEnemies3
-}
