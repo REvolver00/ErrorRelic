@@ -11,8 +11,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.ValueProps;
+using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace ErrorRelics.ErrorRelicsCode.Relics;
 
@@ -26,8 +25,8 @@ public sealed class ErrorTestRelic : ErrorRelicsRelic
     public override List<(string, string)>? Localization =>
         new RelicLoc(
             "ERROR TEST",
-            "At the start of your turn, deal 3 damage to ALL enemies.",
-            "Mercury Hourglass hook test."
+            "At the start of your turn, gain 1 Strength.",
+            "Mercury Hourglass Hook + Vajra Effect."
         );
 
     public override string PackedIconPath =>
@@ -39,17 +38,7 @@ public sealed class ErrorTestRelic : ErrorRelicsRelic
     protected override string BigIconPath =>
         "relic.png".BigRelicImagePath();
 
-    protected override IEnumerable<DynamicVar> CanonicalVars
-    {
-        get
-        {
-            return new DynamicVar[]
-            {
-                new DamageVar(3M, ValueProp.Unpowered)
-            };
-        }
-    }
-
+    // Hook：来自 Mercury Hourglass
     public override async Task AfterPlayerTurnStart(
         PlayerChoiceContext choiceContext,
         Player player)
@@ -64,11 +53,23 @@ public sealed class ErrorTestRelic : ErrorRelicsRelic
 
         Flash();
 
-        await CreatureCmd.Damage(
+        await RunEffect(choiceContext);
+    }
+
+    // Effect：来自 Vajra
+    private async Task RunEffect(PlayerChoiceContext choiceContext)
+    {
+        var owner = Owner;
+
+        if (owner is null)
+            return;
+
+        await PowerCmd.Apply<StrengthPower>(
             choiceContext,
-            player.Creature.CombatState.HittableEnemies,
-            DynamicVars.Damage,
-            owner.Creature
+            owner.Creature,
+            1,
+            owner.Creature,
+            null
         );
     }
 }
