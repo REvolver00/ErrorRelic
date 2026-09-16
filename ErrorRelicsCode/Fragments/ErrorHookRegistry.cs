@@ -1,6 +1,7 @@
 ﻿using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Rooms;
+using MegaCrit.Sts2.Core.Combat;
 
 namespace ErrorRelics.ErrorRelicsCode.Fragments;
 
@@ -69,6 +70,24 @@ public static class ErrorHookRegistry
         return hookId == ErrorHookId.H004_AfterObtained;
     }
 
+// =========================================================
+// H005
+// 来源：Mummified Hand
+//
+// 战斗中
+// 自己打出一张 Power 牌之后
+// =========================================================
+
+    public static bool MatchesAfterPowerCardPlayed(
+        ErrorHookId hookId,
+        Player owner,
+        CardPlay cardPlay)
+    {
+        return hookId == ErrorHookId.H005_PowerCardPlayed
+               && CombatManager.Instance.IsInProgress
+               && cardPlay.Card.Owner == owner
+               && cardPlay.Card.Type == CardType.Power;
+    }
 
     // =========================================================
     // 自动描述
@@ -89,6 +108,9 @@ public static class ErrorHookRegistry
 
             ErrorHookId.H004_AfterObtained
                 => "When obtained,",
+            
+            ErrorHookId.H005_PowerCardPlayed
+                => "After you play a Power card,",
 
             _ => "ERROR:"
         };

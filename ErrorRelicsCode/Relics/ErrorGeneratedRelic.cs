@@ -70,6 +70,43 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
     protected string GeneratedFlavor =>
         $"ERROR Fragment: {HookId} + {EffectId}";
+// =========================================================
+// H005
+// 来源：Mummified Hand
+//
+// 打出 Power 牌之后
+// =========================================================
+
+    public override async Task AfterCardPlayed(
+        PlayerChoiceContext choiceContext,
+        CardPlay cardPlay)
+    {
+        var owner = Owner;
+
+        if (owner is null)
+            return;
+
+        if (!ErrorHookRegistry.MatchesAfterPowerCardPlayed(
+                HookId,
+                owner,
+                cardPlay))
+            return;
+
+        Flash();
+
+        var context = new ErrorContext(
+            owner,
+            choiceContext,
+            DynamicVars.Damage,
+            DynamicVars.Gold,
+            cardPlay
+        );
+
+        await ErrorEffectRegistry.ExecuteAsync(
+            EffectId,
+            context
+        );
+    }
 
 
     // =========================================================
