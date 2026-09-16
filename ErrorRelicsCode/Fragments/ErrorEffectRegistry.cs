@@ -13,8 +13,12 @@ public static class ErrorEffectRegistry
     {
         switch (effectId)
         {
+            // =====================================================
             // E001
             // 来源：Vajra
+            // 获得 1 力量
+            // =====================================================
+
             case ErrorEffectId.E001_GainStrength1:
 
                 await PowerCmd.Apply<StrengthPower>(
@@ -28,8 +32,12 @@ public static class ErrorEffectRegistry
                 break;
 
 
+            // =====================================================
             // E003
             // 来源：Mercury Hourglass
+            // 对所有敌人造成 3 点伤害
+            // =====================================================
+
             case ErrorEffectId.E003_DamageAllEnemies3:
 
                 await CreatureCmd.Damage(
@@ -40,8 +48,25 @@ public static class ErrorEffectRegistry
                 );
 
                 break;
+
+
+            // =====================================================
+            // E004
+            // 来源：Old Coin
+            // 获得 300 金币
+            // =====================================================
+
+            case ErrorEffectId.E004_GainGold300:
+
+                await PlayerCmd.GainGold(
+                    300,
+                    context.Owner
+                );
+
+                break;
         }
     }
+
 
     public static string GetText(ErrorEffectId effectId)
     {
@@ -52,6 +77,9 @@ public static class ErrorEffectRegistry
 
             ErrorEffectId.E003_DamageAllEnemies3
                 => "deal 3 damage to ALL enemies.",
+
+            ErrorEffectId.E004_GainGold300
+                => "gain 300 Gold.",
 
             _ => "do nothing."
         };
