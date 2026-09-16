@@ -4,22 +4,13 @@ namespace ErrorRelics.ErrorRelicsCode.Fragments;
 
 public static class ErrorGenerator
 {
-    private static readonly ErrorHookId[] Hooks =
-    {
-        ErrorHookId.H001_EnterCombat,
-        ErrorHookId.H002_PlayerTurnStart
-    };
-
-    private static readonly ErrorEffectId[] Effects =
-    {
-        ErrorEffectId.E001_GainStrength1,
-        ErrorEffectId.E003_DamageAllEnemies3
-    };
-
     public static ErrorDefinition Generate()
     {
-        var hook = Hooks[Random.Shared.Next(Hooks.Length)];
-        var effect = Effects[Random.Shared.Next(Effects.Length)];
+        var hooks = Enum.GetValues<ErrorHookId>();
+        var effects = Enum.GetValues<ErrorEffectId>();
+
+        var hook = hooks[Random.Shared.Next(hooks.Length)];
+        var effect = effects[Random.Shared.Next(effects.Length)];
 
         return new ErrorDefinition(
             hook,
