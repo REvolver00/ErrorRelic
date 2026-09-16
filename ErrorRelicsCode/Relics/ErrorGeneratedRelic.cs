@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 using ErrorRelics.ErrorRelicsCode.Fragments;
 
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
@@ -23,7 +24,7 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
 
     // =========================================================
-    // 所有 Fragment 共用的动态数值
+    // Fragment 数值
     // =========================================================
 
     protected override IEnumerable<DynamicVar> CanonicalVars
@@ -32,15 +33,21 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
         {
             return new DynamicVar[]
             {
+                // Mercury Hourglass
                 new DamageVar(3M, ValueProp.Unpowered),
-                new GoldVar(300)
+
+                // Old Coin
+                new GoldVar(300),
+
+                // Intimidating Helmet
+                new EnergyVar(2)
             };
         }
     }
 
 
     // =========================================================
-    // 自动生成描述
+    // 自动描述
     // =========================================================
 
     protected string GeneratedDescription =>
@@ -53,7 +60,9 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
 
     // =========================================================
-    // H001：进入战斗
+    // H001
+    // 来源：Vajra
+    // 进入战斗
     // =========================================================
 
     public override async Task AfterRoomEntered(AbstractRoom room)
@@ -70,8 +79,6 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
         Flash();
 
-        // AfterRoomEntered 没有真正的 PlayerChoiceContext，
-        // 所以这里使用 ThrowingPlayerChoiceContext。
         var context = new ErrorContext(
             owner,
             new ThrowingPlayerChoiceContext(),
@@ -87,7 +94,9 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
 
     // =========================================================
-    // H002：玩家回合开始
+    // H002
+    // 来源：Mercury Hourglass
+    // 自己的回合开始
     // =========================================================
 
     public override async Task AfterPlayerTurnStart(
@@ -107,11 +116,47 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
         Flash();
 
-        // 这里游戏已经给了真正的 choiceContext，
-        // 直接传进去。
         var context = new ErrorContext(
             owner,
             choiceContext,
+            DynamicVars.Damage,
+            DynamicVars.Gold
+        );
+
+        await ErrorEffectRegistry.ExecuteAsync(
+            EffectId,
+            context
+        );
+    }
+
+
+    // =========================================================
+    // H003
+    // 来源：Intimidating Helmet
+    //
+    // BeforeCardPlayed
+    // 自己打出的牌使用至少 2 点能量
+    // =========================================================
+
+    public override async Task BeforeCardPlayed(CardPlay cardPlay)
+    {
+        var owner = Owner;
+
+        if (owner is null)
+            return;
+
+        if (!ErrorHookRegistry.MatchesBeforeCardPlayed(
+                HookId,
+                owner,
+                cardPlay,
+                DynamicVars.Energy.IntValue))
+            return;
+
+        Flash();
+
+        var context = new ErrorContext(
+            owner,
+            new ThrowingPlayerChoiceContext(),
             DynamicVars.Damage,
             DynamicVars.Gold
         );

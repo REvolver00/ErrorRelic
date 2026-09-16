@@ -3,5 +3,6 @@
 public enum ErrorHookId
 {
     H001_EnterCombat,
-    H002_PlayerTurnStart
+    H002_PlayerTurnStart,
+    H003_PlayCardEnergy2Plus
 }
