@@ -18,8 +18,8 @@ public sealed class ErrorTestRelic : ErrorGeneratedRelic
 
     protected override ErrorDefinition Definition { get; } =
         new(
-            ErrorHookId.H001_EnterCombat,
-            ErrorEffectId.E003_DamageAllEnemies3
+            ErrorHookId.H004_AfterObtained,
+            ErrorEffectId.E004_GainGold300
         );
 
     public override List<(string, string)>? Localization =>

@@ -58,6 +58,19 @@ public static class ErrorHookRegistry
 
 
     // =========================================================
+    // H004
+    // 来源：Old Coin
+    // 获得 / 拾取遗物时
+    // =========================================================
+
+    public static bool MatchesAfterObtained(
+        ErrorHookId hookId)
+    {
+        return hookId == ErrorHookId.H004_AfterObtained;
+    }
+
+
+    // =========================================================
     // 自动描述
     // =========================================================
 
@@ -73,6 +86,9 @@ public static class ErrorHookRegistry
 
             ErrorHookId.H003_PlayCardEnergy2Plus
                 => "When you play a card using 2 or more Energy,",
+
+            ErrorHookId.H004_AfterObtained
+                => "When obtained,",
 
             _ => "ERROR:"
         };

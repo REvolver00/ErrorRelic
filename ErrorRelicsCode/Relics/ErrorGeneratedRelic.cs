@@ -24,6 +24,19 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
 
     // =========================================================
+    // 拾取效果
+    //
+    // Old Coin 本身也是 true。
+    //
+    // ERROR 遗物统一开启这个入口。
+    // 至于当前 Hook 是不是 H004，
+    // 由下面的 MatchesAfterObtained 决定。
+    // =========================================================
+
+    public override bool HasUponPickupEffect => true;
+
+
+    // =========================================================
     // Fragment 数值
     // =========================================================
 
@@ -57,6 +70,42 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
     protected string GeneratedFlavor =>
         $"ERROR Fragment: {HookId} + {EffectId}";
+
+
+    // =========================================================
+    // H004
+    // 来源：Old Coin
+    //
+    // 真正把遗物拿到手时
+    // =========================================================
+
+    public override async Task AfterObtained()
+    {
+        await base.AfterObtained();
+
+        var owner = Owner;
+
+        if (owner is null)
+            return;
+
+        if (!ErrorHookRegistry.MatchesAfterObtained(
+                HookId))
+            return;
+
+        Flash();
+
+        var context = new ErrorContext(
+            owner,
+            new ThrowingPlayerChoiceContext(),
+            DynamicVars.Damage,
+            DynamicVars.Gold
+        );
+
+        await ErrorEffectRegistry.ExecuteAsync(
+            EffectId,
+            context
+        );
+    }
 
 
     // =========================================================
