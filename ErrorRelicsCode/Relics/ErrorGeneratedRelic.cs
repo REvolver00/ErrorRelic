@@ -13,9 +13,6 @@ namespace ErrorRelics.ErrorRelicsCode.Relics;
 
 public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 {
-    // 子遗物只需要告诉系统：
-    // 我要哪个 H？
-    // 我要哪个 E？
     protected abstract ErrorDefinition Definition { get; }
 
     protected ErrorHookId HookId => Definition.HookId;
@@ -25,21 +22,27 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     public override bool ShouldReceiveCombatHooks => true;
 
 
-    // 暂时保留 Mercury Hourglass 的 DamageVar。
-    // 后面我们再把数值也进一步积木化。
+    // =========================================================
+    // 所有 Fragment 共用的动态数值
+    // =========================================================
+
     protected override IEnumerable<DynamicVar> CanonicalVars
     {
         get
         {
             return new DynamicVar[]
             {
-                new DamageVar(3M, ValueProp.Unpowered)
+                new DamageVar(3M, ValueProp.Unpowered),
+                new GoldVar(300)
             };
         }
     }
 
 
-    // 自动拼遗物描述
+    // =========================================================
+    // 自动生成描述
+    // =========================================================
+
     protected string GeneratedDescription =>
         ErrorHookRegistry.GetText(HookId)
         + " "
@@ -50,7 +53,7 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
 
     // =========================================================
-    // 游戏 API 插口：进入房间
+    // H001：进入战斗
     // =========================================================
 
     public override async Task AfterRoomEntered(AbstractRoom room)
@@ -67,10 +70,13 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
         Flash();
 
+        // AfterRoomEntered 没有真正的 PlayerChoiceContext，
+        // 所以这里使用 ThrowingPlayerChoiceContext。
         var context = new ErrorContext(
             owner,
             new ThrowingPlayerChoiceContext(),
-            DynamicVars.Damage
+            DynamicVars.Damage,
+            DynamicVars.Gold
         );
 
         await ErrorEffectRegistry.ExecuteAsync(
@@ -81,7 +87,7 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
 
     // =========================================================
-    // 游戏 API 插口：玩家回合开始
+    // H002：玩家回合开始
     // =========================================================
 
     public override async Task AfterPlayerTurnStart(
@@ -101,10 +107,13 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
         Flash();
 
+        // 这里游戏已经给了真正的 choiceContext，
+        // 直接传进去。
         var context = new ErrorContext(
             owner,
             choiceContext,
-            DynamicVars.Damage
+            DynamicVars.Damage,
+            DynamicVars.Gold
         );
 
         await ErrorEffectRegistry.ExecuteAsync(

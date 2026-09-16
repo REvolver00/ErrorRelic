@@ -59,11 +59,12 @@ public static class ErrorEffectRegistry
             case ErrorEffectId.E004_GainGold300:
 
                 await PlayerCmd.GainGold(
-                    300,
+                    context.Gold.BaseValue,
                     context.Owner
                 );
 
                 break;
+
         }
     }
 

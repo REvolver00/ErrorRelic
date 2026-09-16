@@ -9,11 +9,13 @@ public sealed class ErrorContext
     public ErrorContext(
         Player owner,
         PlayerChoiceContext choiceContext,
-        DamageVar damage)
+        DamageVar damage,
+        GoldVar gold)
     {
         Owner = owner;
         ChoiceContext = choiceContext;
         Damage = damage;
+        Gold = gold;
     }
 
     public Player Owner { get; }
@@ -21,4 +23,6 @@ public sealed class ErrorContext
     public PlayerChoiceContext ChoiceContext { get; }
 
     public DamageVar Damage { get; }
+
+    public GoldVar Gold { get; }
 }
