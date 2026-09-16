@@ -18,9 +18,11 @@ public sealed class ErrorTestRelic : ErrorGeneratedRelic
 
     protected override ErrorDefinition Definition { get; } =
         new(
-            ErrorHookId.H004_AfterObtained,
-            ErrorEffectId.E004_GainGold300
+            ErrorHookId.H003_PlayCardEnergy2Plus,
+            ErrorEffectId.E005_RandomHandCardFreeThisTurn
         );
+
+
 
     public override List<(string, string)>? Localization =>
         new RelicLoc(

@@ -31,6 +31,8 @@ public sealed class ErrorRandomTestRelic : ErrorGeneratedRelic
     [SavedProperty]
     public ErrorEffectId GeneratedEffectId { get; set; }
 
+    [SavedProperty]
+    public bool DefinitionLocked { get; set; }
 
     // =========================================================
     // ErrorGeneratedRelic 实际使用的 Definition
@@ -47,14 +49,27 @@ public sealed class ErrorRandomTestRelic : ErrorGeneratedRelic
     // 真正获得这一件遗物时，独立随机一次
     // =========================================================
 
-    public override Task AfterObtained()
+    public override async Task AfterObtained()
     {
-        var generated = ErrorGenerator.Generate();
+        // 普通随机获得：
+        // 正常随机 H + E。
+        //
+        // 调试命令生成：
+        // DefinitionLocked = true，
+        // 保留命令提前塞好的 H + E。
+        if (!DefinitionLocked)
+        {
+            var generated = ErrorGenerator.Generate();
 
-        GeneratedHookId = generated.HookId;
-        GeneratedEffectId = generated.EffectId;
+            GeneratedHookId = generated.HookId;
+            GeneratedEffectId = generated.EffectId;
+        }
 
-        return base.AfterObtained();
+        // 这里非常重要。
+        //
+        // 继续进入 ErrorGeneratedRelic.AfterObtained()，
+        // 因此 H004 也能正常触发它自己的 E。
+        await base.AfterObtained();
     }
 
 
