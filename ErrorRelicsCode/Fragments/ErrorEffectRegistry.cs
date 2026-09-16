@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Combat;
+
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace ErrorRelics.ErrorRelicsCode.Fragments;
@@ -35,6 +34,48 @@ public static class ErrorEffectRegistry
                 );
 
                 break;
+
+
+            // =====================================================
+            // E002
+            // 来源：Razor Tooth
+            //
+            // 升级“当前打出的牌”
+            //
+            // 原版限制：
+            // - 必须是自己的牌
+            // - Attack / Skill
+            // - 必须可以升级
+            //
+            // ERROR 规则：
+            // 如果当前 Hook 根本没有 CardPlay，
+            // 什么都不发生。
+            // 不禁止这个组合。
+            // =====================================================
+
+            case ErrorEffectId.E002_UpgradePlayedCard:
+            {
+                var cardPlay = context.CardPlay;
+
+                if (cardPlay is null)
+                    break;
+
+                var card = cardPlay.Card;
+
+                if (card.Owner != context.Owner)
+                    break;
+
+                if (card.Type != CardType.Attack
+                    && card.Type != CardType.Skill)
+                    break;
+
+                if (!card.IsUpgradable)
+                    break;
+
+                CardCmd.Upgrade(card);
+
+                break;
+            }
 
 
             // =====================================================
@@ -75,16 +116,8 @@ public static class ErrorEffectRegistry
             // E005
             // 来源：Mummified Hand
             //
-            // 从当前手牌中随机选择一张牌，
+            // 从当前手牌随机选择一张牌，
             // 使其本回合免费。
-            //
-            // 注意：
-            // 这里故意不检查：
-            // - 是否正在战斗
-            // - 是否刚打出能力牌
-            //
-            // 那些属于原遗物的 Hook 条件，
-            // 不是 E005 本身。
             // =====================================================
 
             case ErrorEffectId.E005_RandomHandCardFreeThisTurn:
@@ -141,6 +174,9 @@ public static class ErrorEffectRegistry
         {
             ErrorEffectId.E001_GainStrength1
                 => "gain 1 Strength.",
+
+            ErrorEffectId.E002_UpgradePlayedCard
+                => "upgrade the played card.",
 
             ErrorEffectId.E003_DamageAllEnemies3
                 => "deal 3 damage to ALL enemies.",

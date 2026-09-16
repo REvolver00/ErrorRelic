@@ -1,4 +1,5 @@
-﻿using MegaCrit.Sts2.Core.Entities.Players;
+﻿using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 
@@ -10,12 +11,14 @@ public sealed class ErrorContext
         Player owner,
         PlayerChoiceContext choiceContext,
         DamageVar damage,
-        GoldVar gold)
+        GoldVar gold,
+        CardPlay? cardPlay = null)
     {
         Owner = owner;
         ChoiceContext = choiceContext;
         Damage = damage;
         Gold = gold;
+        CardPlay = cardPlay;
     }
 
     public Player Owner { get; }
@@ -25,4 +28,6 @@ public sealed class ErrorContext
     public DamageVar Damage { get; }
 
     public GoldVar Gold { get; }
+
+    public CardPlay? CardPlay { get; }
 }

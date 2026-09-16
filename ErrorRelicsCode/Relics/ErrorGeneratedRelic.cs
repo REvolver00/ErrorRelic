@@ -207,8 +207,10 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
             owner,
             new ThrowingPlayerChoiceContext(),
             DynamicVars.Damage,
-            DynamicVars.Gold
+            DynamicVars.Gold,
+            cardPlay
         );
+
 
         await ErrorEffectRegistry.ExecuteAsync(
             EffectId,
