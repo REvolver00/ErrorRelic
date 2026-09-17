@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using MegaCrit.Sts2.Core.Commands;
@@ -14,6 +15,41 @@ namespace ErrorRelics.ErrorRelicsCode.Fragments;
 
 public static class ErrorEffectRegistry
 {
+    // =========================================================
+    // E007 Choice UI Queue
+    //
+    // 来源问题：
+    // Toolbox 的 Effect 会打开 Choose A Card 界面。
+    //
+    // 单个 E007 正常。
+    //
+    // 但是如果多个 ERROR 在同一个时机同时触发 E007，
+    // 游戏可能同时尝试打开多个选牌界面，
+    // 导致 Choice UI 状态冲突 / 黑屏。
+    //
+    // 所以 E007 使用一个 SemaphoreSlim：
+    //
+    // 第一个 E007
+    // ↓
+    // 打开选牌
+    // ↓
+    // 玩家完成选择
+    // ↓
+    // Release
+    // ↓
+    // 第二个 E007 才允许继续
+    //
+    // 注意：
+    // 这里没有删除任何 E007。
+    //
+    // 多次触发仍然全部执行，
+    // 只是从“同时执行”改成“排队执行”。
+    // =========================================================
+
+    private static readonly SemaphoreSlim E007ChoiceGate =
+        new SemaphoreSlim(1, 1);
+
+
     public static async Task ExecuteAsync(
         ErrorEffectId effectId,
         ErrorContext context)
@@ -215,7 +251,7 @@ public static class ErrorEffectRegistry
             // 从 3 张不同的随机无色牌中选择 1 张，
             // 将选择的牌加入当前手牌。
             //
-            // 原版流程完整保留：
+            // 原版流程：
             //
             // ColorlessCardPool
             // ↓
@@ -223,48 +259,69 @@ public static class ErrorEffectRegistry
             // ↓
             // CardFactory.GetDistinctForCombat
             // ↓
-            // 使用 CombatCardGeneration RNG
+            // CombatCardGeneration RNG
             // ↓
             // FromChooseACardScreen
             // ↓
             // AddGeneratedCardToCombat
             //
+            // ERROR 特殊安全处理：
+            //
+            // 如果多个 E007 同时触发，
+            // 不允许同时打开多个选择界面。
+            //
+            // 所有 E007 排队执行。
+            //
             // 注意：
-            // “第一回合”属于 H007，
-            // E007 本身不检查回合数。
+            // 不是 NoOp。
+            // 每一次触发仍然都会执行。
             // =====================================================
 
             case ErrorEffectId.E007_Choose1Of3ColorlessToHand:
             {
-                List<CardModel> choices =
-                    CardFactory.GetDistinctForCombat(
-                        context.Owner,
-                        ModelDb
-                            .CardPool<ColorlessCardPool>()
-                            .GetUnlockedCards(
-                                context.Owner.UnlockState,
-                                context.Owner.RunState.CardMultiplayerConstraint
-                            ),
-                        3,
-                        context.Owner.RunState.Rng.CombatCardGeneration
-                    )
-                    .ToList<CardModel>();
+                await E007ChoiceGate.WaitAsync();
 
-                CardModel card =
-                    await CardSelectCmd.FromChooseACardScreen(
-                        context.ChoiceContext,
-                        choices,
+                try
+                {
+                    List<CardModel> choices =
+                        CardFactory.GetDistinctForCombat(
+                            context.Owner,
+                            ModelDb
+                                .CardPool<ColorlessCardPool>()
+                                .GetUnlockedCards(
+                                    context.Owner.UnlockState,
+                                    context.Owner.RunState.CardMultiplayerConstraint
+                                ),
+                            3,
+                            context.Owner.RunState.Rng.CombatCardGeneration
+                        )
+                        .ToList<CardModel>();
+
+                    CardModel card =
+                        await CardSelectCmd.FromChooseACardScreen(
+                            context.ChoiceContext,
+                            choices,
+                            context.Owner
+                        );
+
+                    if (card == null)
+                        break;
+
+                    await CardPileCmd.AddGeneratedCardToCombat(
+                        card,
+                        PileType.Hand,
                         context.Owner
                     );
-
-                if (card == null)
-                    break;
-
-                await CardPileCmd.AddGeneratedCardToCombat(
-                    card,
-                    PileType.Hand,
-                    context.Owner
-                );
+                }
+                finally
+                {
+                    // 无论正常完成、取消，
+                    // 还是中间发生异常，
+                    // 都必须释放锁。
+                    //
+                    // 否则后面的 E007 会永远卡住。
+                    E007ChoiceGate.Release();
+                }
 
                 break;
             }
