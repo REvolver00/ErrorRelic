@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
 
@@ -44,7 +45,7 @@ public static class ErrorEffectRegistry
             // 来源遗物：Razor Tooth
             //
             // Effect：
-            // 升级“当前打出的牌”
+            // 升级当前打出的牌
             //
             // 如果当前 Hook 没有 CardPlay，
             // 则什么都不发生。
@@ -118,7 +119,7 @@ public static class ErrorEffectRegistry
             // 来源遗物：Mummified Hand
             //
             // Effect：
-            // 从当前手牌随机选择一张牌，
+            // 从当前手牌随机选择一张牌
             // 使其本回合免费
             // =====================================================
 
@@ -172,22 +173,11 @@ public static class ErrorEffectRegistry
             // E006
             // 来源遗物：Distinguished Cape
             //
-            // 原版 Distinguished Cape：
+            // Effect A：
+            // 向牌组加入 3 张 Apparition
             //
-            // AfterObtained
-            // ↓
-            // 随机加入 2 张不同的 Curse
-            // ↓
-            // 加入 3 张 Apparition
-            //
-            // 这里拆出来的 E006 只保留：
-            //
-            // “向牌组加入 3 张 Apparition”
-            //
-            // AfterObtained 属于 Hook，
-            // 所以这里不检查遗物是不是刚刚获得。
-            //
-            // Curse 部分之后单独拆成 E010。
+            // 原版触发条件 AfterObtained 属于 Hook，
+            // 所以 Effect 本身不检查触发时机。
             // =====================================================
 
             case ErrorEffectId.E006_Add3Apparitions:
@@ -217,6 +207,85 @@ public static class ErrorEffectRegistry
 
                 break;
             }
+
+
+            // =====================================================
+            // E010
+            // 来源遗物：Distinguished Cape
+            //
+            // Effect B：
+            // 随机加入 2 张不同的 Curse。
+            //
+            // 原版流程：
+            //
+            // 1. 从 CurseCardPool 取得当前已解锁的 Curse
+            // 2. 只保留 CanBeGeneratedByModifiers 的卡
+            // 3. 按 ModelId 排序
+            // 4. 使用 RunState.Rng.Niche 随机抽取
+            // 5. 抽到以后从候选池移除
+            // 6. 因此两张 Curse 不会重复
+            // 7. 将两张 Curse 加入 Deck
+            //
+            // AfterObtained 属于 Hook，
+            // 所以这里不检查是不是刚获得遗物。
+            // =====================================================
+
+            case ErrorEffectId.E010_Add2RandomCurses:
+            {
+                List<CardModel> availableCurses =
+                    ModelDb
+                        .CardPool<CurseCardPool>()
+                        .GetUnlockedCards(
+                            context.Owner.UnlockState,
+                            context.Owner.RunState.CardMultiplayerConstraint
+                        )
+                        .Where(
+                            card => card.CanBeGeneratedByModifiers
+                        )
+                        .OrderBy(
+                            card => card.Id
+                        )
+                        .ToList();
+
+                List<CardPileAddResult> curseResults =
+                    new List<CardPileAddResult>();
+
+                for (int i = 0; i < 2; ++i)
+                {
+                    CardModel canonicalCard =
+                        context.Owner.RunState.Rng.Niche
+                            .NextItem<CardModel>(
+                                availableCurses
+                            );
+
+                    // 原版就是不放回抽取。
+                    // 抽中以后从候选列表删除，
+                    // 所以下一张不会和上一张重复。
+                    availableCurses.Remove(
+                        canonicalCard
+                    );
+
+                    CardModel curse =
+                        context.Owner.RunState.CreateCard(
+                            canonicalCard,
+                            context.Owner
+                        );
+
+                    curseResults.Add(
+                        await CardPileCmd.Add(
+                            curse,
+                            PileType.Deck
+                        )
+                    );
+                }
+
+                CardCmd.PreviewCardPileAdd(
+                    curseResults,
+                    2f
+                );
+
+                break;
+            }
         }
     }
 
@@ -225,7 +294,8 @@ public static class ErrorEffectRegistry
     // 自动描述
     // =========================================================
 
-    public static string GetText(ErrorEffectId effectId)
+    public static string GetText(
+        ErrorEffectId effectId)
     {
         return effectId switch
         {
@@ -246,6 +316,9 @@ public static class ErrorEffectRegistry
 
             ErrorEffectId.E006_Add3Apparitions
                 => "add 3 Apparitions to your deck.",
+
+            ErrorEffectId.E010_Add2RandomCurses
+                => "add 2 different random Curses to your deck.",
 
             _ => "do nothing."
         };

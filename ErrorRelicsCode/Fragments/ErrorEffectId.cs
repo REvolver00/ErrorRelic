@@ -57,11 +57,20 @@ public enum ErrorEffectId
     // E006
     // 来源遗物：Distinguished Cape
     //
-    // Effect：
+    // Effect A：
     // 向牌组加入 3 张 Apparition
-    //
-    // 原版的“随机加入 2 张 Curse”
-    // 之后单独拆成 E010。
     // =========================================================
-    E006_Add3Apparitions
+    E006_Add3Apparitions,
+
+
+    // =========================================================
+    // E010
+    // 来源遗物：Distinguished Cape
+    //
+    // Effect B：
+    // 从当前可生成的 Curse 中
+    // 随机选择 2 张不同的 Curse
+    // 加入牌组
+    // =========================================================
+    E010_Add2RandomCurses
 }
