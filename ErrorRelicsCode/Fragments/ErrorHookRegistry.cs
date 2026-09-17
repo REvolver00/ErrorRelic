@@ -48,7 +48,7 @@ public static class ErrorHookRegistry
     //
     // Hook：
     // 自己打出一张牌
-    // 且这次打牌使用至少 2 点能量
+    // 且这次打牌使用至少 2 点 Energy
     // =========================================================
 
     public static bool MatchesBeforeCardPlayed(
@@ -73,11 +73,11 @@ public static class ErrorHookRegistry
     // Hook：
     // 获得 / 拾取遗物时
     //
-    // 两个 Fragment 的 Hook 行为完全相同，
-    // 所以共用同一套匹配代码。
+    // H004 / H006 来源不同，
+    // 所以保留两个 Fragment ID。
     //
-    // 但是 H004 / H006 仍然是两个独立 ID，
-    // 在随机池中分别占一份权重。
+    // 但是 Hook 行为完全相同，
+    // 所以共用这一套代码。
     // =========================================================
 
     public static bool MatchesAfterObtained(
@@ -110,10 +110,39 @@ public static class ErrorHookRegistry
 
 
     // =========================================================
+    // H007
+    // 来源遗物：Toolbox
+    //
+    // Hook：
+    // 第一回合起始手牌抽取之前
+    //
+    // 原版源码：
+    //
+    // BeforeHandDraw
+    // + player == Owner
+    // + Owner.PlayerCombatState.TurnNumber == 1
+    //
+    // combatState 参数原版没有实际使用，
+    // 所以这里也不需要检查。
+    // =========================================================
+
+    public static bool MatchesBeforeHandDraw(
+        ErrorHookId hookId,
+        Player owner,
+        Player player)
+    {
+        return hookId == ErrorHookId.H007_FirstTurnBeforeHandDraw
+               && player == owner
+               && owner.PlayerCombatState.TurnNumber == 1;
+    }
+
+
+    // =========================================================
     // 自动描述
     // =========================================================
 
-    public static string GetText(ErrorHookId hookId)
+    public static string GetText(
+        ErrorHookId hookId)
     {
         return hookId switch
         {
@@ -134,6 +163,9 @@ public static class ErrorHookRegistry
 
             ErrorHookId.H006_AfterObtained
                 => "When obtained,",
+
+            ErrorHookId.H007_FirstTurnBeforeHandDraw
+                => "Before drawing your opening hand,",
 
             _ => "ERROR:"
         };

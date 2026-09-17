@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Cards;
@@ -24,7 +25,7 @@ public static class ErrorEffectRegistry
             // 来源遗物：Vajra
             //
             // Effect：
-            // 获得 1 力量
+            // 获得 1 Strength
             // =====================================================
 
             case ErrorEffectId.E001_GainStrength1:
@@ -48,7 +49,7 @@ public static class ErrorEffectRegistry
             // 升级当前打出的牌
             //
             // 如果当前 Hook 没有 CardPlay，
-            // 则什么都不发生。
+            // 什么都不发生。
             // =====================================================
 
             case ErrorEffectId.E002_UpgradePlayedCard:
@@ -175,9 +176,6 @@ public static class ErrorEffectRegistry
             //
             // Effect A：
             // 向牌组加入 3 张 Apparition
-            //
-            // 原版触发条件 AfterObtained 属于 Hook，
-            // 所以 Effect 本身不检查触发时机。
             // =====================================================
 
             case ErrorEffectId.E006_Add3Apparitions:
@@ -210,24 +208,74 @@ public static class ErrorEffectRegistry
 
 
             // =====================================================
+            // E007
+            // 来源遗物：Toolbox
+            //
+            // Effect：
+            // 从 3 张不同的随机无色牌中选择 1 张，
+            // 将选择的牌加入当前手牌。
+            //
+            // 原版流程完整保留：
+            //
+            // ColorlessCardPool
+            // ↓
+            // GetUnlockedCards
+            // ↓
+            // CardFactory.GetDistinctForCombat
+            // ↓
+            // 使用 CombatCardGeneration RNG
+            // ↓
+            // FromChooseACardScreen
+            // ↓
+            // AddGeneratedCardToCombat
+            //
+            // 注意：
+            // “第一回合”属于 H007，
+            // E007 本身不检查回合数。
+            // =====================================================
+
+            case ErrorEffectId.E007_Choose1Of3ColorlessToHand:
+            {
+                List<CardModel> choices =
+                    CardFactory.GetDistinctForCombat(
+                        context.Owner,
+                        ModelDb
+                            .CardPool<ColorlessCardPool>()
+                            .GetUnlockedCards(
+                                context.Owner.UnlockState,
+                                context.Owner.RunState.CardMultiplayerConstraint
+                            ),
+                        3,
+                        context.Owner.RunState.Rng.CombatCardGeneration
+                    )
+                    .ToList<CardModel>();
+
+                CardModel card =
+                    await CardSelectCmd.FromChooseACardScreen(
+                        context.ChoiceContext,
+                        choices,
+                        context.Owner
+                    );
+
+                if (card == null)
+                    break;
+
+                await CardPileCmd.AddGeneratedCardToCombat(
+                    card,
+                    PileType.Hand,
+                    context.Owner
+                );
+
+                break;
+            }
+
+
+            // =====================================================
             // E010
             // 来源遗物：Distinguished Cape
             //
             // Effect B：
-            // 随机加入 2 张不同的 Curse。
-            //
-            // 原版流程：
-            //
-            // 1. 从 CurseCardPool 取得当前已解锁的 Curse
-            // 2. 只保留 CanBeGeneratedByModifiers 的卡
-            // 3. 按 ModelId 排序
-            // 4. 使用 RunState.Rng.Niche 随机抽取
-            // 5. 抽到以后从候选池移除
-            // 6. 因此两张 Curse 不会重复
-            // 7. 将两张 Curse 加入 Deck
-            //
-            // AfterObtained 属于 Hook，
-            // 所以这里不检查是不是刚获得遗物。
+            // 随机加入 2 张不同的 Curse
             // =====================================================
 
             case ErrorEffectId.E010_Add2RandomCurses:
@@ -258,9 +306,6 @@ public static class ErrorEffectRegistry
                                 availableCurses
                             );
 
-                    // 原版就是不放回抽取。
-                    // 抽中以后从候选列表删除，
-                    // 所以下一张不会和上一张重复。
                     availableCurses.Remove(
                         canonicalCard
                     );
@@ -316,6 +361,9 @@ public static class ErrorEffectRegistry
 
             ErrorEffectId.E006_Add3Apparitions
                 => "add 3 Apparitions to your deck.",
+
+            ErrorEffectId.E007_Choose1Of3ColorlessToHand
+                => "choose 1 of 3 random Colorless cards and add it to your hand.",
 
             ErrorEffectId.E010_Add2RandomCurses
                 => "add 2 different random Curses to your deck.",

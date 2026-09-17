@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 using ErrorRelics.ErrorRelicsCode.Fragments;
 
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -26,11 +27,12 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     // =========================================================
     // 拾取效果
     //
-    // Old Coin 本身也是 true。
+    // Old Coin / Distinguished Cape
+    // 都使用 AfterObtained。
     //
     // ERROR 遗物统一开启这个入口。
-    // 至于当前 Hook 是不是 H004，
-    // 由下面的 MatchesAfterObtained 决定。
+    // 至于当前 H 是否属于 AfterObtained，
+    // 由 ErrorHookRegistry 判断。
     // =========================================================
 
     public override bool HasUponPickupEffect => true;
@@ -70,12 +72,15 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
     protected string GeneratedFlavor =>
         $"ERROR Fragment: {HookId} + {EffectId}";
-// =========================================================
-// H005
-// 来源：Mummified Hand
-//
-// 打出 Power 牌之后
-// =========================================================
+
+
+    // =========================================================
+    // H005
+    // 来源遗物：Mummified Hand
+    //
+    // Hook：
+    // 打出 Power 牌之后
+    // =========================================================
 
     public override async Task AfterCardPlayed(
         PlayerChoiceContext choiceContext,
@@ -111,8 +116,12 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
     // =========================================================
     // H004
-    // 来源：Old Coin
+    // 来源遗物：Old Coin
     //
+    // H006
+    // 来源遗物：Distinguished Cape
+    //
+    // Hook：
     // 真正把遗物拿到手时
     // =========================================================
 
@@ -147,11 +156,14 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
     // =========================================================
     // H001
-    // 来源：Vajra
+    // 来源遗物：Vajra
+    //
+    // Hook：
     // 进入战斗
     // =========================================================
 
-    public override async Task AfterRoomEntered(AbstractRoom room)
+    public override async Task AfterRoomEntered(
+        AbstractRoom room)
     {
         var owner = Owner;
 
@@ -181,7 +193,9 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
     // =========================================================
     // H002
-    // 来源：Mercury Hourglass
+    // 来源遗物：Mercury Hourglass
+    //
+    // Hook：
     // 自己的回合开始
     // =========================================================
 
@@ -218,13 +232,15 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
     // =========================================================
     // H003
-    // 来源：Intimidating Helmet
+    // 来源遗物：Intimidating Helmet
     //
+    // Hook：
     // BeforeCardPlayed
-    // 自己打出的牌使用至少 2 点能量
+    // 自己打出的牌使用至少 2 点 Energy
     // =========================================================
 
-    public override async Task BeforeCardPlayed(CardPlay cardPlay)
+    public override async Task BeforeCardPlayed(
+        CardPlay cardPlay)
     {
         var owner = Owner;
 
@@ -248,6 +264,55 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
             cardPlay
         );
 
+        await ErrorEffectRegistry.ExecuteAsync(
+            EffectId,
+            context
+        );
+    }
+
+
+    // =========================================================
+    // H007
+    // 来源遗物：Toolbox
+    //
+    // Hook：
+    // 第一回合起始手牌抽取之前
+    //
+    // 原版 Toolbox 使用：
+    //
+    // BeforeHandDraw(
+    //     Player player,
+    //     PlayerChoiceContext choiceContext,
+    //     ICombatState combatState)
+    //
+    // combatState 原版没有参与条件判断，
+    // 所以这里只负责接住原生 Hook。
+    // =========================================================
+
+    public override async Task BeforeHandDraw(
+        Player player,
+        PlayerChoiceContext choiceContext,
+        ICombatState combatState)
+    {
+        var owner = Owner;
+
+        if (owner is null)
+            return;
+
+        if (!ErrorHookRegistry.MatchesBeforeHandDraw(
+                HookId,
+                owner,
+                player))
+            return;
+
+        Flash();
+
+        var context = new ErrorContext(
+            owner,
+            choiceContext,
+            DynamicVars.Damage,
+            DynamicVars.Gold
+        );
 
         await ErrorEffectRegistry.ExecuteAsync(
             EffectId,
