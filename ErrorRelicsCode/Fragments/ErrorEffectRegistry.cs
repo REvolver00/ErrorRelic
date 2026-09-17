@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace ErrorRelics.ErrorRelicsCode.Fragments;
@@ -19,7 +20,9 @@ public static class ErrorEffectRegistry
         {
             // =====================================================
             // E001
-            // 来源：Vajra
+            // 来源遗物：Vajra
+            //
+            // Effect：
             // 获得 1 力量
             // =====================================================
 
@@ -38,19 +41,13 @@ public static class ErrorEffectRegistry
 
             // =====================================================
             // E002
-            // 来源：Razor Tooth
+            // 来源遗物：Razor Tooth
             //
+            // Effect：
             // 升级“当前打出的牌”
             //
-            // 原版限制：
-            // - 必须是自己的牌
-            // - Attack / Skill
-            // - 必须可以升级
-            //
-            // ERROR 规则：
-            // 如果当前 Hook 根本没有 CardPlay，
-            // 什么都不发生。
-            // 不禁止这个组合。
+            // 如果当前 Hook 没有 CardPlay，
+            // 则什么都不发生。
             // =====================================================
 
             case ErrorEffectId.E002_UpgradePlayedCard:
@@ -80,7 +77,9 @@ public static class ErrorEffectRegistry
 
             // =====================================================
             // E003
-            // 来源：Mercury Hourglass
+            // 来源遗物：Mercury Hourglass
+            //
+            // Effect：
             // 对所有敌人造成 3 点伤害
             // =====================================================
 
@@ -98,8 +97,10 @@ public static class ErrorEffectRegistry
 
             // =====================================================
             // E004
-            // 来源：Old Coin
-            // 获得 300 金币
+            // 来源遗物：Old Coin
+            //
+            // Effect：
+            // 获得 300 Gold
             // =====================================================
 
             case ErrorEffectId.E004_GainGold300:
@@ -114,10 +115,11 @@ public static class ErrorEffectRegistry
 
             // =====================================================
             // E005
-            // 来源：Mummified Hand
+            // 来源遗物：Mummified Hand
             //
+            // Effect：
             // 从当前手牌随机选择一张牌，
-            // 使其本回合免费。
+            // 使其本回合免费
             // =====================================================
 
             case ErrorEffectId.E005_RandomHandCardFreeThisTurn:
@@ -164,9 +166,64 @@ public static class ErrorEffectRegistry
 
                 break;
             }
+
+
+            // =====================================================
+            // E006
+            // 来源遗物：Distinguished Cape
+            //
+            // 原版 Distinguished Cape：
+            //
+            // AfterObtained
+            // ↓
+            // 随机加入 2 张不同的 Curse
+            // ↓
+            // 加入 3 张 Apparition
+            //
+            // 这里拆出来的 E006 只保留：
+            //
+            // “向牌组加入 3 张 Apparition”
+            //
+            // AfterObtained 属于 Hook，
+            // 所以这里不检查遗物是不是刚刚获得。
+            //
+            // Curse 部分之后单独拆成 E010。
+            // =====================================================
+
+            case ErrorEffectId.E006_Add3Apparitions:
+            {
+                List<CardPileAddResult> results =
+                    new List<CardPileAddResult>();
+
+                for (int i = 0; i < 3; ++i)
+                {
+                    CardModel card =
+                        context.Owner.RunState.CreateCard<Apparition>(
+                            context.Owner
+                        );
+
+                    results.Add(
+                        await CardPileCmd.Add(
+                            card,
+                            PileType.Deck
+                        )
+                    );
+                }
+
+                CardCmd.PreviewCardPileAdd(
+                    results,
+                    2f
+                );
+
+                break;
+            }
         }
     }
 
+
+    // =========================================================
+    // 自动描述
+    // =========================================================
 
     public static string GetText(ErrorEffectId effectId)
     {
@@ -186,6 +243,9 @@ public static class ErrorEffectRegistry
 
             ErrorEffectId.E005_RandomHandCardFreeThisTurn
                 => "make a random card in your hand free this turn.",
+
+            ErrorEffectId.E006_Add3Apparitions
+                => "add 3 Apparitions to your deck.",
 
             _ => "do nothing."
         };

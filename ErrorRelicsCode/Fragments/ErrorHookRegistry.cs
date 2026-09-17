@@ -9,7 +9,9 @@ public static class ErrorHookRegistry
 {
     // =========================================================
     // H001
-    // 来源：Vajra
+    // 来源遗物：Vajra
+    //
+    // Hook：
     // 进入战斗
     // =========================================================
 
@@ -24,7 +26,9 @@ public static class ErrorHookRegistry
 
     // =========================================================
     // H002
-    // 来源：Mercury Hourglass
+    // 来源遗物：Mercury Hourglass
+    //
+    // Hook：
     // 自己的回合开始
     // =========================================================
 
@@ -40,8 +44,9 @@ public static class ErrorHookRegistry
 
     // =========================================================
     // H003
-    // 来源：Intimidating Helmet
+    // 来源遗物：Intimidating Helmet
     //
+    // Hook：
     // 自己打出一张牌
     // 且这次打牌使用至少 2 点能量
     // =========================================================
@@ -60,23 +65,37 @@ public static class ErrorHookRegistry
 
     // =========================================================
     // H004
-    // 来源：Old Coin
+    // 来源遗物：Old Coin
+    //
+    // H006
+    // 来源遗物：Distinguished Cape
+    //
+    // Hook：
     // 获得 / 拾取遗物时
+    //
+    // 两个 Fragment 的 Hook 行为完全相同，
+    // 所以共用同一套匹配代码。
+    //
+    // 但是 H004 / H006 仍然是两个独立 ID，
+    // 在随机池中分别占一份权重。
     // =========================================================
 
     public static bool MatchesAfterObtained(
         ErrorHookId hookId)
     {
-        return hookId == ErrorHookId.H004_AfterObtained;
+        return hookId == ErrorHookId.H004_AfterObtained
+               || hookId == ErrorHookId.H006_AfterObtained;
     }
 
-// =========================================================
-// H005
-// 来源：Mummified Hand
-//
-// 战斗中
-// 自己打出一张 Power 牌之后
-// =========================================================
+
+    // =========================================================
+    // H005
+    // 来源遗物：Mummified Hand
+    //
+    // Hook：
+    // 战斗中
+    // 自己打出一张 Power 牌之后
+    // =========================================================
 
     public static bool MatchesAfterPowerCardPlayed(
         ErrorHookId hookId,
@@ -88,6 +107,7 @@ public static class ErrorHookRegistry
                && cardPlay.Card.Owner == owner
                && cardPlay.Card.Type == CardType.Power;
     }
+
 
     // =========================================================
     // 自动描述
@@ -108,9 +128,12 @@ public static class ErrorHookRegistry
 
             ErrorHookId.H004_AfterObtained
                 => "When obtained,",
-            
+
             ErrorHookId.H005_PowerCardPlayed
                 => "After you play a Power card,",
+
+            ErrorHookId.H006_AfterObtained
+                => "When obtained,",
 
             _ => "ERROR:"
         };
