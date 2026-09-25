@@ -100,5 +100,22 @@ public enum ErrorEffectId
     // 随机选择 2 张不同的 Curse
     // 加入牌组
     // =========================================================
-    E010_Add2RandomCurses
+    E010_Add2RandomCurses,
+
+
+    // =========================================================
+    // E009
+    // 来源遗物：Royal Stamp
+    //
+    // Effect：
+    // 从牌组中选择 1 张可以被 RoyallyApproved 附魔的牌，
+    // 对它施加 RoyallyApproved，
+    // 并保留原版 NCardEnchantVfx。
+    //
+    // 注意：
+    // E009 在源码位置上追加到 E010 后面，
+    // 是为了不改变已经存在的 E010 枚举底层值。
+    // Fragment ID 仍然是 E009。
+    // =========================================================
+    E009_Enchant1CardRoyallyApproved
 }

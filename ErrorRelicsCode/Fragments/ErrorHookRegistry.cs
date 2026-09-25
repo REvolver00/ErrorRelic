@@ -73,11 +73,14 @@ public static class ErrorHookRegistry
     // H008
     // 来源遗物：Astrolabe
     //
+    // H009
+    // 来源遗物：Royal Stamp
+    //
     // Hook：
     // 获得 / 拾取遗物时
     //
-    // 三个 Fragment 来源不同，
-    // 所以保留三个独立 Fragment ID。
+    // 四个 Fragment 来源不同，
+    // 所以保留四个独立 Fragment ID。
     //
     // 但是原版 Hook 都是 AfterObtained，
     // 因此共用这一套代码。
@@ -88,7 +91,8 @@ public static class ErrorHookRegistry
     {
         return hookId == ErrorHookId.H004_AfterObtained
                || hookId == ErrorHookId.H006_AfterObtained
-               || hookId == ErrorHookId.H008_AfterObtained;
+               || hookId == ErrorHookId.H008_AfterObtained
+               || hookId == ErrorHookId.H009_AfterObtained;
     }
 
 
@@ -172,6 +176,9 @@ public static class ErrorHookRegistry
                 => "Before drawing your opening hand,",
 
             ErrorHookId.H008_AfterObtained
+                => "When obtained,",
+
+            ErrorHookId.H009_AfterObtained
                 => "When obtained,",
 
             _ => "ERROR:"

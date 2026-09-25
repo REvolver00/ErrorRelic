@@ -5,11 +5,16 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.Factories;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Cards;
+using MegaCrit.Sts2.Core.Models.Enchantments;
 using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.Nodes;
+using MegaCrit.Sts2.Core.Nodes.Vfx;
 
 namespace ErrorRelics.ErrorRelicsCode.Fragments;
 
@@ -346,6 +351,86 @@ public static class ErrorEffectRegistry
 
 
             // =====================================================
+            // E009
+            // 来源遗物：Royal Stamp
+            //
+            // 原版效果：
+            //
+            // 1. 获取 RoyallyApproved Enchantment
+            // 2. 找出牌组中所有可以被它附魔的牌
+            // 3. 使用 Niche RNG 执行 UnstableShuffle
+            // 4. 弹出 EnchantSelectionPrompt，选择 1 张
+            // 5. CardCmd.Enchant<RoyallyApproved>(card, 1M)
+            // 6. 创建 NCardEnchantVfx
+            // 7. 如果 NRun.Instance 存在，
+            //    将 VFX 加入 GlobalUi.CardPreviewContainer
+            //
+            // 这里不删除原版 VFX，
+            // 也不把选择效果改成随机效果。
+            // =====================================================
+
+            case ErrorEffectId.E009_Enchant1CardRoyallyApproved:
+            {
+                EnchantmentModel royalStamp =
+                    ModelDb.Enchantment<RoyallyApproved>();
+
+                List<CardModel> cards =
+                    PileType.Deck
+                        .GetPile(context.Owner)
+                        .Cards
+                        .Where(card => royalStamp.CanEnchant(card))
+                        .ToList();
+
+                CardSelectorPrefs prefs =
+                    new CardSelectorPrefs(
+                        CardSelectorPrefs.EnchantSelectionPrompt,
+                        1
+                    );
+
+                CardModel? card =
+                    (
+                        await CardSelectCmd.FromDeckForEnchantment(
+                            cards
+                                .UnstableShuffle(
+                                    context.Owner.RunState.Rng.Niche
+                                )
+                                .ToList(),
+                            royalStamp,
+                            1,
+                            prefs
+                        )
+                    )
+                    .FirstOrDefault();
+
+                if (card == null)
+                    break;
+
+                CardCmd.Enchant<RoyallyApproved>(
+                    card,
+                    1M
+                );
+
+                NCardEnchantVfx? child =
+                    NCardEnchantVfx.Create(card);
+
+                if (child == null)
+                    break;
+
+                NRun? instance = NRun.Instance;
+
+                if (instance == null)
+                    break;
+
+                instance
+                    .GlobalUi
+                    .CardPreviewContainer
+                    .AddChildSafely(child);
+
+                break;
+            }
+
+
+            // =====================================================
             // E010
             // 来源遗物：Distinguished Cape
             //
@@ -442,6 +527,9 @@ public static class ErrorEffectRegistry
 
             ErrorEffectId.E008_Transform3AndUpgrade
                 => "transform 3 cards, then upgrade the transformed cards.",
+
+            ErrorEffectId.E009_Enchant1CardRoyallyApproved
+                => "enchant 1 card with Royally Approved.",
 
             ErrorEffectId.E010_Add2RandomCurses
                 => "add 2 different random Curses to your deck.",

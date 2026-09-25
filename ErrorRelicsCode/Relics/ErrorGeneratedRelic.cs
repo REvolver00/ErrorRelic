@@ -31,8 +31,10 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     //
     // H004：Old Coin
     // H006：Distinguished Cape
+    // H008：Astrolabe
+    // H009：Royal Stamp
     //
-    // 两者原版都使用 AfterObtained。
+    // 四者原版都使用 AfterObtained。
     //
     // ERROR 遗物统一开启这个入口。
     // 当前 H 是否真正属于 AfterObtained，
@@ -163,10 +165,16 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     // 来源遗物：
     // Distinguished Cape
     //
+    // H008
+    // 来源遗物：Astrolabe
+    //
+    // H009
+    // 来源遗物：Royal Stamp
+    //
     // 原版 Hook：
     // AfterObtained()
     //
-    // 两个 Fragment 使用相同原生 Hook，
+    // 四个 Fragment 使用相同原生 Hook，
     // 所以共用这一入口。
     //
     // 注意：
@@ -174,7 +182,7 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     //
     // 当前仍使用 ThrowingPlayerChoiceContext。
     // 如果以后 E007 等 Choice Effect
-    // 与 H004/H006 组合发生问题，
+    // 与这些 AfterObtained Hook 组合发生问题，
     // 将由 Compatibility 层单独处理。
     // =========================================================
 
