@@ -276,15 +276,10 @@ public static class ErrorEffectRegistry
             // 不是 NoOp。
             // 每一次触发仍然都会执行。
             // =====================================================
-
             case ErrorEffectId.E007_Choose1Of3ColorlessToHand:
             {
-                await E007ChoiceGate.WaitAsync();
-
-                try
-                {
-                    List<CardModel> choices =
-                        CardFactory.GetDistinctForCombat(
+                List<CardModel> choices =
+                    CardFactory.GetDistinctForCombat(
                             context.Owner,
                             ModelDb
                                 .CardPool<ColorlessCardPool>()
@@ -297,31 +292,21 @@ public static class ErrorEffectRegistry
                         )
                         .ToList<CardModel>();
 
-                    CardModel card =
-                        await CardSelectCmd.FromChooseACardScreen(
-                            context.ChoiceContext,
-                            choices,
-                            context.Owner
-                        );
-
-                    if (card == null)
-                        break;
-
-                    await CardPileCmd.AddGeneratedCardToCombat(
-                        card,
-                        PileType.Hand,
+                CardModel? card =
+                    await CardSelectCmd.FromChooseACardScreen(
+                        context.ChoiceContext,
+                        choices,
                         context.Owner
                     );
-                }
-                finally
-                {
-                    // 无论正常完成、取消，
-                    // 还是中间发生异常，
-                    // 都必须释放锁。
-                    //
-                    // 否则后面的 E007 会永远卡住。
-                    E007ChoiceGate.Release();
-                }
+
+                if (card == null)
+                    break;
+
+                await CardPileCmd.AddGeneratedCardToCombat(
+                    card,
+                    PileType.Hand,
+                    context.Owner
+                );
 
                 break;
             }

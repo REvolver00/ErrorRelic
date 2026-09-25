@@ -27,11 +27,15 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     // =========================================================
     // 拾取效果
     //
-    // Old Coin / Distinguished Cape
-    // 都使用 AfterObtained。
+    // 来源遗物：
+    //
+    // H004：Old Coin
+    // H006：Distinguished Cape
+    //
+    // 两者原版都使用 AfterObtained。
     //
     // ERROR 遗物统一开启这个入口。
-    // 至于当前 H 是否属于 AfterObtained，
+    // 当前 H 是否真正属于 AfterObtained，
     // 由 ErrorHookRegistry 判断。
     // =========================================================
 
@@ -48,13 +52,25 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
         {
             return new DynamicVar[]
             {
-                // Mercury Hourglass
-                new DamageVar(3M, ValueProp.Unpowered),
+                // =================================================
+                // 来源遗物：Mercury Hourglass
+                // 原版数值：3 点伤害
+                // =================================================
+                new DamageVar(
+                    3M,
+                    ValueProp.Unpowered
+                ),
 
-                // Old Coin
+                // =================================================
+                // 来源遗物：Old Coin
+                // 原版数值：300 Gold
+                // =================================================
                 new GoldVar(300),
 
-                // Intimidating Helmet
+                // =================================================
+                // 来源遗物：Intimidating Helmet
+                // 原版触发阈值：至少使用 2 Energy
+                // =================================================
                 new EnergyVar(2)
             };
         }
@@ -76,10 +92,27 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
     // =========================================================
     // H005
-    // 来源遗物：Mummified Hand
     //
-    // Hook：
-    // 打出 Power 牌之后
+    // 来源遗物：
+    // Mummified Hand
+    //
+    // 原版 Hook：
+    // AfterCardPlayed(
+    //     PlayerChoiceContext choiceContext,
+    //     CardPlay cardPlay)
+    //
+    // 原版触发条件：
+    // 1. Combat 正在进行
+    // 2. 这张牌属于自己
+    // 3. CardType == Power
+    //
+    // ERROR：
+    // 当 H005 条件成立时执行当前随机 Effect。
+    //
+    // 重要：
+    // 这里直接保留游戏传进来的 choiceContext。
+    // 如果 Effect 本身需要 PlayerChoice，
+    // 必须优先使用这个原生 Context。
     // =========================================================
 
     public override async Task AfterCardPlayed(
@@ -107,7 +140,8 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
             cardPlay
         );
 
-        await ErrorEffectRegistry.ExecuteAsync(
+        await ErrorExecutionCompatibility.ExecuteAsync(
+            HookId,
             EffectId,
             context
         );
@@ -116,13 +150,32 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
     // =========================================================
     // H004
-    // 来源遗物：Old Coin
+    //
+    // 来源遗物：
+    // Old Coin
+    //
+    // 原版 Hook：
+    // AfterObtained()
+    //
     //
     // H006
-    // 来源遗物：Distinguished Cape
     //
-    // Hook：
-    // 真正把遗物拿到手时
+    // 来源遗物：
+    // Distinguished Cape
+    //
+    // 原版 Hook：
+    // AfterObtained()
+    //
+    // 两个 Fragment 使用相同原生 Hook，
+    // 所以共用这一入口。
+    //
+    // 注意：
+    // AfterObtained 原版没有传入 PlayerChoiceContext。
+    //
+    // 当前仍使用 ThrowingPlayerChoiceContext。
+    // 如果以后 E007 等 Choice Effect
+    // 与 H004/H006 组合发生问题，
+    // 将由 Compatibility 层单独处理。
     // =========================================================
 
     public override async Task AfterObtained()
@@ -147,7 +200,8 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
             DynamicVars.Gold
         );
 
-        await ErrorEffectRegistry.ExecuteAsync(
+        await ErrorExecutionCompatibility.ExecuteAsync(
+            HookId,
             EffectId,
             context
         );
@@ -156,10 +210,20 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
     // =========================================================
     // H001
-    // 来源遗物：Vajra
     //
-    // Hook：
-    // 进入战斗
+    // 来源遗物：
+    // Vajra
+    //
+    // 原版 Hook：
+    // AfterRoomEntered(AbstractRoom room)
+    //
+    // 原版条件：
+    // room is CombatRoom
+    //
+    // Vajra 原版同样使用：
+    // new ThrowingPlayerChoiceContext()
+    //
+    // 因此这里继续忠于原版 Hook 环境。
     // =========================================================
 
     public override async Task AfterRoomEntered(
@@ -184,7 +248,8 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
             DynamicVars.Gold
         );
 
-        await ErrorEffectRegistry.ExecuteAsync(
+        await ErrorExecutionCompatibility.ExecuteAsync(
+            HookId,
             EffectId,
             context
         );
@@ -193,10 +258,15 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
     // =========================================================
     // H002
-    // 来源遗物：Mercury Hourglass
+    //
+    // 来源遗物：
+    // Mercury Hourglass
     //
     // Hook：
     // 自己的回合开始
+    //
+    // 原生 Hook 会提供 PlayerChoiceContext，
+    // 所以直接向 Effect 传递原生 Context。
     // =========================================================
 
     public override async Task AfterPlayerTurnStart(
@@ -223,7 +293,8 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
             DynamicVars.Gold
         );
 
-        await ErrorEffectRegistry.ExecuteAsync(
+        await ErrorExecutionCompatibility.ExecuteAsync(
+            HookId,
             EffectId,
             context
         );
@@ -232,11 +303,21 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
     // =========================================================
     // H003
-    // 来源遗物：Intimidating Helmet
     //
-    // Hook：
-    // BeforeCardPlayed
-    // 自己打出的牌使用至少 2 点 Energy
+    // 来源遗物：
+    // Intimidating Helmet
+    //
+    // 原版 Hook：
+    // BeforeCardPlayed(CardPlay cardPlay)
+    //
+    // 原版条件：
+    // 自己打出的牌使用至少 2 点 Energy。
+    //
+    // 这个原生 Hook 没有提供 PlayerChoiceContext，
+    // 因此当前保持 ThrowingPlayerChoiceContext。
+    //
+    // Choice 类 Effect 如果与 H003 出现兼容问题，
+    // 后续由 Compatibility 层单独处理。
     // =========================================================
 
     public override async Task BeforeCardPlayed(
@@ -264,7 +345,8 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
             cardPlay
         );
 
-        await ErrorEffectRegistry.ExecuteAsync(
+        await ErrorExecutionCompatibility.ExecuteAsync(
+            HookId,
             EffectId,
             context
         );
@@ -273,20 +355,24 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
     // =========================================================
     // H007
-    // 来源遗物：Toolbox
     //
-    // Hook：
-    // 第一回合起始手牌抽取之前
+    // 来源遗物：
+    // Toolbox
     //
-    // 原版 Toolbox 使用：
+    // 原版 Hook：
     //
     // BeforeHandDraw(
     //     Player player,
     //     PlayerChoiceContext choiceContext,
     //     ICombatState combatState)
     //
-    // combatState 原版没有参与条件判断，
-    // 所以这里只负责接住原生 Hook。
+    // 原版触发条件：
+    // 1. player == Owner
+    // 2. TurnNumber == 1
+    //
+    // combatState 在原版 Toolbox 条件判断中没有参与。
+    //
+    // 这里直接保留原生 choiceContext。
     // =========================================================
 
     public override async Task BeforeHandDraw(
@@ -314,7 +400,8 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
             DynamicVars.Gold
         );
 
-        await ErrorEffectRegistry.ExecuteAsync(
+        await ErrorExecutionCompatibility.ExecuteAsync(
+            HookId,
             EffectId,
             context
         );
