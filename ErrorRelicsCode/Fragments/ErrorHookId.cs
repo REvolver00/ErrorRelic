@@ -263,5 +263,54 @@
     // TurnsSeen = (TurnsSeen + 1) % 3
     // 战斗结束不清零。
     // =========================================================
-    H023_Every3TurnsPendulum
+    H023_Every3TurnsPendulum,
+
+
+    // =========================================================
+    // H024
+    // 来源遗物：Sparkling Rouge
+    // 原版 Hook：AfterBlockCleared(Creature creature)
+    // 条件：creature == Owner.Creature && TurnNumber == 3
+    // =========================================================
+    H024_Turn3AfterBlockClearedSparklingRouge,
+
+
+    // =========================================================
+    // H025
+    // 来源遗物：Oddly Smooth Stone
+    // 原版 Hook：AfterRoomEntered(AbstractRoom room)
+    // 条件：room is CombatRoom
+    // =========================================================
+    H025_EnterCombatOddlySmoothStone,
+
+
+    // =========================================================
+    // H026
+    // 来源遗物：Horn Cleat
+    // 原版 Hook：AfterBlockCleared(Creature creature)
+    // 条件：creature == Owner.Creature && TurnNumber == 2
+    // =========================================================
+    H026_Turn2AfterBlockClearedHornCleat,
+
+
+    // =========================================================
+    // H027
+    // 来源遗物：Captain's Wheel
+    // 原版 Hook：AfterBlockCleared(Creature creature)
+    // 条件：creature == Owner.Creature && TurnNumber == 3
+    //
+    // 与 H024 条件相同，但来源遗物不同，
+    // 所以保留独立 Fragment ID。
+    // =========================================================
+    H027_Turn3AfterBlockClearedCaptainsWheel,
+
+
+    // =========================================================
+    // H028
+    // 来源遗物：Candelabra
+    // 原版 Hook：AfterSideTurnStart(...)
+    // 条件：participants.Contains(Owner.Creature)
+    //       && TurnNumber == 2
+    // =========================================================
+    H028_Turn2SideTurnStartCandelabra
 }

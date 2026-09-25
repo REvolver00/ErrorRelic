@@ -17,6 +17,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
+using MegaCrit.Sts2.Core.ValueProps;
 
 namespace ErrorRelics.ErrorRelicsCode.Fragments;
 
@@ -1021,6 +1022,122 @@ public static class ErrorEffectRegistry
 
                 break;
             }
+
+
+            // =====================================================
+            // E025
+            // 来源遗物：Sparkling Rouge
+            // 用户本机 sts2.dll 反编译源码：
+            // 先 Apply<StrengthPower>(1)，再 Apply<DexterityPower>(1)。
+            // =====================================================
+
+            case ErrorEffectId.E025_GainStrength1Dexterity1:
+            {
+                await PowerCmd.Apply<StrengthPower>(
+                    context.ChoiceContext,
+                    context.Owner.Creature,
+                    context.Vars["SparklingRougeStrength"].BaseValue,
+                    context.Owner.Creature,
+                    null
+                );
+
+                await PowerCmd.Apply<DexterityPower>(
+                    context.ChoiceContext,
+                    context.Owner.Creature,
+                    context.Vars["SparklingRougeDexterity"].BaseValue,
+                    context.Owner.Creature,
+                    null
+                );
+
+                break;
+            }
+
+
+            // =====================================================
+            // E026
+            // 来源遗物：Oddly Smooth Stone
+            // 用户本机 sts2.dll 反编译源码：Apply<DexterityPower>(1)。
+            // =====================================================
+
+            case ErrorEffectId.E026_GainDexterity1:
+            {
+                await PowerCmd.Apply<DexterityPower>(
+                    context.ChoiceContext,
+                    context.Owner.Creature,
+                    context.Vars["OddlySmoothStoneDexterity"].BaseValue,
+                    context.Owner.Creature,
+                    null
+                );
+
+                break;
+            }
+
+
+            // =====================================================
+            // E027
+            // 来源遗物：Horn Cleat
+            // 用户本机 sts2.dll 反编译源码：
+            // GainBlock(... BlockVar(14, Unpowered), null)。
+            // =====================================================
+
+            case ErrorEffectId.E027_GainBlock14:
+            {
+                BlockVar block =
+                    new BlockVar(
+                        context.Vars["HornCleatBlock"].BaseValue,
+                        ValueProp.Unpowered
+                    );
+
+                await CreatureCmd.GainBlock(
+                    context.Owner.Creature,
+                    block,
+                    null
+                );
+
+                break;
+            }
+
+
+            // =====================================================
+            // E028
+            // 来源遗物：Captain's Wheel
+            // 用户本机 sts2.dll 反编译源码：
+            // GainBlock(... BlockVar(18, Unpowered), null)。
+            // =====================================================
+
+            case ErrorEffectId.E028_GainBlock18:
+            {
+                BlockVar block =
+                    new BlockVar(
+                        context.Vars["CaptainsWheelBlock"].BaseValue,
+                        ValueProp.Unpowered
+                    );
+
+                await CreatureCmd.GainBlock(
+                    context.Owner.Creature,
+                    block,
+                    null
+                );
+
+                break;
+            }
+
+
+            // =====================================================
+            // E029
+            // 来源遗物：Candelabra
+            // 用户本机 sts2.dll 反编译源码：GainEnergy(2, Owner)。
+            // =====================================================
+
+            case ErrorEffectId.E029_GainEnergy2:
+            {
+                await PlayerCmd.GainEnergy(
+                    context.Vars["CandelabraEnergy"].BaseValue,
+                    context.Owner
+                );
+
+                break;
+            }
         }
     }
 
@@ -1105,6 +1222,21 @@ public static class ErrorEffectRegistry
 
             ErrorEffectId.E024_Draw1
                 => "draw 1 card.",
+
+            ErrorEffectId.E025_GainStrength1Dexterity1
+                => "gain 1 Strength, then gain 1 Dexterity.",
+
+            ErrorEffectId.E026_GainDexterity1
+                => "gain 1 Dexterity.",
+
+            ErrorEffectId.E027_GainBlock14
+                => "gain 14 Block.",
+
+            ErrorEffectId.E028_GainBlock18
+                => "gain 18 Block.",
+
+            ErrorEffectId.E029_GainEnergy2
+                => "gain 2 Energy.",
 
             _ => "do nothing."
         };

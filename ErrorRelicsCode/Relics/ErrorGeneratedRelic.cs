@@ -135,6 +135,42 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
                 new CardsVar(
                     "PendulumCards",
                     1
+                ),
+
+                // Sparkling Rouge：Strength 1
+                new DynamicVar(
+                    "SparklingRougeStrength",
+                    1M
+                ),
+
+                // Sparkling Rouge：Dexterity 1
+                new DynamicVar(
+                    "SparklingRougeDexterity",
+                    1M
+                ),
+
+                // Oddly Smooth Stone：Dexterity 1
+                new DynamicVar(
+                    "OddlySmoothStoneDexterity",
+                    1M
+                ),
+
+                // Horn Cleat：Block 14
+                new DynamicVar(
+                    "HornCleatBlock",
+                    14M
+                ),
+
+                // Captain's Wheel：Block 18
+                new DynamicVar(
+                    "CaptainsWheelBlock",
+                    18M
+                ),
+
+                // Candelabra：Energy 2
+                new DynamicVar(
+                    "CandelabraEnergy",
+                    2M
                 )
             };
         }
@@ -450,7 +486,10 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     // 来源遗物：
     // Vajra
     //
-    // 原版 Hook：
+    // H025 来源遗物：
+    // Oddly Smooth Stone
+    //
+    // 两者原版 Hook：
     // AfterRoomEntered(AbstractRoom room)
     //
     // 原版条件：
@@ -690,6 +729,29 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
             }
 
             InvokeDisplayAmountChanged();
+            return;
+        }
+
+        // H028 来源遗物：Candelabra
+        if (ErrorHookRegistry.MatchesCandelabraSideTurnStart(
+                HookId,
+                owner,
+                participants))
+        {
+            Flash();
+
+            var candelabraContext =
+                new ErrorContext(
+                    owner,
+                    new ThrowingPlayerChoiceContext(),
+                    DynamicVars
+                );
+
+            await ErrorExecutionCompatibility.ExecuteAsync(
+                HookId,
+                EffectId,
+                candelabraContext
+            );
         }
     }
 
@@ -783,6 +845,50 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
         }
 
         return Task.CompletedTask;
+    }
+
+
+    // =========================================================
+    // H024 / H026 / H027
+    //
+    // 来源遗物：
+    // Sparkling Rouge / Horn Cleat / Captain's Wheel
+    //
+    // 用户本机 sts2.dll 三者都使用：
+    // AfterBlockCleared(Creature creature)
+    //
+    // 这个原生 Hook 没有 PlayerChoiceContext，
+    // 因此这里保持 ThrowingPlayerChoiceContext。
+    // =========================================================
+
+    public override async Task AfterBlockCleared(
+        Creature creature)
+    {
+        var owner = Owner;
+
+        if (owner is null)
+            return;
+
+        if (!ErrorHookRegistry.MatchesAfterBlockCleared(
+                HookId,
+                owner,
+                creature))
+            return;
+
+        Flash();
+
+        var context =
+            new ErrorContext(
+                owner,
+                new ThrowingPlayerChoiceContext(),
+                DynamicVars
+            );
+
+        await ErrorExecutionCompatibility.ExecuteAsync(
+            HookId,
+            EffectId,
+            context
+        );
     }
 
 

@@ -266,5 +266,30 @@ public enum ErrorEffectId
     // Effect：
     // 抽 1 张牌。
     // =========================================================
-    E024_Draw1
+    E024_Draw1,
+
+
+    // E025 来源遗物：Sparkling Rouge
+    // 先获得 1 Strength，再获得 1 Dexterity。
+    E025_GainStrength1Dexterity1,
+
+
+    // E026 来源遗物：Oddly Smooth Stone
+    // 获得 1 Dexterity。
+    E026_GainDexterity1,
+
+
+    // E027 来源遗物：Horn Cleat
+    // 获得 14 Block。
+    E027_GainBlock14,
+
+
+    // E028 来源遗物：Captain's Wheel
+    // 获得 18 Block。
+    E028_GainBlock18,
+
+
+    // E029 来源遗物：Candelabra
+    // 获得 2 Energy。
+    E029_GainEnergy2
 }

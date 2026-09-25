@@ -23,8 +23,12 @@ public static class ErrorHookRegistry
         ErrorHookId hookId,
         AbstractRoom room)
     {
+        if (room is not CombatRoom)
+            return false;
+
         return hookId == ErrorHookId.H001_EnterCombat
-               && room is CombatRoom;
+               || hookId
+                   == ErrorHookId.H025_EnterCombatOddlySmoothStone;
     }
 
 
@@ -252,6 +256,59 @@ public static class ErrorHookRegistry
 
 
     // =========================================================
+    // H024 / H026 / H027
+    // 来源遗物：
+    // Sparkling Rouge / Horn Cleat / Captain's Wheel
+    //
+    // 三者原版都使用 AfterBlockCleared(Creature creature)。
+    // =========================================================
+
+    public static bool MatchesAfterBlockCleared(
+        ErrorHookId hookId,
+        Player owner,
+        Creature creature)
+    {
+        if (creature != owner.Creature)
+            return false;
+
+        int turnNumber =
+            owner.PlayerCombatState.TurnNumber;
+
+        return hookId switch
+        {
+            ErrorHookId.H024_Turn3AfterBlockClearedSparklingRouge
+                => turnNumber == 3,
+
+            ErrorHookId.H026_Turn2AfterBlockClearedHornCleat
+                => turnNumber == 2,
+
+            ErrorHookId.H027_Turn3AfterBlockClearedCaptainsWheel
+                => turnNumber == 3,
+
+            _ => false
+        };
+    }
+
+
+    // =========================================================
+    // H028
+    // 来源遗物：Candelabra
+    // 原版 Hook：AfterSideTurnStart(...)
+    // =========================================================
+
+    public static bool MatchesCandelabraSideTurnStart(
+        ErrorHookId hookId,
+        Player owner,
+        IReadOnlyList<Creature> participants)
+    {
+        return hookId
+                   == ErrorHookId.H028_Turn2SideTurnStartCandelabra
+               && participants.Contains(owner.Creature)
+               && owner.PlayerCombatState.TurnNumber == 2;
+    }
+
+
+    // =========================================================
     // 自动描述
     // =========================================================
 
@@ -328,6 +385,21 @@ public static class ErrorHookRegistry
 
             ErrorHookId.H023_Every3TurnsPendulum
                 => "Every 3 turns,",
+
+            ErrorHookId.H024_Turn3AfterBlockClearedSparklingRouge
+                => "On turn 3 after your Block is cleared,",
+
+            ErrorHookId.H025_EnterCombatOddlySmoothStone
+                => "When entering combat,",
+
+            ErrorHookId.H026_Turn2AfterBlockClearedHornCleat
+                => "On turn 2 after your Block is cleared,",
+
+            ErrorHookId.H027_Turn3AfterBlockClearedCaptainsWheel
+                => "On turn 3 after your Block is cleared,",
+
+            ErrorHookId.H028_Turn2SideTurnStartCandelabra
+                => "At the start of turn 2,",
 
             _ => "ERROR:"
         };
