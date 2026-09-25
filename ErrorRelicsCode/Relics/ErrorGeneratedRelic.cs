@@ -12,6 +12,8 @@ using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
@@ -171,6 +173,42 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
                 new DynamicVar(
                     "CandelabraEnergy",
                     2M
+                ),
+
+                // =================================================
+                // 来源遗物：Meal Ticket
+                // 用户本机反编译源码：HealVar(15)
+                // =================================================
+                new DynamicVar(
+                    "MealTicketHeal",
+                    15M
+                ),
+
+                // =================================================
+                // 来源遗物：Joss Paper
+                // 用户本机反编译源码：ExhaustAmount = 5
+                // =================================================
+                new DynamicVar(
+                    "JossPaperExhaustAmount",
+                    5M
+                ),
+
+                // =================================================
+                // 来源遗物：Joss Paper
+                // 用户本机反编译源码：CardsVar(1)
+                // =================================================
+                new CardsVar(
+                    "JossPaperCards",
+                    1
+                ),
+
+                // =================================================
+                // 来源遗物：Planisphere
+                // 用户本机反编译源码：HealVar(5)
+                // =================================================
+                new DynamicVar(
+                    "PlanisphereHeal",
+                    5M
                 )
             };
         }
@@ -191,6 +229,18 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     private bool _isCounterActivating;
 
     private int _turnsSeen;
+
+
+    // =========================================================
+    // H030
+    // 来源遗物：Joss Paper
+    // =========================================================
+
+    private bool _jossPaperIsActivating;
+
+    private int _jossPaperCardsExhausted;
+
+    private int _jossPaperEtherealCount;
 
 
     private bool IsCounterActivating
@@ -220,12 +270,72 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     }
 
 
+    // =========================================================
+    // H030
+    // 来源遗物：Joss Paper
+    //
+    // 完整保留用户本机反编译源码里的：
+    // - CardsExhausted SavedProperty
+    // - EtherealCount 延迟结算
+    // - Active 状态（阈值前 1）
+    // =========================================================
+
+    private bool JossPaperIsActivating
+    {
+        get => _jossPaperIsActivating;
+
+        set
+        {
+            AssertMutable();
+            _jossPaperIsActivating = value;
+            InvokeDisplayAmountChanged();
+        }
+    }
+
+
+    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
+    public int JossPaperCardsExhausted
+    {
+        get => _jossPaperCardsExhausted;
+
+        set
+        {
+            AssertMutable();
+
+            _jossPaperCardsExhausted = value;
+
+            Status =
+                (decimal)_jossPaperCardsExhausted
+                    == DynamicVars[
+                        "JossPaperExhaustAmount"
+                    ].BaseValue - 1M
+                    ? RelicStatus.Active
+                    : RelicStatus.Normal;
+
+            InvokeDisplayAmountChanged();
+        }
+    }
+
+
+    private int JossPaperEtherealCount
+    {
+        get => _jossPaperEtherealCount;
+
+        set
+        {
+            AssertMutable();
+            _jossPaperEtherealCount = value;
+        }
+    }
+
+
     public override bool ShowCounter
     {
         get
         {
             if (HookId == ErrorHookId.H021_Every3TurnsHappyFlower
-                || HookId == ErrorHookId.H023_Every3TurnsPendulum)
+                || HookId == ErrorHookId.H023_Every3TurnsPendulum
+                || HookId == ErrorHookId.H030_Every5ExhaustsJossPaper)
             {
                 return true;
             }
@@ -254,6 +364,19 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
                 }
 
                 return DynamicVars["Turns"].IntValue;
+            }
+
+            if (HookId
+                == ErrorHookId.H030_Every5ExhaustsJossPaper)
+            {
+                if (!JossPaperIsActivating)
+                {
+                    return JossPaperCardsExhausted;
+                }
+
+                return DynamicVars[
+                    "JossPaperExhaustAmount"
+                ].IntValue;
             }
 
             if (HookId
@@ -296,6 +419,7 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     // Pendulum 原版使用抽牌遗物音效。
     public override string FlashSfx =>
         HookId == ErrorHookId.H023_Every3TurnsPendulum
+        || HookId == ErrorHookId.H030_Every5ExhaustsJossPaper
             ? "event:/sfx/ui/relic_activate_draw"
             : base.FlashSfx;
 
@@ -309,6 +433,23 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
         await Cmd.Wait(1f);
 
         IsCounterActivating = false;
+    }
+
+
+    // =========================================================
+    // H030
+    // 来源遗物：Joss Paper
+    // =========================================================
+
+    private async Task DoJossPaperActivateVisuals()
+    {
+        JossPaperIsActivating = true;
+
+        Flash();
+
+        await Cmd.Wait(1f);
+
+        JossPaperIsActivating = false;
     }
 
 
@@ -530,6 +671,7 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
         // =====================================================
         if (!ErrorHookRegistry.MatchesAfterRoomEntered(
                 HookId,
+                owner,
                 room))
             return;
 
@@ -844,6 +986,14 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
             }
         }
 
+        // H030 来源遗物：Joss Paper
+        // 原版只清零临时 EtherealCount。
+        // CardsExhausted 是 SavedProperty，跨战斗保留。
+        if (HookId == ErrorHookId.H030_Every5ExhaustsJossPaper)
+        {
+            JossPaperEtherealCount = 0;
+        }
+
         return Task.CompletedTask;
     }
 
@@ -889,6 +1039,155 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
             EffectId,
             context
         );
+    }
+
+
+    // =========================================================
+    // H030
+    // 来源遗物：Joss Paper
+    //
+    // 用户本机 sts2.dll 原版 Hook：
+    //
+    // AfterCardExhausted(
+    //     PlayerChoiceContext choiceContext,
+    //     CardModel card,
+    //     bool causedByEthereal)
+    //
+    // 非 Ethereal：
+    // 立即累计并检查 5 张阈值。
+    //
+    // Ethereal：
+    // 只累计到临时 EtherealCount，
+    // 等 AfterSideTurnEnd 再统一结算。
+    // =========================================================
+
+    public override async Task AfterCardExhausted(
+        PlayerChoiceContext choiceContext,
+        CardModel card,
+        bool causedByEthereal)
+    {
+        var owner = Owner;
+
+        if (owner is null)
+            return;
+
+        if (!ErrorHookRegistry.MatchesJossPaperCardExhausted(
+                HookId,
+                owner,
+                card))
+            return;
+
+        if (causedByEthereal)
+        {
+            JossPaperEtherealCount++;
+            return;
+        }
+
+        JossPaperCardsExhausted++;
+
+        await TriggerJossPaperThresholds(
+            choiceContext
+        );
+    }
+
+
+    // =========================================================
+    // H030
+    // 来源遗物：Joss Paper
+    //
+    // 用户本机 sts2.dll 原版 Hook：
+    // AfterSideTurnEnd(...)
+    //
+    // 把本回合 Ethereal 自动 Exhaust 的数量
+    // 一次加入持久计数后，再检查阈值。
+    // =========================================================
+
+    public override async Task AfterSideTurnEnd(
+        PlayerChoiceContext choiceContext,
+        CombatSide side,
+        IEnumerable<Creature> participants)
+    {
+        var owner = Owner;
+
+        if (owner is null)
+            return;
+
+        if (!ErrorHookRegistry.MatchesJossPaperSideTurnEnd(
+                HookId,
+                owner,
+                participants))
+            return;
+
+        JossPaperCardsExhausted +=
+            JossPaperEtherealCount;
+
+        JossPaperEtherealCount = 0;
+
+        await TriggerJossPaperThresholds(
+            choiceContext
+        );
+    }
+
+
+    // =========================================================
+    // H030
+    // 来源遗物：Joss Paper
+    //
+    // 原版达到阈值后：
+    // Draw(cardsExhausted / 5)
+    // cardsExhausted %= 5
+    //
+    // ERROR Hook 拆分以后：
+    // 每跨过一个 5 张阈值，就执行当前 Effect 一次。
+    //
+    // 因此：
+    // 5 张 -> 1 次 Effect
+    // 10 张 -> 2 次 Effect
+    //
+    // 当 Effect == E031（Joss Paper Draw 1）时，
+    // 结果与原版完全一致。
+    // =========================================================
+
+    private async Task TriggerJossPaperThresholds(
+        PlayerChoiceContext choiceContext)
+    {
+        int threshold =
+            DynamicVars[
+                "JossPaperExhaustAmount"
+            ].IntValue;
+
+        if (JossPaperCardsExhausted < threshold)
+            return;
+
+        int activationCount =
+            JossPaperCardsExhausted / threshold;
+
+        TaskHelper.RunSafely(
+            DoJossPaperActivateVisuals()
+        );
+
+        var owner = Owner;
+
+        if (owner is null)
+            return;
+
+        var context =
+            new ErrorContext(
+                owner,
+                choiceContext,
+                DynamicVars
+            );
+
+        for (int i = 0; i < activationCount; ++i)
+        {
+            await ErrorExecutionCompatibility.ExecuteAsync(
+                HookId,
+                EffectId,
+                context
+            );
+        }
+
+        JossPaperCardsExhausted %= threshold;
     }
 
 

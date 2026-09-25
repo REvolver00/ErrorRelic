@@ -1138,6 +1138,66 @@ public static class ErrorEffectRegistry
 
                 break;
             }
+
+
+            // =====================================================
+            // E030
+            // 来源遗物：Meal Ticket
+            //
+            // 用户本机 sts2.dll 反编译源码：
+            // CreatureCmd.Heal(Owner.Creature, HealVar(15).BaseValue)
+            // =====================================================
+
+            case ErrorEffectId.E030_Heal15:
+            {
+                await CreatureCmd.Heal(
+                    context.Owner.Creature,
+                    context.Vars["MealTicketHeal"].BaseValue
+                );
+
+                break;
+            }
+
+
+            // =====================================================
+            // E031
+            // 来源遗物：Joss Paper
+            //
+            // 用户本机 sts2.dll 反编译源码：
+            // CardPileCmd.Draw(choiceContext, 1, Owner)
+            //
+            // 与 E024 Pendulum 分开保留独立 Fragment ID。
+            // =====================================================
+
+            case ErrorEffectId.E031_Draw1JossPaper:
+            {
+                await CardPileCmd.Draw(
+                    context.ChoiceContext,
+                    context.Vars["JossPaperCards"].BaseValue,
+                    context.Owner
+                );
+
+                break;
+            }
+
+
+            // =====================================================
+            // E032
+            // 来源遗物：Planisphere
+            //
+            // 用户本机 sts2.dll 反编译源码：
+            // CreatureCmd.Heal(Owner.Creature, HealVar(5).BaseValue)
+            // =====================================================
+
+            case ErrorEffectId.E032_Heal5:
+            {
+                await CreatureCmd.Heal(
+                    context.Owner.Creature,
+                    context.Vars["PlanisphereHeal"].BaseValue
+                );
+
+                break;
+            }
         }
     }
 
@@ -1237,6 +1297,15 @@ public static class ErrorEffectRegistry
 
             ErrorEffectId.E029_GainEnergy2
                 => "gain 2 Energy.",
+
+            ErrorEffectId.E030_Heal15
+                => "heal 15 HP.",
+
+            ErrorEffectId.E031_Draw1JossPaper
+                => "draw 1 card.",
+
+            ErrorEffectId.E032_Heal5
+                => "heal 5 HP.",
 
             _ => "do nothing."
         };

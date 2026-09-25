@@ -4,6 +4,8 @@ using System.Linq;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Map;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Combat;
 
@@ -21,14 +23,40 @@ public static class ErrorHookRegistry
 
     public static bool MatchesAfterRoomEntered(
         ErrorHookId hookId,
+        Player owner,
         AbstractRoom room)
     {
-        if (room is not CombatRoom)
-            return false;
+        switch (hookId)
+        {
+            // H001 来源遗物：Vajra
+            // H025 来源遗物：Oddly Smooth Stone
+            case ErrorHookId.H001_EnterCombat:
+            case ErrorHookId.H025_EnterCombatOddlySmoothStone:
+                return room is CombatRoom;
 
-        return hookId == ErrorHookId.H001_EnterCombat
-               || hookId
-                   == ErrorHookId.H025_EnterCombatOddlySmoothStone;
+            // H029 来源遗物：Meal Ticket
+            case ErrorHookId.H029_EnterMerchantMealTicket:
+                return !owner.Creature.IsDead
+                       && room is MerchantRoom;
+
+            // H031 来源遗物：Planisphere
+            case ErrorHookId.H031_EnterFirstUnknownRoomPlanisphere:
+            {
+                if (owner.Creature.IsDead)
+                    return false;
+
+                MapPoint? currentMapPoint =
+                    owner.RunState.CurrentMapPoint;
+
+                return currentMapPoint != null
+                       && currentMapPoint.PointType
+                           == MapPointType.Unknown
+                       && owner.RunState.CurrentRoomCount <= 1;
+            }
+
+            default:
+                return false;
+        }
     }
 
 
@@ -309,6 +337,43 @@ public static class ErrorHookRegistry
 
 
     // =========================================================
+    // H030
+    // 来源遗物：Joss Paper
+    //
+    // AfterCardExhausted：
+    // 只统计属于 Owner 的牌。
+    // =========================================================
+
+    public static bool MatchesJossPaperCardExhausted(
+        ErrorHookId hookId,
+        Player owner,
+        CardModel card)
+    {
+        return hookId == ErrorHookId.H030_Every5ExhaustsJossPaper
+               && card.Owner == owner;
+    }
+
+
+    // =========================================================
+    // H030
+    // 来源遗物：Joss Paper
+    //
+    // AfterSideTurnEnd：
+    // 只在 participants 包含 Owner.Creature 时
+    // 结算 Ethereal Exhaust。
+    // =========================================================
+
+    public static bool MatchesJossPaperSideTurnEnd(
+        ErrorHookId hookId,
+        Player owner,
+        IEnumerable<Creature> participants)
+    {
+        return hookId == ErrorHookId.H030_Every5ExhaustsJossPaper
+               && participants.Contains(owner.Creature);
+    }
+
+
+    // =========================================================
     // 自动描述
     // =========================================================
 
@@ -400,6 +465,15 @@ public static class ErrorHookRegistry
 
             ErrorHookId.H028_Turn2SideTurnStartCandelabra
                 => "At the start of turn 2,",
+
+            ErrorHookId.H029_EnterMerchantMealTicket
+                => "When entering a Merchant room,",
+
+            ErrorHookId.H030_Every5ExhaustsJossPaper
+                => "Every 5 cards you Exhaust,",
+
+            ErrorHookId.H031_EnterFirstUnknownRoomPlanisphere
+                => "When entering the first Unknown room,",
 
             _ => "ERROR:"
         };

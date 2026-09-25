@@ -312,5 +312,51 @@
     // 条件：participants.Contains(Owner.Creature)
     //       && TurnNumber == 2
     // =========================================================
-    H028_Turn2SideTurnStartCandelabra
+    H028_Turn2SideTurnStartCandelabra,
+
+
+    // =========================================================
+    // H029
+    // 来源遗物：Meal Ticket
+    //
+    // 原版 Hook：
+    // AfterRoomEntered(AbstractRoom room)
+    //
+    // 条件：
+    // Owner.Creature.IsDead == false
+    // && room is MerchantRoom
+    // =========================================================
+    H029_EnterMerchantMealTicket,
+
+
+    // =========================================================
+    // H030
+    // 来源遗物：Joss Paper
+    //
+    // 语义：
+    // 每累计 Exhaust 自己的 5 张牌时触发一次。
+    //
+    // 原版：
+    // - 非 Ethereal Exhaust 立即累计并检查
+    // - Ethereal Exhaust 先暂存在 EtherealCount
+    // - 自己一侧回合结束时统一加入 CardsExhausted
+    // - CardsExhausted 是 SavedProperty，跨战斗保留
+    // =========================================================
+    H030_Every5ExhaustsJossPaper,
+
+
+    // =========================================================
+    // H031
+    // 来源遗物：Planisphere
+    //
+    // 原版 Hook：
+    // AfterRoomEntered(AbstractRoom room)
+    //
+    // 条件：
+    // Owner.Creature.IsDead == false
+    // && CurrentMapPoint != null
+    // && CurrentMapPoint.PointType == Unknown
+    // && CurrentRoomCount <= 1
+    // =========================================================
+    H031_EnterFirstUnknownRoomPlanisphere
 }
