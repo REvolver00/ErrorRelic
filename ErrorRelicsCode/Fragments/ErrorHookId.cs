@@ -77,5 +77,24 @@
     // + player == Owner
     // + TurnNumber == 1
     // =========================================================
-    H007_FirstTurnBeforeHandDraw
+    H007_FirstTurnBeforeHandDraw,
+
+
+    // =========================================================
+    // H008
+    // 来源遗物：Astrolabe
+    //
+    // Hook：
+    // 获得 / 拾取这件遗物时
+    //
+    // 原版 Astrolabe 使用 AfterObtained。
+    //
+    // 与 H004 Old Coin、
+    // H006 Distinguished Cape
+    // 使用相同的原生 Hook。
+    //
+    // 但来源遗物不同，
+    // 所以保留独立 Fragment ID 和随机权重。
+    // =========================================================
+    H008_AfterObtained
 }

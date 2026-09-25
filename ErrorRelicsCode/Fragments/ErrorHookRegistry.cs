@@ -70,21 +70,25 @@ public static class ErrorHookRegistry
     // H006
     // 来源遗物：Distinguished Cape
     //
+    // H008
+    // 来源遗物：Astrolabe
+    //
     // Hook：
     // 获得 / 拾取遗物时
     //
-    // H004 / H006 来源不同，
-    // 所以保留两个 Fragment ID。
+    // 三个 Fragment 来源不同，
+    // 所以保留三个独立 Fragment ID。
     //
-    // 但是 Hook 行为完全相同，
-    // 所以共用这一套代码。
+    // 但是原版 Hook 都是 AfterObtained，
+    // 因此共用这一套代码。
     // =========================================================
 
     public static bool MatchesAfterObtained(
         ErrorHookId hookId)
     {
         return hookId == ErrorHookId.H004_AfterObtained
-               || hookId == ErrorHookId.H006_AfterObtained;
+               || hookId == ErrorHookId.H006_AfterObtained
+               || hookId == ErrorHookId.H008_AfterObtained;
     }
 
 
@@ -166,6 +170,9 @@ public static class ErrorHookRegistry
 
             ErrorHookId.H007_FirstTurnBeforeHandDraw
                 => "Before drawing your opening hand,",
+
+            ErrorHookId.H008_AfterObtained
+                => "When obtained,",
 
             _ => "ERROR:"
         };

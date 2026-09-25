@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Factories;
@@ -15,41 +15,6 @@ namespace ErrorRelics.ErrorRelicsCode.Fragments;
 
 public static class ErrorEffectRegistry
 {
-    // =========================================================
-    // E007 Choice UI Queue
-    //
-    // 来源问题：
-    // Toolbox 的 Effect 会打开 Choose A Card 界面。
-    //
-    // 单个 E007 正常。
-    //
-    // 但是如果多个 ERROR 在同一个时机同时触发 E007，
-    // 游戏可能同时尝试打开多个选牌界面，
-    // 导致 Choice UI 状态冲突 / 黑屏。
-    //
-    // 所以 E007 使用一个 SemaphoreSlim：
-    //
-    // 第一个 E007
-    // ↓
-    // 打开选牌
-    // ↓
-    // 玩家完成选择
-    // ↓
-    // Release
-    // ↓
-    // 第二个 E007 才允许继续
-    //
-    // 注意：
-    // 这里没有删除任何 E007。
-    //
-    // 多次触发仍然全部执行，
-    // 只是从“同时执行”改成“排队执行”。
-    // =========================================================
-
-    private static readonly SemaphoreSlim E007ChoiceGate =
-        new SemaphoreSlim(1, 1);
-
-
     public static async Task ExecuteAsync(
         ErrorEffectId effectId,
         ErrorContext context)
@@ -265,17 +230,14 @@ public static class ErrorEffectRegistry
             // ↓
             // AddGeneratedCardToCombat
             //
-            // ERROR 特殊安全处理：
+            // 重要：
+            // 不额外使用 SemaphoreSlim。
             //
-            // 如果多个 E007 同时触发，
-            // 不允许同时打开多个选择界面。
-            //
-            // 所有 E007 排队执行。
-            //
-            // 注意：
-            // 不是 NoOp。
-            // 每一次触发仍然都会执行。
+            // PlayerChoice 的暂停、排队与恢复
+            // 交给游戏原生 PlayerChoiceContext /
+            // HookPlayerChoiceContext 生命周期。
             // =====================================================
+
             case ErrorEffectId.E007_Choose1Of3ColorlessToHand:
             {
                 List<CardModel> choices =
@@ -307,6 +269,77 @@ public static class ErrorEffectRegistry
                     PileType.Hand,
                     context.Owner
                 );
+
+                break;
+            }
+
+
+            // =====================================================
+            // E008
+            // 来源遗物：Astrolabe
+            //
+            // 原版效果：
+            //
+            // 选择牌组中的 3 张牌。
+            //
+            // 对每一张选择的牌：
+            //
+            // CreateRandomCardForTransform(
+            //     original,
+            //     false,
+            //     Owner.RunState.Rng.Niche)
+            //
+            // ↓
+            //
+            // Upgrade(newCard)
+            //
+            // ↓
+            //
+            // Transform(original, newCard)
+            //
+            // 注意：
+            // 这里保持 Astrolabe 原版执行顺序：
+            //
+            // 先创建 Transform 目标
+            // → Upgrade 新牌
+            // → 再执行 Transform。
+            // =====================================================
+
+            case ErrorEffectId.E008_Transform3AndUpgrade:
+            {
+                CardSelectorPrefs prefs =
+                    new CardSelectorPrefs(
+                        CardSelectorPrefs.TransformSelectionPrompt,
+                        3
+                    );
+
+                List<CardModel> selectedCards =
+                    (
+                        await CardSelectCmd.FromDeckForTransformation(
+                            context.Owner,
+                            prefs
+                        )
+                    )
+                    .ToList<CardModel>();
+
+                foreach (CardModel original in selectedCards)
+                {
+                    CardModel cardForTransform =
+                        CardFactory.CreateRandomCardForTransform(
+                            original,
+                            false,
+                            context.Owner.RunState.Rng.Niche
+                        );
+
+                    CardCmd.Upgrade(
+                        cardForTransform
+                    );
+
+                    await CardCmd.Transform(
+                        original,
+                        cardForTransform
+                    );
+                }
 
                 break;
             }
@@ -406,6 +439,9 @@ public static class ErrorEffectRegistry
 
             ErrorEffectId.E007_Choose1Of3ColorlessToHand
                 => "choose 1 of 3 random Colorless cards and add it to your hand.",
+
+            ErrorEffectId.E008_Transform3AndUpgrade
+                => "transform 3 cards, then upgrade the transformed cards.",
 
             ErrorEffectId.E010_Add2RandomCurses
                 => "add 2 different random Curses to your deck.",
