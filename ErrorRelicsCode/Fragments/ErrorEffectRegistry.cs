@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Cards;
@@ -951,6 +952,75 @@ public static class ErrorEffectRegistry
                 break;
             }
 
+
+
+            // =====================================================
+            // E022
+            // 来源遗物：Happy Flower
+            //
+            // 原版效果：
+            // 获得 1 Energy。
+            // =====================================================
+
+            case ErrorEffectId.E022_GainEnergy1:
+            {
+                await PlayerCmd.GainEnergy(
+                    context.Vars["HappyFlowerEnergy"].BaseValue,
+                    context.Owner
+                );
+
+                break;
+            }
+
+
+            // =====================================================
+            // E023
+            // 来源遗物：Stone Calendar
+            //
+            // 原版效果：
+            // 对所有 HittableEnemies 造成 52 点
+            // ValueProp.Unpowered 伤害。
+            // =====================================================
+
+            case ErrorEffectId.E023_DamageAllEnemies52:
+            {
+                var stoneCalendarDamage =
+                    (DamageVar)context.Vars[
+                        "StoneCalendarDamage"
+                    ];
+
+                await CreatureCmd.Damage(
+                    context.ChoiceContext,
+                    context.Owner.Creature
+                        .CombatState
+                        .HittableEnemies,
+                    stoneCalendarDamage,
+                    context.Owner.Creature
+                );
+
+                break;
+            }
+
+
+            // =====================================================
+            // E024
+            // 来源遗物：Pendulum
+            //
+            // 原版效果：
+            // 使用当前 Hook 的原生 PlayerChoiceContext
+            // 抽 1 张牌。
+            // =====================================================
+
+            case ErrorEffectId.E024_Draw1:
+            {
+                await CardPileCmd.Draw(
+                    context.ChoiceContext,
+                    context.Vars["PendulumCards"].BaseValue,
+                    context.Owner
+                );
+
+                break;
+            }
         }
     }
 
@@ -1026,6 +1096,15 @@ public static class ErrorEffectRegistry
 
             ErrorEffectId.E021_AddWhistle
                 => "add 1 Whistle to your deck.",
+
+            ErrorEffectId.E022_GainEnergy1
+                => "gain 1 Energy.",
+
+            ErrorEffectId.E023_DamageAllEnemies52
+                => "deal 52 damage to ALL enemies.",
+
+            ErrorEffectId.E024_Draw1
+                => "draw 1 card.",
 
             _ => "do nothing."
         };

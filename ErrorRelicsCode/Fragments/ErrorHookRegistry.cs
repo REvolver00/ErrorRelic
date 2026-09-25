@@ -1,4 +1,8 @@
-﻿using MegaCrit.Sts2.Core.Entities.Cards;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Combat;
@@ -190,6 +194,64 @@ public static class ErrorHookRegistry
 
 
     // =========================================================
+    // H021
+    // 来源遗物：Happy Flower
+    //
+    // 原版 Hook：
+    // AfterSideTurnStart
+    //
+    // 只在 Owner 所在一侧的回合开始时推进计数。
+    // =========================================================
+
+    public static bool MatchesHappyFlowerSideTurnStart(
+        ErrorHookId hookId,
+        Player owner,
+        IReadOnlyList<Creature> participants)
+    {
+        return hookId == ErrorHookId.H021_Every3TurnsHappyFlower
+               && participants.Contains(owner.Creature);
+    }
+
+
+    // =========================================================
+    // H022
+    // 来源遗物：Stone Calendar
+    //
+    // AfterSideTurnStart 用于状态/计数显示；
+    // BeforeSideTurnEnd 在第 7 回合真正触发 Effect。
+    // =========================================================
+
+    public static bool MatchesStoneCalendarSide(
+        ErrorHookId hookId,
+        Player owner,
+        IEnumerable<Creature> participants)
+    {
+        return hookId == ErrorHookId.H022_EndOfTurn7StoneCalendar
+               && participants.Contains(owner.Creature);
+    }
+
+
+    // =========================================================
+    // H023
+    // 来源遗物：Pendulum
+    //
+    // 原版 Hook：
+    // AfterPlayerTurnStart
+    //
+    // 只在 player == Owner 时推进 3 回合持久计数。
+    // =========================================================
+
+    public static bool MatchesPendulumPlayerTurnStart(
+        ErrorHookId hookId,
+        Player owner,
+        Player player)
+    {
+        return hookId == ErrorHookId.H023_Every3TurnsPendulum
+               && player == owner;
+    }
+
+
+    // =========================================================
     // 自动描述
     // =========================================================
 
@@ -257,6 +319,15 @@ public static class ErrorHookRegistry
 
             ErrorHookId.H020_AfterObtained
                 => "When obtained,",
+
+            ErrorHookId.H021_Every3TurnsHappyFlower
+                => "Every 3 turns,",
+
+            ErrorHookId.H022_EndOfTurn7StoneCalendar
+                => "At the end of turn 7,",
+
+            ErrorHookId.H023_Every3TurnsPendulum
+                => "Every 3 turns,",
 
             _ => "ERROR:"
         };
