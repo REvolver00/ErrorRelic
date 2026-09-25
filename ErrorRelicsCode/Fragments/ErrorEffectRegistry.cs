@@ -14,6 +14,7 @@ using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Enchantments;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Nodes;
+using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
 
 namespace ErrorRelics.ErrorRelicsCode.Fragments;
@@ -491,6 +492,229 @@ public static class ErrorEffectRegistry
 
                 break;
             }
+
+            // =====================================================
+            // E011
+            // 来源遗物：Nutritious Soup
+            //
+            // 原版 AfterObtained：
+            // 遍历当前牌组快照。
+            // 对所有 Basic + Strike + 可被 TezcatarasEmber 附魔的牌：
+            // Enchant<TezcatarasEmber>(card, 1M) + 原版附魔 VFX。
+            // =====================================================
+
+            case ErrorEffectId.E011_EnchantBasicStrikesTezcatarasEmber:
+            {
+                IEnumerable<CardModel> cards =
+                    PileType.Deck
+                        .GetPile(context.Owner)
+                        .Cards
+                        .ToList<CardModel>();
+
+                foreach (CardModel card in cards)
+                {
+                    if (card.Rarity == CardRarity.Basic
+                        && card.Tags.Contains(CardTag.Strike)
+                        && ModelDb.Enchantment<TezcatarasEmber>()
+                            .CanEnchant(card))
+                    {
+                        CardCmd.Enchant<TezcatarasEmber>(
+                            card,
+                            1M
+                        );
+
+                        NCardEnchantVfx? vfx =
+                            NCardEnchantVfx.Create(card);
+
+                        if (vfx != null)
+                        {
+                            NRun? instance = NRun.Instance;
+
+                            if (instance != null)
+                            {
+                                instance
+                                    .GlobalUi
+                                    .CardPreviewContainer
+                                    .AddChildSafely(vfx);
+                            }
+                        }
+                    }
+                }
+
+                break;
+            }
+
+
+            // =====================================================
+            // E012
+            // 来源遗物：Pael's Claw
+            //
+            // 原版 AfterObtained：
+            // 遍历牌组，对所有 Goopy.CanEnchant(card) 的牌
+            // Enchant<Goopy>(card, 1M) + 原版附魔 VFX。
+            //
+            // 不自行追加 Defend 过滤，
+            // 忠于原版让 Goopy.CanEnchant 决定目标资格。
+            // =====================================================
+
+            case ErrorEffectId.E012_EnchantAllGoopyEligible:
+            {
+                IEnumerable<CardModel> cards =
+                    PileType.Deck
+                        .GetPile(context.Owner)
+                        .Cards
+                        .ToList<CardModel>();
+
+                foreach (CardModel card in cards)
+                {
+                    if (ModelDb.Enchantment<Goopy>()
+                        .CanEnchant(card))
+                    {
+                        CardCmd.Enchant<Goopy>(
+                            card,
+                            1M
+                        );
+
+                        NRun? instance = NRun.Instance;
+
+                        if (instance != null)
+                        {
+                            instance
+                                .GlobalUi
+                                .CardPreviewContainer
+                                .AddChildSafely(
+                                    NCardEnchantVfx.Create(card)
+                                );
+                        }
+                    }
+                }
+
+                break;
+            }
+
+
+            // =====================================================
+            // E013
+            // 来源遗物：Sand Castle
+            //
+            // 原版 AfterObtained：
+            // 可升级牌 -> StableShuffle(Niche) -> Take(6)
+            // -> Grid preview 3 columns -> Upgrade(GridLayout)
+            // =====================================================
+
+            case ErrorEffectId.E013_Upgrade6RandomCards:
+            {
+                IEnumerable<CardModel> cards =
+                    PileType.Deck
+                        .GetPile(context.Owner)
+                        .Cards
+                        .Where(card =>
+                            card != null
+                            && card.IsUpgradable
+                        )
+                        .ToList<CardModel>()
+                        .StableShuffle(
+                            context.Owner.RunState.Rng.Niche
+                        )
+                        .Take(6);
+
+                NRun? instance = NRun.Instance;
+
+                if (instance != null)
+                {
+                    instance
+                        .GlobalUi
+                        .GridCardPreviewContainer
+                        .ForceMaxColumnsUntilEmpty(3);
+                }
+
+                foreach (CardModel card in cards)
+                {
+                    CardCmd.Upgrade(
+                        card,
+                        CardPreviewStyle.GridLayout
+                    );
+                }
+
+                break;
+            }
+
+
+            // =====================================================
+            // E014
+            // 来源遗物：War Paint
+            //
+            // 原版 AfterObtained：
+            // 可升级 Skill -> StableShuffle(Niche) -> Take(2)
+            // -> Upgrade(HorizontalLayout)
+            // =====================================================
+
+            case ErrorEffectId.E014_Upgrade2RandomSkills:
+            {
+                IEnumerable<CardModel> cards =
+                    PileType.Deck
+                        .GetPile(context.Owner)
+                        .Cards
+                        .Where(card =>
+                            card != null
+                            && card.Type == CardType.Skill
+                            && card.IsUpgradable
+                        )
+                        .ToList<CardModel>()
+                        .StableShuffle(
+                            context.Owner.RunState.Rng.Niche
+                        )
+                        .Take(2);
+
+                foreach (CardModel card in cards)
+                {
+                    CardCmd.Upgrade(
+                        card,
+                        CardPreviewStyle.HorizontalLayout
+                    );
+                }
+
+                break;
+            }
+
+
+            // =====================================================
+            // E015
+            // 来源遗物：Whetstone
+            //
+            // 原版 AfterObtained：
+            // 可升级 Attack -> StableShuffle(Niche) -> Take(2)
+            // -> Upgrade(HorizontalLayout)
+            // =====================================================
+
+            case ErrorEffectId.E015_Upgrade2RandomAttacks:
+            {
+                IEnumerable<CardModel> cards =
+                    PileType.Deck
+                        .GetPile(context.Owner)
+                        .Cards
+                        .Where(card =>
+                            card != null
+                            && card.Type == CardType.Attack
+                            && card.IsUpgradable
+                        )
+                        .ToList<CardModel>()
+                        .StableShuffle(
+                            context.Owner.RunState.Rng.Niche
+                        )
+                        .Take(2);
+
+                foreach (CardModel card in cards)
+                {
+                    CardCmd.Upgrade(
+                        card,
+                        CardPreviewStyle.HorizontalLayout
+                    );
+                }
+
+                break;
+            }
+
         }
     }
 
@@ -533,6 +757,21 @@ public static class ErrorEffectRegistry
 
             ErrorEffectId.E010_Add2RandomCurses
                 => "add 2 different random Curses to your deck.",
+
+            ErrorEffectId.E011_EnchantBasicStrikesTezcatarasEmber
+                => "enchant all Basic Strikes with Tezcatara's Ember.",
+
+            ErrorEffectId.E012_EnchantAllGoopyEligible
+                => "enchant all Defends with Goopy.",
+
+            ErrorEffectId.E013_Upgrade6RandomCards
+                => "upgrade 6 random cards.",
+
+            ErrorEffectId.E014_Upgrade2RandomSkills
+                => "upgrade 2 random Skills.",
+
+            ErrorEffectId.E015_Upgrade2RandomAttacks
+                => "upgrade 2 random Attacks.",
 
             _ => "do nothing."
         };

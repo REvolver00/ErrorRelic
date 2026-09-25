@@ -33,8 +33,13 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     // H006：Distinguished Cape
     // H008：Astrolabe
     // H009：Royal Stamp
+    // H010：Nutritious Soup
+    // H011：Pael's Claw
+    // H012：Sand Castle
+    // H013：War Paint
+    // H014：Whetstone
     //
-    // 四者原版都使用 AfterObtained。
+    // 以上遗物原版都使用 AfterObtained。
     //
     // ERROR 遗物统一开启这个入口。
     // 当前 H 是否真正属于 AfterObtained，
@@ -171,10 +176,25 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     // H009
     // 来源遗物：Royal Stamp
     //
+    // H010
+    // 来源遗物：Nutritious Soup
+    //
+    // H011
+    // 来源遗物：Pael's Claw
+    //
+    // H012
+    // 来源遗物：Sand Castle
+    //
+    // H013
+    // 来源遗物：War Paint
+    //
+    // H014
+    // 来源遗物：Whetstone
+    //
     // 原版 Hook：
     // AfterObtained()
     //
-    // 四个 Fragment 使用相同原生 Hook，
+    // 这些 Fragment 使用相同原生 Hook，
     // 所以共用这一入口。
     //
     // 注意：

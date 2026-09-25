@@ -76,11 +76,26 @@ public static class ErrorHookRegistry
     // H009
     // 来源遗物：Royal Stamp
     //
+    // H010
+    // 来源遗物：Nutritious Soup
+    //
+    // H011
+    // 来源遗物：Pael's Claw
+    //
+    // H012
+    // 来源遗物：Sand Castle
+    //
+    // H013
+    // 来源遗物：War Paint
+    //
+    // H014
+    // 来源遗物：Whetstone
+    //
     // Hook：
     // 获得 / 拾取遗物时
     //
-    // 四个 Fragment 来源不同，
-    // 所以保留四个独立 Fragment ID。
+    // 九个 Fragment 来源不同，
+    // 所以保留九个独立 Fragment ID。
     //
     // 但是原版 Hook 都是 AfterObtained，
     // 因此共用这一套代码。
@@ -92,7 +107,12 @@ public static class ErrorHookRegistry
         return hookId == ErrorHookId.H004_AfterObtained
                || hookId == ErrorHookId.H006_AfterObtained
                || hookId == ErrorHookId.H008_AfterObtained
-               || hookId == ErrorHookId.H009_AfterObtained;
+               || hookId == ErrorHookId.H009_AfterObtained
+               || hookId == ErrorHookId.H010_AfterObtained
+               || hookId == ErrorHookId.H011_AfterObtained
+               || hookId == ErrorHookId.H012_AfterObtained
+               || hookId == ErrorHookId.H013_AfterObtained
+               || hookId == ErrorHookId.H014_AfterObtained;
     }
 
 
@@ -179,6 +199,21 @@ public static class ErrorHookRegistry
                 => "When obtained,",
 
             ErrorHookId.H009_AfterObtained
+                => "When obtained,",
+
+            ErrorHookId.H010_AfterObtained
+                => "When obtained,",
+
+            ErrorHookId.H011_AfterObtained
+                => "When obtained,",
+
+            ErrorHookId.H012_AfterObtained
+                => "When obtained,",
+
+            ErrorHookId.H013_AfterObtained
+                => "When obtained,",
+
+            ErrorHookId.H014_AfterObtained
                 => "When obtained,",
 
             _ => "ERROR:"

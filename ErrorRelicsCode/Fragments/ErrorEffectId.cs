@@ -117,5 +117,62 @@ public enum ErrorEffectId
     // 是为了不改变已经存在的 E010 枚举底层值。
     // Fragment ID 仍然是 E009。
     // =========================================================
-    E009_Enchant1CardRoyallyApproved
+    E009_Enchant1CardRoyallyApproved,
+
+
+    // =========================================================
+    // E011
+    // 来源遗物：Nutritious Soup
+    //
+    // Effect：
+    // 将牌组中的所有 Basic Strike
+    // 附魔为 TezcatarasEmber。
+    // =========================================================
+    E011_EnchantBasicStrikesTezcatarasEmber,
+
+
+    // =========================================================
+    // E012
+    // 来源遗物：Pael's Claw
+    //
+    // Effect：
+    // 对牌组中所有 Goopy.CanEnchant(card) 的牌
+    // 施加 Goopy。
+    //
+    // 原版描述对应：Enchant all Defends with Goopy.
+    // =========================================================
+    E012_EnchantAllGoopyEligible,
+
+
+    // =========================================================
+    // E013
+    // 来源遗物：Sand Castle
+    //
+    // Effect：
+    // 使用 Niche RNG 稳定洗牌后，
+    // 随机 Upgrade 6 张可升级牌。
+    // =========================================================
+    E013_Upgrade6RandomCards,
+
+
+    // =========================================================
+    // E014
+    // 来源遗物：War Paint
+    //
+    // Effect：
+    // 使用 Niche RNG 稳定洗牌后，
+    // 随机 Upgrade 2 张 Skill。
+    // =========================================================
+    E014_Upgrade2RandomSkills,
+
+
+    // =========================================================
+    // E015
+    // 来源遗物：Whetstone
+    //
+    // Effect：
+    // 使用 Niche RNG 稳定洗牌后，
+    // 随机 Upgrade 2 张 Attack。
+    // =========================================================
+    E015_Upgrade2RandomAttacks
 }
