@@ -91,11 +91,29 @@ public static class ErrorHookRegistry
     // H014
     // 来源遗物：Whetstone
     //
+    // H015
+    // 来源遗物：Neow's Talisman
+    //
+    // H016
+    // 来源遗物：Pael's Horn
+    //
+    // H017
+    // 来源遗物：Neow's Torment
+    //
+    // H018
+    // 来源遗物：Storybook
+    //
+    // H019
+    // 来源遗物：Jewelry Box
+    //
+    // H020
+    // 来源遗物：Tanx's Whistle
+    //
     // Hook：
     // 获得 / 拾取遗物时
     //
-    // 九个 Fragment 来源不同，
-    // 所以保留九个独立 Fragment ID。
+    // 十五个 Fragment 来源不同，
+    // 所以保留十五个独立 Fragment ID。
     //
     // 但是原版 Hook 都是 AfterObtained，
     // 因此共用这一套代码。
@@ -112,7 +130,13 @@ public static class ErrorHookRegistry
                || hookId == ErrorHookId.H011_AfterObtained
                || hookId == ErrorHookId.H012_AfterObtained
                || hookId == ErrorHookId.H013_AfterObtained
-               || hookId == ErrorHookId.H014_AfterObtained;
+               || hookId == ErrorHookId.H014_AfterObtained
+               || hookId == ErrorHookId.H015_AfterObtained
+               || hookId == ErrorHookId.H016_AfterObtained
+               || hookId == ErrorHookId.H017_AfterObtained
+               || hookId == ErrorHookId.H018_AfterObtained
+               || hookId == ErrorHookId.H019_AfterObtained
+               || hookId == ErrorHookId.H020_AfterObtained;
     }
 
 
@@ -214,6 +238,24 @@ public static class ErrorHookRegistry
                 => "When obtained,",
 
             ErrorHookId.H014_AfterObtained
+                => "When obtained,",
+
+            ErrorHookId.H015_AfterObtained
+                => "When obtained,",
+
+            ErrorHookId.H016_AfterObtained
+                => "When obtained,",
+
+            ErrorHookId.H017_AfterObtained
+                => "When obtained,",
+
+            ErrorHookId.H018_AfterObtained
+                => "When obtained,",
+
+            ErrorHookId.H019_AfterObtained
+                => "When obtained,",
+
+            ErrorHookId.H020_AfterObtained
                 => "When obtained,",
 
             _ => "ERROR:"

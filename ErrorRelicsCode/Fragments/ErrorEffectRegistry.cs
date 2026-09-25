@@ -715,6 +715,242 @@ public static class ErrorEffectRegistry
                 break;
             }
 
+
+            // =====================================================
+            // E016
+            // 来源遗物：Neow's Talisman
+            //
+            // 原版源码：
+            // Deck -> Basic cards
+            // -> LastOrDefault(Strike)
+            // -> LastOrDefault(Defend)
+            // -> Upgrade(HorizontalLayout)
+            //
+            // 原版没有额外 IsUpgradable 判断，
+            // 这里也不擅自添加。
+            // =====================================================
+
+            case ErrorEffectId.E016_UpgradeBasicStrikeAndDefend:
+            {
+                List<CardModel> basicCards =
+                    PileType.Deck
+                        .GetPile(context.Owner)
+                        .Cards
+                        .Where(card =>
+                            card.Rarity == CardRarity.Basic
+                        )
+                        .ToList();
+
+                CardModel? strike =
+                    basicCards.LastOrDefault(
+                        card => card.Tags.Contains(
+                            CardTag.Strike
+                        )
+                    );
+
+                CardModel? defend =
+                    basicCards.LastOrDefault(
+                        card => card.Tags.Contains(
+                            CardTag.Defend
+                        )
+                    );
+
+                if (strike != null)
+                {
+                    CardCmd.Upgrade(
+                        strike,
+                        CardPreviewStyle.HorizontalLayout
+                    );
+                }
+
+                if (defend != null)
+                {
+                    CardCmd.Upgrade(
+                        defend,
+                        CardPreviewStyle.HorizontalLayout
+                    );
+                }
+
+                break;
+            }
+
+
+            // =====================================================
+            // E017
+            // 来源遗物：Pael's Horn
+            //
+            // Effect：
+            // 向牌组加入 2 张 Relax。
+            //
+            // 复用已经实机验证过的
+            // Distinguished Cape / E006
+            // CardPileCmd.Add + PreviewCardPileAdd 框架。
+            // =====================================================
+
+            case ErrorEffectId.E017_Add2Relax:
+            {
+                List<CardPileAddResult> results =
+                    new List<CardPileAddResult>();
+
+                for (int i = 0; i < 2; ++i)
+                {
+                    CardModel card =
+                        context.Owner.RunState.CreateCard<Relax>(
+                            context.Owner
+                        );
+
+                    results.Add(
+                        await CardPileCmd.Add(
+                            card,
+                            PileType.Deck
+                        )
+                    );
+                }
+
+                CardCmd.PreviewCardPileAdd(
+                    results,
+                    2f
+                );
+
+                break;
+            }
+
+
+            // =====================================================
+            // E018
+            // 来源遗物：Neow's Torment
+            //
+            // Effect：
+            // 向牌组加入 1 张 Neow's Fury。
+            // =====================================================
+
+            case ErrorEffectId.E018_AddNeowsFury:
+            {
+                List<CardPileAddResult> results =
+                    new List<CardPileAddResult>();
+
+                CardModel card =
+                    context.Owner.RunState.CreateCard<NeowsFury>(
+                        context.Owner
+                    );
+
+                results.Add(
+                    await CardPileCmd.Add(
+                        card,
+                        PileType.Deck
+                    )
+                );
+
+                CardCmd.PreviewCardPileAdd(
+                    results,
+                    2f
+                );
+
+                break;
+            }
+
+
+            // =====================================================
+            // E019
+            // 来源遗物：Storybook
+            //
+            // Effect：
+            // 向牌组加入 1 张 Brightest Flame。
+            // =====================================================
+
+            case ErrorEffectId.E019_AddBrightestFlame:
+            {
+                List<CardPileAddResult> results =
+                    new List<CardPileAddResult>();
+
+                CardModel card =
+                    context.Owner.RunState.CreateCard<BrightestFlame>(
+                        context.Owner
+                    );
+
+                results.Add(
+                    await CardPileCmd.Add(
+                        card,
+                        PileType.Deck
+                    )
+                );
+
+                CardCmd.PreviewCardPileAdd(
+                    results,
+                    2f
+                );
+
+                break;
+            }
+
+
+            // =====================================================
+            // E020
+            // 来源遗物：Jewelry Box
+            //
+            // Effect：
+            // 向牌组加入 1 张 Apotheosis。
+            // =====================================================
+
+            case ErrorEffectId.E020_AddApotheosis:
+            {
+                List<CardPileAddResult> results =
+                    new List<CardPileAddResult>();
+
+                CardModel card =
+                    context.Owner.RunState.CreateCard<Apotheosis>(
+                        context.Owner
+                    );
+
+                results.Add(
+                    await CardPileCmd.Add(
+                        card,
+                        PileType.Deck
+                    )
+                );
+
+                CardCmd.PreviewCardPileAdd(
+                    results,
+                    2f
+                );
+
+                break;
+            }
+
+
+            // =====================================================
+            // E021
+            // 来源遗物：Tanx's Whistle
+            //
+            // Effect：
+            // 向牌组加入 1 张 Whistle。
+            // =====================================================
+
+            case ErrorEffectId.E021_AddWhistle:
+            {
+                List<CardPileAddResult> results =
+                    new List<CardPileAddResult>();
+
+                CardModel card =
+                    context.Owner.RunState.CreateCard<Whistle>(
+                        context.Owner
+                    );
+
+                results.Add(
+                    await CardPileCmd.Add(
+                        card,
+                        PileType.Deck
+                    )
+                );
+
+                CardCmd.PreviewCardPileAdd(
+                    results,
+                    2f
+                );
+
+                break;
+            }
+
         }
     }
 
@@ -772,6 +1008,24 @@ public static class ErrorEffectRegistry
 
             ErrorEffectId.E015_Upgrade2RandomAttacks
                 => "upgrade 2 random Attacks.",
+
+            ErrorEffectId.E016_UpgradeBasicStrikeAndDefend
+                => "upgrade 1 Basic Strike and 1 Basic Defend.",
+
+            ErrorEffectId.E017_Add2Relax
+                => "add 2 Relax to your deck.",
+
+            ErrorEffectId.E018_AddNeowsFury
+                => "add 1 Neow's Fury to your deck.",
+
+            ErrorEffectId.E019_AddBrightestFlame
+                => "add 1 Brightest Flame to your deck.",
+
+            ErrorEffectId.E020_AddApotheosis
+                => "add 1 Apotheosis to your deck.",
+
+            ErrorEffectId.E021_AddWhistle
+                => "add 1 Whistle to your deck.",
 
             _ => "do nothing."
         };

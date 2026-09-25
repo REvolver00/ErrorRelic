@@ -38,6 +38,12 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     // H012：Sand Castle
     // H013：War Paint
     // H014：Whetstone
+    // H015：Neow's Talisman
+    // H016：Pael's Horn
+    // H017：Neow's Torment
+    // H018：Storybook
+    // H019：Jewelry Box
+    // H020：Tanx's Whistle
     //
     // 以上遗物原版都使用 AfterObtained。
     //
@@ -190,6 +196,24 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     //
     // H014
     // 来源遗物：Whetstone
+    //
+    // H015
+    // 来源遗物：Neow's Talisman
+    //
+    // H016
+    // 来源遗物：Pael's Horn
+    //
+    // H017
+    // 来源遗物：Neow's Torment
+    //
+    // H018
+    // 来源遗物：Storybook
+    //
+    // H019
+    // 来源遗物：Jewelry Box
+    //
+    // H020
+    // 来源遗物：Tanx's Whistle
     //
     // 原版 Hook：
     // AfterObtained()
