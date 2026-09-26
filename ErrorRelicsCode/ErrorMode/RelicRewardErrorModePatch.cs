@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using HarmonyLib;
 
-using Godot;
-using HarmonyLib;
-
-using MegaCrit.Sts2.Core.HoverTips;
-using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rewards;
 
@@ -12,35 +8,59 @@ namespace ErrorRelics.ErrorRelicsCode.ErrorMode;
 
 
 // =============================================================
-// Elite / normal RelicReward.
+// ELITE1 - RANDOM RELIC REWARDS ONLY
 //
-// IMPORTANT:
-// _relic stays the ORIGINAL vanilla relic at all times.
+// Vanilla RelicReward.Populate() first completes its normal flow:
+// - rolls / uses the intended rarity
+// - PullNextRelicFromFront(...)
+// - removes the source relic from the player's RelicGrabBag
+// - removes it from SharedRelicGrabBag
+// - ToMutable()
 //
-// This preserves:
-// - reward serialization
-// - reward synchronization
-// - vanilla reward bookkeeping
+// Only AFTER all of that finishes do we replace the final _relic
+// with one locked ERROR relic.
 //
-// We only associate a locked ERROR view with that source.
-// RelicCmd.Obtain swaps to the exact same ERROR at claim time.
+// We intentionally do NOT patch:
+// - RelicFactory
+// - RelicCmd
+// - reward UI getters
+// - predetermined relic rewards
+//
+// Predetermined rewards are left vanilla in ELITE1.
+// This keeps the test focused on Elite/random relic rewards.
 // =============================================================
 
 [HarmonyPatch(
     typeof(RelicReward),
     nameof(RelicReward.Populate)
 )]
-public static class RelicRewardPopulateErrorPatch
+public static class RelicRewardEliteErrorModePatch
 {
     [HarmonyPostfix]
     public static void Postfix(
         RelicReward __instance)
     {
-        if (!ErrorModeState.IsEnabled(
-                __instance.Player))
+        Player player =
+            __instance.Player;
+
+        if (player == null
+            || !ErrorModeState.IsEnabled(player))
         {
             return;
         }
+
+        // ELITE1 is intentionally singleplayer-only.
+        if (player.RunState.Players.Count != 1)
+            return;
+
+        // Leave predetermined relic rewards untouched.
+        RelicModel? predetermined =
+            Traverse.Create(__instance)
+                .Field("_predeterminedRelic")
+                .GetValue<RelicModel>();
+
+        if (predetermined != null)
+            return;
 
         RelicModel? source =
             __instance.Relic;
@@ -54,108 +74,16 @@ public static class RelicRewardPopulateErrorPatch
             return;
         }
 
-        ErrorDisplayReplacementState.GetOrCreate(
-            source
-        );
-    }
-}
+        RelicModel replacement =
+            ErrorModeState.CreateLockedError(
+                source.Rarity
+            );
 
-
-// Description shown by reward UI.
-[HarmonyPatch(
-    typeof(RelicReward),
-    "get_Description"
-)]
-public static class RelicRewardDescriptionErrorPatch
-{
-    [HarmonyPostfix]
-    public static void Postfix(
-        RelicReward __instance,
-        ref LocString __result)
-    {
-        RelicModel? source =
-            __instance.Relic;
-
-        if (source == null)
-            return;
-
-        if (!ErrorDisplayReplacementState.TryGet(
-                source,
-                out var error)
-            || error == null)
-        {
-            return;
-        }
-
-        __result =
-            error.Title;
-    }
-}
-
-
-// Hover text shown by reward UI.
-[HarmonyPatch(
-    typeof(RelicReward),
-    "get_ExtraHoverTips"
-)]
-public static class RelicRewardHoverErrorPatch
-{
-    [HarmonyPostfix]
-    public static void Postfix(
-        RelicReward __instance,
-        ref IEnumerable<IHoverTip> __result)
-    {
-        RelicModel? source =
-            __instance.Relic;
-
-        if (source == null)
-            return;
-
-        if (!ErrorDisplayReplacementState.TryGet(
-                source,
-                out var error)
-            || error == null)
-        {
-            return;
-        }
-
-        __result =
-            error.HoverTips;
-    }
-}
-
-
-// Icon shown by reward UI.
-[HarmonyPatch(
-    typeof(RelicReward),
-    "CreateIcon"
-)]
-public static class RelicRewardIconErrorPatch
-{
-    [HarmonyPostfix]
-    public static void Postfix(
-        RelicReward __instance,
-        ref TextureRect __result)
-    {
-        RelicModel? source =
-            __instance.Relic;
-
-        if (source == null)
-            return;
-
-        if (!ErrorDisplayReplacementState.TryGet(
-                source,
-                out var error)
-            || error == null)
-        {
-            return;
-        }
-
-        __result.Texture =
-            error.BigIcon;
-
-        error.UpdateTexture(
-            __result
-        );
+        // RelicReward.OnSelect later passes _relic directly to
+        // RelicCmd.Obtain, so keep this as the mutable ERROR made
+        // by CreateLockedError.
+        Traverse.Create(__instance)
+            .Field("_relic")
+            .SetValue(replacement);
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
 using ErrorRelics.ErrorRelicsCode.Fragments;
 using ErrorRelics.ErrorRelicsCode.Relics;
@@ -10,14 +9,19 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace ErrorRelics.ErrorRelicsCode.ErrorMode;
 
+
+// =============================================================
+// SHOP1 CLEAN
+//
+// Stable mode switch:
+// player owns ErrorProofRelic => ERROR Mode ON.
+//
+// This file contains only state/helper methods.
+// It does NOT patch rewards, treasure, RelicCmd, or RelicFactory.
+// =============================================================
+
 public static class ErrorModeState
 {
-    private static readonly object Gate = new();
-
-    private static readonly Dictionary<ulong, ErrorProofRelic>
-        NeowReplacementByPlayer = new();
-
-    // Only the proof relic enables ERROR mode.
     public static bool IsEnabled(
         Player player)
     {
@@ -26,17 +30,20 @@ public static class ErrorModeState
         );
     }
 
+
     public static bool IsErrorRelic(
         RelicModel relic)
     {
         return relic is ErrorRandomTestRelic;
     }
 
+
     public static bool IsProofRelic(
         RelicModel relic)
     {
         return relic is ErrorProofRelic;
     }
+
 
     public static RelicModel GetCanonicalForRarity(
         RelicRarity rarity)
@@ -57,6 +64,7 @@ public static class ErrorModeState
         };
     }
 
+
     public static ErrorRandomTestRelic CreateMutableForRarity(
         RelicRarity rarity)
     {
@@ -67,19 +75,22 @@ public static class ErrorModeState
         if (mutable is not ErrorRandomTestRelic errorRelic)
         {
             throw new System.InvalidOperationException(
-                "ERROR rarity shell did not create an ErrorRandomTestRelic."
+                "ERROR rarity shell did not create ErrorRandomTestRelic."
             );
         }
 
         return errorRelic;
     }
 
-    // Generate H/E now, while the reward/shop/chest is being shown.
+
+    // Randomize once at shop-generation time, then lock.
     public static ErrorRandomTestRelic CreateLockedError(
         RelicRarity rarity)
     {
         ErrorRandomTestRelic relic =
-            CreateMutableForRarity(rarity);
+            CreateMutableForRarity(
+                rarity
+            );
 
         ErrorDefinition generated =
             ErrorGenerator.Generate();
@@ -95,6 +106,7 @@ public static class ErrorModeState
         return relic;
     }
 
+
     public static ErrorProofRelic CreateProof()
     {
         RelicModel mutable =
@@ -109,50 +121,5 @@ public static class ErrorModeState
         }
 
         return proof;
-    }
-
-    public static void ArmNeowReplacement(
-        Player player,
-        ErrorProofRelic proof)
-    {
-        lock (Gate)
-        {
-            NeowReplacementByPlayer[player.NetId] =
-                proof;
-        }
-    }
-
-    public static bool TryConsumeNeowReplacement(
-        Player player,
-        out ErrorProofRelic? proof)
-    {
-        lock (Gate)
-        {
-            if (!NeowReplacementByPlayer.TryGetValue(
-                    player.NetId,
-                    out ErrorProofRelic? value))
-            {
-                proof = null;
-                return false;
-            }
-
-            NeowReplacementByPlayer.Remove(
-                player.NetId
-            );
-
-            proof = value;
-            return true;
-        }
-    }
-
-    public static void ClearNeowReplacement(
-        Player player)
-    {
-        lock (Gate)
-        {
-            NeowReplacementByPlayer.Remove(
-                player.NetId
-            );
-        }
     }
 }

@@ -6,6 +6,7 @@ using ErrorRelics.ErrorRelicsCode.Relics;
 
 using HarmonyLib;
 
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models.Events;
 
@@ -39,29 +40,19 @@ public static class NeowErrorModePatch
         if (targetIndex < 0)
             return;
 
-        EventOption originalOption =
-            options[targetIndex];
-
         ErrorProofRelic proof =
             ErrorModeState.CreateProof();
 
         async Task OnProofChosen()
         {
-            ErrorModeState.ArmNeowReplacement(
-                __instance.Owner,
-                proof
+            await RelicCmd.Obtain(
+                proof,
+                __instance.Owner
             );
 
-            try
-            {
-                await originalOption.Chosen();
-            }
-            finally
-            {
-                ErrorModeState.ClearNeowReplacement(
-                    __instance.Owner
-                );
-            }
+            Traverse.Create(__instance)
+                .Method("Done")
+                .GetValue();
         }
 
         EventOption proofOption =

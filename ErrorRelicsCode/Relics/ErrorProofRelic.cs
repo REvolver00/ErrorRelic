@@ -17,6 +17,11 @@ public sealed class ErrorProofRelic : ErrorRelicsRelic
     public override RelicRarity Rarity =>
         RelicRarity.Common;
 
+    // The Proof is synthetic and is never drawn from a vanilla relic bag.
+    // Making it stackable prevents RelicCmd.Obtain from trying to remove
+    // this custom relic from Player/SharedRelicGrabBag.
+    public override bool IsStackable => true;
+
     public override bool IsAllowed(
         IRunState runState)
     {
@@ -26,7 +31,7 @@ public sealed class ErrorProofRelic : ErrorRelicsRelic
     public override List<(string, string)>? Localization =>
         new RelicLoc(
             "ERROR",
-            "[109]",
+            "[109-ANCIENT1]",
             ""
         );
 

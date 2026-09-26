@@ -8,23 +8,14 @@ namespace ErrorRelics.ErrorRelicsCode.ErrorMode;
 
 
 // =============================================================
-// Shop ERROR replacement.
+// SHOP1 ONLY
 //
-// Vanilla MerchantRelicEntry.FillSlot first finishes all of this:
-// - PullNextRelicFromBack
-// - vanilla blacklist / IsAllowedInShops checks
-// - ToMutable
-// - SetModel
-// - CalcCost
-// - MarkRelicAsSeen
+// This is the only new gameplay patch compared with DIAG8.
 //
-// Only after that has completed do we swap the displayed/purchased
-// Model to an already-randomized, locked ERROR relic.
-//
-// Important:
-// We DO NOT call CalcCost again.
-// This preserves the price vanilla already generated and avoids
-// consuming PlayerRng.Shops a second time.
+// Do NOT patch RelicFactory.
+// Do NOT patch RelicCmd.
+// Do NOT patch treasure.
+// Do NOT patch RelicReward.
 // =============================================================
 
 [HarmonyPatch(
@@ -42,8 +33,11 @@ public static class MerchantRelicEntryErrorModePatch
                 .Field("_player")
                 .GetValue<Player>();
 
-        if (!ErrorModeState.IsEnabled(player))
+        if (!ErrorModeState.IsEnabled(
+                player))
+        {
             return;
+        }
 
         RelicModel? source =
             __instance.Model;
@@ -63,7 +57,8 @@ public static class MerchantRelicEntryErrorModePatch
             );
 
         // Model has a private setter.
-        // Set only the model itself; keep vanilla's already-generated cost.
+        // Vanilla already calculated the shop price.
+        // Keep that price and only replace the displayed/purchased relic.
         Traverse.Create(__instance)
             .Property("Model")
             .SetValue(replacement);
