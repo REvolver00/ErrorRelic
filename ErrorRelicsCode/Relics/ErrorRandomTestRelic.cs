@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves.Runs;
 
 using BaseLib.Abstracts;
@@ -16,9 +17,20 @@ using ErrorRelics.ErrorRelicsCode.Fragments;
 namespace ErrorRelics.ErrorRelicsCode.Relics;
 
 [Pool(typeof(MegaCrit.Sts2.Core.Models.RelicPools.SharedRelicPool))]
-public sealed class ErrorRandomTestRelic : ErrorGeneratedRelic
+public class ErrorRandomTestRelic : ErrorGeneratedRelic
 {
     public override RelicRarity Rarity => RelicRarity.Common;
+
+
+    // =========================================================
+    // ERROR RANDOM 只允许由 ERROR 模式主动生成。
+    //
+    // 保留 [Pool] 是为了让 BaseLib 正常注册 Model，
+    // 但 IsAllowed=false 会让它不作为普通原版遗物
+    // 自己混进玩家的 GrabBag。
+    // =========================================================
+
+    public override bool IsAllowed(IRunState runState) => false;
 
 
     // =========================================================
@@ -87,12 +99,19 @@ public sealed class ErrorRandomTestRelic : ErrorGeneratedRelic
     {
         get
         {
+            string hookId =
+                GeneratedHookId
+                    .ToString()
+                    .Split('_')[0];
+
+            string effectId =
+                GeneratedEffectId
+                    .ToString()
+                    .Split('_')[0];
+
             yield return new HoverTip(
                 Title,
-                "[DEBUG]\n" +
-                $"Hook: {GeneratedHookId}\n" +
-                $"Effect: {GeneratedEffectId}\n\n" +
-                GeneratedDescription
+                $"[DEBUG]\n{hookId}-{effectId}"
             );
         }
     }
@@ -108,9 +127,9 @@ public sealed class ErrorRandomTestRelic : ErrorGeneratedRelic
 
     public override List<(string, string)>? Localization =>
         new RelicLoc(
-            "ERROR RANDOM TEST",
-            "[DEBUG] Hover this relic to inspect its generated Hook / Effect.",
-            "[INSTANCE DEBUG DATA]"
+            "ERROR",
+            "[当？将有？发生]",
+            ""
         );
 
 
