@@ -71,7 +71,7 @@ public static class AncientRelicOptionErrorModePatch
         // become three independently generated ERROR choices.
         relic =
             ErrorModeState.CreateLockedError(
-                relic.Rarity
+                relic
             );
     }
 }

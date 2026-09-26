@@ -53,7 +53,7 @@ public static class MerchantRelicEntryErrorModePatch
 
         RelicModel replacement =
             ErrorModeState.CreateLockedError(
-                source.Rarity
+                source
             );
 
         // Model has a private setter.

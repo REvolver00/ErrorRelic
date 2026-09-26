@@ -168,6 +168,12 @@ public static class TreasureRoomBeginErrorPatch
         errorRelic.DefinitionLocked =
             true;
 
+        // VISUAL2 metadata only. The canonical ERROR still follows
+        // the exact CHEST2 award flow that already passed testing.
+        errorRelic.SetVisualSource(
+            source
+        );
+
         TreasureRoomErrorModeState.Reset();
 
         TreasureRoomErrorModeState.Remember(

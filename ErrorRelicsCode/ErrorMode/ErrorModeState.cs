@@ -107,6 +107,27 @@ public static class ErrorModeState
     }
 
 
+    // VISUAL2 overload.
+    //
+    // H/E generation is still the exact stable ANCIENT1 method
+    // above. This overload only remembers the vanilla source
+    // AFTER the ERROR has already been created.
+    public static ErrorRandomTestRelic CreateLockedError(
+        RelicModel source)
+    {
+        ErrorRandomTestRelic relic =
+            CreateLockedError(
+                source.Rarity
+            );
+
+        relic.SetVisualSource(
+            source
+        );
+
+        return relic;
+    }
+
+
     public static ErrorProofRelic CreateProof()
     {
         RelicModel mutable =

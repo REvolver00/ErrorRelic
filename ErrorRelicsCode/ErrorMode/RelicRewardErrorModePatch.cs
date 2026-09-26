@@ -76,7 +76,7 @@ public static class RelicRewardEliteErrorModePatch
 
         RelicModel replacement =
             ErrorModeState.CreateLockedError(
-                source.Rarity
+                source
             );
 
         // RelicReward.OnSelect later passes _relic directly to

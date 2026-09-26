@@ -31,7 +31,7 @@ public sealed class ErrorProofRelic : ErrorRelicsRelic
     public override List<(string, string)>? Localization =>
         new RelicLoc(
             "ERROR",
-            "[109-ANCIENT1]",
+            "[109-VISUAL2.1]",
             ""
         );
 

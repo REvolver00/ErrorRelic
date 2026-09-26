@@ -46,6 +46,71 @@ public class ErrorRandomTestRelic : ErrorGeneratedRelic
     [SavedProperty]
     public bool DefinitionLocked { get; set; }
 
+
+    // =========================================================
+    // VISUAL2 metadata only
+    //
+    // These fields remember which vanilla relic this ERROR
+    // replaced. They DO NOT change RelicModel.Icon/BigIcon paths.
+    //
+    // The actual visual corruption is applied later, purely in
+    // UI nodes (NRelic.Reload / RelicReward.CreateIcon).
+    // =========================================================
+
+    [SavedProperty]
+    public string VisualSourceIconPath { get; set; } =
+        string.Empty;
+
+    [SavedProperty]
+    public string VisualSourceOutlinePath { get; set; } =
+        string.Empty;
+
+    [SavedProperty]
+    public string VisualSourceBigIconPath { get; set; } =
+        string.Empty;
+
+
+    public bool HasVisualSource =>
+        !string.IsNullOrEmpty(
+            VisualSourceIconPath
+        );
+
+
+    public void SetVisualSource(
+        MegaCrit.Sts2.Core.Models.RelicModel source)
+    {
+        // Small icon path is public and does not require changing
+        // the ERROR model's own icon path.
+        VisualSourceIconPath =
+            source.IconPath;
+
+        // Outline / BigIcon paths are not both public, so read the
+        // already-supported texture ResourcePath from the vanilla
+        // source model. Failure only disables that one visual path.
+        try
+        {
+            VisualSourceOutlinePath =
+                source.IconOutline.ResourcePath;
+        }
+        catch
+        {
+            VisualSourceOutlinePath =
+                string.Empty;
+        }
+
+        try
+        {
+            VisualSourceBigIconPath =
+                source.BigIcon.ResourcePath;
+        }
+        catch
+        {
+            VisualSourceBigIconPath =
+                string.Empty;
+        }
+    }
+
+
     // =========================================================
     // ErrorGeneratedRelic 实际使用的 Definition
     // =========================================================
