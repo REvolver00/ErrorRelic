@@ -1,0 +1,28 @@
+ERROR Relics 0.90 Beta
+======================
+
+Pool:
+- 61 Hooks
+- 65 Effects
+- 3,965 theoretical H/E combinations
+
+0.90 Beta changes:
+1. Ordinary Event relic options now become ERROR through the shared
+   EventModel.RelicOption(RelicModel, Func<Task>, string) layer.
+   Vanilla still decides which source relic the event wanted first.
+2. Ancient events are explicitly excluded from this new patch and keep
+   the existing tested AncientEventModel path.
+3. Neow / ErrorProofRelic flow is unchanged.
+4. ErrorProofRelic description is now the player notice and displays
+   version 0.90 Beta.
+5. Mod manifest version is now 0.90-beta.
+
+VISUAL2.1 note:
+The existing Merchant/Chest/RelicReward/Ancient paths already refuse to
+convert ErrorProofRelic as an ordinary source relic. The red/black Proof
+itself is expected to remain visible in the player's relic bar because it
+is the ERROR Mode key. No risky NRelic.Reload visual rewrite was added.
+
+Build:
+- These changes are C# / manifest text only.
+- Use Build, not Publish.
