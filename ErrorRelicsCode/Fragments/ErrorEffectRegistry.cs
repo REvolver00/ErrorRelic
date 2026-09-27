@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Extensions;
@@ -1198,6 +1199,146 @@ public static class ErrorEffectRegistry
 
                 break;
             }
+
+            case ErrorEffectId.E033_GainMaxHp20:
+                await CreatureCmd.GainMaxHp(context.Owner.Creature, context.Vars["BigMushroomMaxHp"].BaseValue);
+                break;
+
+            case ErrorEffectId.E034_GainEnergy1GremlinHorn:
+                await PlayerCmd.GainEnergy(1M, context.Owner);
+                break;
+
+            case ErrorEffectId.E035_Draw1GremlinHorn:
+                await CardPileCmd.Draw(context.ChoiceContext, 1M, context.Owner);
+                break;
+
+            case ErrorEffectId.E036_DamageAllEnemies5:
+                await CreatureCmd.Damage(context.ChoiceContext, context.Owner.Creature.CombatState.HittableEnemies,
+                    new DamageVar(5M, ValueProp.Unpowered), context.Owner.Creature);
+                break;
+
+            case ErrorEffectId.E037_DamageRandomEnemy6Kusarigama:
+            case ErrorEffectId.E047_DamageRandomEnemy6ParryingShield:
+            {
+                var target = context.Owner.RunState.Rng.CombatTargets.NextItem(context.Owner.Creature.CombatState.HittableEnemies);
+                if (target != null)
+                    await CreatureCmd.Damage(context.ChoiceContext, target,
+                        new DamageVar(6M, ValueProp.Unpowered), context.Owner.Creature);
+                break;
+            }
+
+            case ErrorEffectId.E038_GainBlock4OrnamentalFan:
+            case ErrorEffectId.E046_GainBlock4RippleBasin:
+                await CreatureCmd.GainBlock(context.Owner.Creature, new BlockVar(4M, ValueProp.Unpowered), null);
+                break;
+
+            case ErrorEffectId.E039_GainEnergy1Nunchaku:
+                await PlayerCmd.GainEnergy(1M, context.Owner);
+                break;
+
+            case ErrorEffectId.E040_GainBlock7TuningFork:
+                await CreatureCmd.GainBlock(context.Owner.Creature, new BlockVar(7M, ValueProp.Unpowered), null);
+                break;
+
+            case ErrorEffectId.E041_ApplyVulnerable1All:
+                await PowerCmd.Apply<VulnerablePower>(context.ChoiceContext,
+                    context.Owner.Creature.CombatState.HittableEnemies, 1M, context.Owner.Creature, null);
+                break;
+
+            case ErrorEffectId.E042_ApplyPoison4All:
+                foreach (var enemy in context.Owner.Creature.CombatState.HittableEnemies)
+                    await PowerCmd.Apply<PoisonPower>(context.ChoiceContext, enemy, 4M, context.Owner.Creature, null);
+                break;
+
+            case ErrorEffectId.E043_ApplyVigor8Self:
+                await PowerCmd.Apply<VigorPower>(context.ChoiceContext, context.Owner.Creature, 8M, context.Owner.Creature, null);
+                break;
+
+            case ErrorEffectId.E044_Draw3:
+                await CardPileCmd.Draw(context.ChoiceContext, 3M, context.Owner);
+                break;
+
+            case ErrorEffectId.E045_GainBlock6Orichalcum:
+            case ErrorEffectId.E055_GainBlock6Abacus:
+                await CreatureCmd.GainBlock(context.Owner.Creature, new BlockVar(6M, ValueProp.Unpowered), null);
+                break;
+
+            case ErrorEffectId.E048_Heal25:
+                await CreatureCmd.Heal(context.Owner.Creature, 25M);
+                break;
+
+            case ErrorEffectId.E049_Heal2:
+                await CreatureCmd.Heal(context.Owner.Creature, 2M);
+                break;
+
+            case ErrorEffectId.E050_GainBlock10:
+                await CreatureCmd.GainBlock(context.Owner.Creature, new BlockVar(10M, ValueProp.Unpowered), null);
+                break;
+
+            case ErrorEffectId.E051_ApplyFocus1:
+                await PowerCmd.Apply<FocusPower>(context.ChoiceContext, context.Owner.Creature, 1M, context.Owner.Creature, null);
+                break;
+
+            case ErrorEffectId.E052_DamageAllEnemies9:
+                await CreatureCmd.Damage(context.ChoiceContext, context.Owner.Creature.CombatState.HittableEnemies,
+                    new DamageVar(9M, ValueProp.Unpowered), context.Owner.Creature);
+                break;
+
+            case ErrorEffectId.E053_GainMaxHp7:
+                await CreatureCmd.GainMaxHp(context.Owner.Creature, 7M);
+                break;
+
+            case ErrorEffectId.E054_HealToFull:
+                await CreatureCmd.Heal(context.Owner.Creature,
+                    context.Owner.Creature.MaxHp - context.Owner.Creature.CurrentHp);
+                break;
+
+            case ErrorEffectId.E056_DamageAllEnemies20:
+                await CreatureCmd.Damage(context.ChoiceContext, context.Owner.Creature.CombatState.HittableEnemies,
+                    new DamageVar(20M, ValueProp.Unpowered), context.Owner.Creature);
+                break;
+
+            case ErrorEffectId.E057_Draw1GamePiece:
+                await CardPileCmd.Draw(context.ChoiceContext, 1M, context.Owner);
+                break;
+
+            case ErrorEffectId.E058_ApplyWeak1All:
+                await PowerCmd.Apply<WeakPower>(context.ChoiceContext,
+                    context.Owner.Creature.CombatState.HittableEnemies, 1M, context.Owner.Creature, null);
+                break;
+
+            case ErrorEffectId.E059_GainStrength2Self:
+                await PowerCmd.Apply<StrengthPower>(context.ChoiceContext, context.Owner.Creature, 2M, context.Owner.Creature, null);
+                break;
+
+            case ErrorEffectId.E060_GainStrength1AllEnemies:
+                await PowerCmd.Apply<StrengthPower>(context.ChoiceContext,
+                    context.Owner.Creature.CombatState.GetOpponentsOf(context.Owner.Creature).Where(c => c.IsAlive),
+                    1M, null, null);
+                break;
+
+            case ErrorEffectId.E061_Create3ShivsInHand:
+                await Shiv.CreateInHand(context.Owner, 3, context.Owner.Creature.CombatState);
+                break;
+
+            case ErrorEffectId.E062_GainMaxHp1:
+                await CreatureCmd.GainMaxHp(context.Owner.Creature, 1M);
+                break;
+
+            case ErrorEffectId.E063_Heal12:
+                await CreatureCmd.Heal(context.Owner.Creature, 12M);
+                break;
+
+            case ErrorEffectId.E064_ApplyReptileTrinketPower3:
+                await PowerCmd.Apply<ReptileTrinketPower>(context.ChoiceContext, context.Owner.Creature, 3M,
+                    context.Owner.Creature, null);
+                break;
+
+            case ErrorEffectId.E065_SelfDamage4Unblockable:
+                await CreatureCmd.Damage(context.ChoiceContext, context.Owner.Creature,
+                    new DamageVar(4M, ValueProp.Unblockable | ValueProp.Unpowered),
+                    null, null, null);
+                break;
         }
     }
 
@@ -1306,6 +1447,40 @@ public static class ErrorEffectRegistry
 
             ErrorEffectId.E032_Heal5
                 => "heal 5 HP.",
+
+            ErrorEffectId.E033_GainMaxHp20 => "gain 20 Max HP.",
+            ErrorEffectId.E034_GainEnergy1GremlinHorn => "gain 1 Energy.",
+            ErrorEffectId.E035_Draw1GremlinHorn => "draw 1 card.",
+            ErrorEffectId.E036_DamageAllEnemies5 => "deal 5 damage to ALL enemies.",
+            ErrorEffectId.E037_DamageRandomEnemy6Kusarigama => "deal 6 damage to a random enemy.",
+            ErrorEffectId.E038_GainBlock4OrnamentalFan => "gain 4 Block.",
+            ErrorEffectId.E039_GainEnergy1Nunchaku => "gain 1 Energy.",
+            ErrorEffectId.E040_GainBlock7TuningFork => "gain 7 Block.",
+            ErrorEffectId.E041_ApplyVulnerable1All => "apply 1 Vulnerable to ALL enemies.",
+            ErrorEffectId.E042_ApplyPoison4All => "apply 4 Poison to ALL enemies.",
+            ErrorEffectId.E043_ApplyVigor8Self => "gain 8 Vigor.",
+            ErrorEffectId.E044_Draw3 => "draw 3 cards.",
+            ErrorEffectId.E045_GainBlock6Orichalcum => "gain 6 Block.",
+            ErrorEffectId.E046_GainBlock4RippleBasin => "gain 4 Block.",
+            ErrorEffectId.E047_DamageRandomEnemy6ParryingShield => "deal 6 damage to a random enemy.",
+            ErrorEffectId.E048_Heal25 => "heal 25 HP.",
+            ErrorEffectId.E049_Heal2 => "heal 2 HP.",
+            ErrorEffectId.E050_GainBlock10 => "gain 10 Block.",
+            ErrorEffectId.E051_ApplyFocus1 => "gain 1 Focus.",
+            ErrorEffectId.E052_DamageAllEnemies9 => "deal 9 damage to ALL enemies.",
+            ErrorEffectId.E053_GainMaxHp7 => "gain 7 Max HP.",
+            ErrorEffectId.E054_HealToFull => "heal to full HP.",
+            ErrorEffectId.E055_GainBlock6Abacus => "gain 6 Block.",
+            ErrorEffectId.E056_DamageAllEnemies20 => "deal 20 damage to ALL enemies.",
+            ErrorEffectId.E057_Draw1GamePiece => "draw 1 card.",
+            ErrorEffectId.E058_ApplyWeak1All => "apply 1 Weak to ALL enemies.",
+            ErrorEffectId.E059_GainStrength2Self => "gain 2 Strength.",
+            ErrorEffectId.E060_GainStrength1AllEnemies => "give ALL living enemies 1 Strength.",
+            ErrorEffectId.E061_Create3ShivsInHand => "create 3 Shivs in your hand.",
+            ErrorEffectId.E062_GainMaxHp1 => "gain 1 Max HP.",
+            ErrorEffectId.E063_Heal12 => "heal 12 HP.",
+            ErrorEffectId.E064_ApplyReptileTrinketPower3 => "gain Reptile Trinket's 3 Strength effect.",
+            ErrorEffectId.E065_SelfDamage4Unblockable => "take 4 unblockable damage.",
 
             _ => "do nothing."
         };

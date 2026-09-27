@@ -13,6 +13,8 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
@@ -209,7 +211,45 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
                 new DynamicVar(
                     "PlanisphereHeal",
                     5M
-                )
+                ),
+
+                // H032-E065 expansion values
+                new DynamicVar("BigMushroomMaxHp", 20M),
+                new DynamicVar("LetterOpenerCards", 3M),
+                new DynamicVar("LetterOpenerDamage", 5M),
+                new DynamicVar("KusarigamaCards", 3M),
+                new DynamicVar("KusarigamaDamage", 6M),
+                new DynamicVar("OrnamentalFanCards", 3M),
+                new DynamicVar("OrnamentalFanBlock", 4M),
+                new DynamicVar("NunchakuCards", 10M),
+                new DynamicVar("NunchakuEnergy", 1M),
+                new DynamicVar("TuningForkCards", 10M),
+                new DynamicVar("TuningForkBlock", 7M),
+                new DynamicVar("BagOfMarblesVulnerable", 1M),
+                new DynamicVar("TwistedFunnelPoison", 4M),
+                new DynamicVar("AkabekoVigor", 8M),
+                new DynamicVar("CentennialPuzzleCards", 3M),
+                new DynamicVar("OrichalcumBlock", 6M),
+                new DynamicVar("RippleBasinBlock", 4M),
+                new DynamicVar("ParryingShieldBlockThreshold", 10M),
+                new DynamicVar("ParryingShieldDamage", 6M),
+                new DynamicVar("PantographHeal", 25M),
+                new DynamicVar("BloodVialHeal", 2M),
+                new DynamicVar("AnchorBlock", 10M),
+                new DynamicVar("DataDiskFocus", 1M),
+                new DynamicVar("FestivePopperDamage", 9M),
+                new DynamicVar("LeesWaffleMaxHp", 7M),
+                new DynamicVar("AbacusBlock", 6M),
+                new DynamicVar("ScreamingFlagonDamage", 20M),
+                new DynamicVar("GamePieceCards", 1M),
+                new DynamicVar("RedMaskWeak", 1M),
+                new DynamicVar("BrimstoneSelfStrength", 2M),
+                new DynamicVar("BrimstoneEnemyStrength", 1M),
+                new DynamicVar("NinjaScrollShivs", 3M),
+                new DynamicVar("ChosenCheeseMaxHp", 1M),
+                new DynamicVar("MeatOnTheBoneHeal", 12M),
+                new DynamicVar("ReptileTrinketStrength", 3M),
+                new DynamicVar("RoyalPoisonDamage", 4M)
             };
         }
     }
@@ -241,6 +281,41 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     private int _jossPaperCardsExhausted;
 
     private int _jossPaperEtherealCount;
+
+    // H032-H061 expansion state
+    private int _letterOpenerSkillsThisTurn;
+    private int _kusarigamaAttacksThisTurn;
+    private int _ornamentalFanAttacksThisTurn;
+    private int _nunchakuAttacksPlayed;
+    private int _tuningForkSkillsPlayed;
+    private bool _centennialPuzzleUsedThisCombat;
+    private bool _orichalcumShouldTrigger;
+    private bool _rippleBasinAttackPlayedThisTurn;
+
+    [SavedProperty]
+    public int NunchakuAttacksPlayed
+    {
+        get => _nunchakuAttacksPlayed;
+        set { AssertMutable(); _nunchakuAttacksPlayed = value; }
+    }
+
+    [SavedProperty]
+    public int TuningForkSkillsPlayed
+    {
+        get => _tuningForkSkillsPlayed;
+        set { AssertMutable(); _tuningForkSkillsPlayed = value; }
+    }
+
+    private async Task ExecuteExpandedEffect(
+        PlayerChoiceContext choiceContext,
+        CardPlay? cardPlay = null)
+    {
+        var owner = Owner;
+        if (owner is null) return;
+        await ErrorExecutionCompatibility.ExecuteAsync(
+            HookId, EffectId,
+            new ErrorContext(owner, choiceContext, DynamicVars, cardPlay));
+    }
 
 
     private bool IsCounterActivating
@@ -500,6 +575,90 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
         if (owner is null)
             return;
 
+        // H034 LetterOpener: every 3 Skills this turn.
+        if (HookId == ErrorHookId.H034_Every3SkillsThisTurnLetterOpener
+            && CombatManager.Instance.IsInProgress
+            && cardPlay.Card.Owner == owner
+            && cardPlay.Card.Type == CardType.Skill)
+        {
+            _letterOpenerSkillsThisTurn++;
+            if (_letterOpenerSkillsThisTurn % DynamicVars["LetterOpenerCards"].IntValue == 0)
+            {
+                Flash();
+                await ExecuteExpandedEffect(choiceContext, cardPlay);
+            }
+            return;
+        }
+
+        // H035 Kusarigama / H036 OrnamentalFan / H037 Nunchaku.
+        if (cardPlay.Card.Owner == owner && cardPlay.Card.Type == CardType.Attack)
+        {
+            if (HookId == ErrorHookId.H035_Every3AttacksThisTurnKusarigama)
+            {
+                _kusarigamaAttacksThisTurn++;
+                if (CombatManager.Instance.IsInProgress
+                    && _kusarigamaAttacksThisTurn % DynamicVars["KusarigamaCards"].IntValue == 0)
+                {
+                    Flash();
+                    await ExecuteExpandedEffect(choiceContext, cardPlay);
+                }
+                return;
+            }
+            if (HookId == ErrorHookId.H036_Every3AttacksThisTurnOrnamentalFan)
+            {
+                _ornamentalFanAttacksThisTurn++;
+                if (CombatManager.Instance.IsInProgress
+                    && _ornamentalFanAttacksThisTurn % DynamicVars["OrnamentalFanCards"].IntValue == 0)
+                {
+                    Flash();
+                    await ExecuteExpandedEffect(choiceContext, cardPlay);
+                }
+                return;
+            }
+            if (HookId == ErrorHookId.H037_Every10AttacksPersistentNunchaku)
+            {
+                NunchakuAttacksPlayed++;
+                if (CombatManager.Instance.IsInProgress
+                    && NunchakuAttacksPlayed % DynamicVars["NunchakuCards"].IntValue == 0)
+                {
+                    Flash();
+                    await ExecuteExpandedEffect(choiceContext, cardPlay);
+                }
+                return;
+            }
+            if (HookId == ErrorHookId.H044_EndTurnIfNoAttackRippleBasin)
+            {
+                _rippleBasinAttackPlayedThisTurn = true;
+                return;
+            }
+        }
+
+        // H038 TuningFork: cumulative Skills persist across combats.
+        if (HookId == ErrorHookId.H038_Every10SkillsPersistentTuningFork
+            && cardPlay.Card.Owner == owner
+            && cardPlay.Card.Type == CardType.Skill)
+        {
+            TuningForkSkillsPlayed++;
+            if (TuningForkSkillsPlayed >= DynamicVars["TuningForkCards"].IntValue)
+            {
+                Flash();
+                await ExecuteExpandedEffect(choiceContext, cardPlay);
+                TuningForkSkillsPlayed -= DynamicVars["TuningForkCards"].IntValue;
+            }
+            return;
+        }
+
+        // H054 GamePiece duplicates the native Power-card trigger as its own fragment.
+        if (HookId == ErrorHookId.H054_PowerCardPlayedGamePiece
+            && CombatManager.Instance.IsInProgress
+            && cardPlay.Card.Owner == owner
+            && cardPlay.Card.Type == CardType.Power)
+        {
+            Flash();
+            await ExecuteExpandedEffect(choiceContext, cardPlay);
+            return;
+        }
+
         if (!ErrorHookRegistry.MatchesAfterPowerCardPlayed(
                 HookId,
                 owner,
@@ -601,8 +760,9 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
         if (owner is null)
             return;
 
-        if (!ErrorHookRegistry.MatchesAfterObtained(
-                HookId))
+        if (!ErrorHookRegistry.MatchesAfterObtained(HookId)
+            && HookId != ErrorHookId.H032_AfterObtainedBigMushroom
+            && HookId != ErrorHookId.H051_AfterObtainedLeesWaffle)
             return;
 
         Flash();
@@ -663,6 +823,14 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
         {
             Status = RelicStatus.Normal;
             InvokeDisplayAmountChanged();
+        }
+
+        if (HookId == ErrorHookId.H049_EnterCombatDataDisk
+            && room is CombatRoom)
+        {
+            Flash();
+            await ExecuteExpandedEffect(new ThrowingPlayerChoiceContext());
+            return;
         }
 
         // =====================================================
@@ -760,6 +928,16 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
             return;
         }
 
+        if (player == owner
+            && owner.PlayerCombatState.TurnNumber == 1
+            && (HookId == ErrorHookId.H050_FirstTurnAfterPlayerTurnStartFestivePopper
+                || HookId == ErrorHookId.H061_FirstTurnAfterPlayerTurnStartRoyalPoison))
+        {
+            Flash();
+            await ExecuteExpandedEffect(choiceContext);
+            return;
+        }
+
         // =====================================================
         // H002
         // 来源遗物：Mercury Hourglass
@@ -818,6 +996,30 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
         if (owner is null)
             return;
+
+        if (participants.Contains(owner.Creature))
+        {
+            if (HookId == ErrorHookId.H034_Every3SkillsThisTurnLetterOpener
+                && owner.PlayerCombatState.TurnNumber != 1)
+            {
+                _letterOpenerSkillsThisTurn = 0;
+            }
+
+            if (HookId == ErrorHookId.H041_FirstTurnAfterSideTurnStartAkabeko
+                && owner.PlayerCombatState.TurnNumber == 1)
+            {
+                Flash();
+                await ExecuteExpandedEffect(new ThrowingPlayerChoiceContext());
+                return;
+            }
+
+            if (HookId == ErrorHookId.H056_AfterSideTurnStartBrimstone)
+            {
+                Flash();
+                await ExecuteExpandedEffect(new ThrowingPlayerChoiceContext());
+                return;
+            }
+        }
 
         if (ErrorHookRegistry.MatchesHappyFlowerSideTurnStart(
                 HookId,
@@ -921,6 +1123,34 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
         if (owner is null)
             return;
 
+        if (participants.Contains(owner.Creature))
+        {
+            if (HookId == ErrorHookId.H043_EndTurnIfZeroBlockOrichalcum
+                && _orichalcumShouldTrigger)
+            {
+                _orichalcumShouldTrigger = false;
+                Flash();
+                await ExecuteExpandedEffect(choiceContext);
+                return;
+            }
+
+            if (HookId == ErrorHookId.H044_EndTurnIfNoAttackRippleBasin
+                && !_rippleBasinAttackPlayedThisTurn)
+            {
+                Flash();
+                await ExecuteExpandedEffect(choiceContext);
+                return;
+            }
+
+            if (HookId == ErrorHookId.H053_EndTurnEmptyHandScreamingFlagon
+                && PileType.Hand.GetPile(owner).IsEmpty)
+            {
+                Flash();
+                await ExecuteExpandedEffect(choiceContext);
+                return;
+            }
+        }
+
         if (!ErrorHookRegistry.MatchesStoneCalendarSide(
                 HookId,
                 owner,
@@ -970,7 +1200,7 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     // 明确不在这里清零，所以跨战斗继续累计。
     // =========================================================
 
-    public override Task AfterCombatEnd(
+    public override async Task AfterCombatEnd(
         CombatRoom room)
     {
         if (HookId == ErrorHookId.H021_Every3TurnsHappyFlower
@@ -994,7 +1224,18 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
             JossPaperEtherealCount = 0;
         }
 
-        return Task.CompletedTask;
+        _centennialPuzzleUsedThisCombat = false;
+        _letterOpenerSkillsThisTurn = 0;
+        _kusarigamaAttacksThisTurn = 0;
+        _ornamentalFanAttacksThisTurn = 0;
+        _rippleBasinAttackPlayedThisTurn = false;
+        _orichalcumShouldTrigger = false;
+
+        if (HookId == ErrorHookId.H058_AfterCombatEndChosenCheese)
+        {
+            Flash();
+            await ExecuteExpandedEffect(new ThrowingPlayerChoiceContext());
+        }
     }
 
 
@@ -1111,6 +1352,23 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
         if (owner is null)
             return;
+
+        if (participants.Contains(owner.Creature))
+        {
+            if (HookId == ErrorHookId.H035_Every3AttacksThisTurnKusarigama)
+            {
+                _kusarigamaAttacksThisTurn = 0;
+                return;
+            }
+
+            if (HookId == ErrorHookId.H045_AfterTurnEndIfBlock10ParryingShield
+                && owner.Creature.Block >= DynamicVars["ParryingShieldBlockThreshold"].IntValue)
+            {
+                Flash();
+                await ExecuteExpandedEffect(choiceContext);
+                return;
+            }
+        }
 
         if (!ErrorHookRegistry.MatchesJossPaperSideTurnEnd(
                 HookId,
@@ -1274,6 +1532,15 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
         if (owner is null)
             return;
 
+        if (HookId == ErrorHookId.H057_FirstTurnBeforeHandDrawNinjaScroll
+            && player == owner
+            && owner.PlayerCombatState.TurnNumber == 1)
+        {
+            Flash();
+            await ExecuteExpandedEffect(choiceContext);
+            return;
+        }
+
         if (!ErrorHookRegistry.MatchesBeforeHandDraw(
                 HookId,
                 owner,
@@ -1294,4 +1561,174 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
             context
         );
     }
+
+    // =========================================================
+    // H032-H061 expansion native hooks
+    // =========================================================
+
+    public override async Task BeforeCombatStart()
+    {
+        var owner = Owner;
+        if (owner is null) return;
+
+        if (HookId == ErrorHookId.H048_BeforeCombatStartAnchor)
+        {
+            Flash();
+            await ExecuteExpandedEffect(new ThrowingPlayerChoiceContext());
+            return;
+        }
+
+        if (HookId == ErrorHookId.H046_BeforeBossCombatPantograph
+            && !owner.Creature.IsDead
+            && owner.RunState.CurrentRoom.RoomType == RoomType.Boss)
+        {
+            Flash();
+            await ExecuteExpandedEffect(new ThrowingPlayerChoiceContext());
+        }
+    }
+
+    public override async Task BeforeSideTurnStart(
+        PlayerChoiceContext choiceContext,
+        CombatSide side,
+        IReadOnlyList<Creature> participants,
+        ICombatState combatState)
+    {
+        var owner = Owner;
+        if (owner is null || !participants.Contains(owner.Creature)) return;
+
+        if (HookId == ErrorHookId.H036_Every3AttacksThisTurnOrnamentalFan)
+        {
+            _ornamentalFanAttacksThisTurn = 0;
+            return;
+        }
+
+        if (HookId == ErrorHookId.H044_EndTurnIfNoAttackRippleBasin)
+        {
+            _rippleBasinAttackPlayedThisTurn = false;
+            return;
+        }
+
+        if (owner.PlayerCombatState.TurnNumber == 1
+            && (HookId == ErrorHookId.H039_FirstTurnBeforeSideTurnStartBagOfMarbles
+                || HookId == ErrorHookId.H040_FirstTurnBeforeSideTurnStartTwistedFunnel
+                || HookId == ErrorHookId.H055_FirstTurnBeforeSideTurnStartRedMask))
+        {
+            Flash();
+            await ExecuteExpandedEffect(choiceContext);
+        }
+    }
+
+    public override Task BeforeSideTurnEndVeryEarly(
+        PlayerChoiceContext choiceContext,
+        CombatSide side,
+        IEnumerable<Creature> participants)
+    {
+        var owner = Owner;
+        if (owner is not null
+            && HookId == ErrorHookId.H043_EndTurnIfZeroBlockOrichalcum
+            && participants.Contains(owner.Creature)
+            && owner.Creature.Block <= 0)
+        {
+            _orichalcumShouldTrigger = true;
+        }
+        return Task.CompletedTask;
+    }
+
+    public override async Task AfterDeath(
+        PlayerChoiceContext choiceContext,
+        Creature target,
+        bool wasRemovalPrevented,
+        float deathAnimLength)
+    {
+        var owner = Owner;
+        if (owner is null
+            || HookId != ErrorHookId.H033_EnemyDeathGremlinHorn
+            || target.Side == owner.Creature.Side)
+            return;
+
+        Flash();
+        await ExecuteExpandedEffect(choiceContext);
+    }
+
+    public override async Task AfterDamageReceived(
+        PlayerChoiceContext choiceContext,
+        Creature target,
+        DamageResult result,
+        ValueProp props,
+        Creature? dealer,
+        CardModel? cardSource)
+    {
+        var owner = Owner;
+        if (owner is null
+            || HookId != ErrorHookId.H042_FirstUnblockedDamageEachCombatCentennialPuzzle
+            || !CombatManager.Instance.IsInProgress
+            || target != owner.Creature
+            || result.UnblockedDamage <= 0
+            || _centennialPuzzleUsedThisCombat)
+            return;
+
+        _centennialPuzzleUsedThisCombat = true;
+        Flash();
+        await ExecuteExpandedEffect(choiceContext);
+    }
+
+    public override async Task AfterPlayerTurnStartLate(
+        PlayerChoiceContext choiceContext,
+        Player player)
+    {
+        var owner = Owner;
+        if (owner is null
+            || HookId != ErrorHookId.H047_FirstTurnStartLateBloodVial
+            || player != owner
+            || owner.PlayerCombatState.TurnNumber > 1)
+            return;
+
+        Flash();
+        await ExecuteExpandedEffect(choiceContext);
+    }
+
+    public override async Task AfterShuffle(
+        PlayerChoiceContext choiceContext,
+        Player shuffler)
+    {
+        var owner = Owner;
+        if (owner is null
+            || HookId != ErrorHookId.H052_AfterShuffleTheAbacus
+            || shuffler != owner)
+            return;
+
+        Flash();
+        await ExecuteExpandedEffect(choiceContext);
+    }
+
+    public override async Task AfterCombatVictoryEarly(CombatRoom room)
+    {
+        var owner = Owner;
+        if (owner is null
+            || HookId != ErrorHookId.H059_VictoryAtHalfHpMeatOnTheBone
+            || owner.Creature.IsDead)
+            return;
+
+        int threshold = (int)(owner.Creature.MaxHp * 0.5M);
+        if (owner.Creature.CurrentHp > threshold) return;
+
+        Flash();
+        await ExecuteExpandedEffect(new ThrowingPlayerChoiceContext());
+    }
+
+    public override async Task AfterPotionUsed(
+        PotionModel potion,
+        Creature? target)
+    {
+        var owner = Owner;
+        if (owner is null
+            || HookId != ErrorHookId.H060_AfterPotionUsedReptileTrinket
+            || potion.Owner != owner
+            || !CombatManager.Instance.IsInProgress)
+            return;
+
+        Flash();
+        await ExecuteExpandedEffect(new ThrowingPlayerChoiceContext());
+    }
+
 }

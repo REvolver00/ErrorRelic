@@ -141,6 +141,33 @@ public static class ErrorExecutionCompatibility
             // E031 来源遗物：Joss Paper
             ErrorEffectId.E031_Draw1JossPaper => true,
 
+            ErrorEffectId.E034_GainEnergy1GremlinHorn => true,
+            ErrorEffectId.E035_Draw1GremlinHorn => true,
+            ErrorEffectId.E036_DamageAllEnemies5 => true,
+            ErrorEffectId.E037_DamageRandomEnemy6Kusarigama => true,
+            ErrorEffectId.E038_GainBlock4OrnamentalFan => true,
+            ErrorEffectId.E039_GainEnergy1Nunchaku => true,
+            ErrorEffectId.E040_GainBlock7TuningFork => true,
+            ErrorEffectId.E041_ApplyVulnerable1All => true,
+            ErrorEffectId.E042_ApplyPoison4All => true,
+            ErrorEffectId.E043_ApplyVigor8Self => true,
+            ErrorEffectId.E044_Draw3 => true,
+            ErrorEffectId.E045_GainBlock6Orichalcum => true,
+            ErrorEffectId.E046_GainBlock4RippleBasin => true,
+            ErrorEffectId.E047_DamageRandomEnemy6ParryingShield => true,
+            ErrorEffectId.E050_GainBlock10 => true,
+            ErrorEffectId.E051_ApplyFocus1 => true,
+            ErrorEffectId.E052_DamageAllEnemies9 => true,
+            ErrorEffectId.E055_GainBlock6Abacus => true,
+            ErrorEffectId.E056_DamageAllEnemies20 => true,
+            ErrorEffectId.E057_Draw1GamePiece => true,
+            ErrorEffectId.E058_ApplyWeak1All => true,
+            ErrorEffectId.E059_GainStrength2Self => true,
+            ErrorEffectId.E060_GainStrength1AllEnemies => true,
+            ErrorEffectId.E061_Create3ShivsInHand => true,
+            ErrorEffectId.E064_ApplyReptileTrinketPower3 => true,
+            ErrorEffectId.E065_SelfDamage4Unblockable => true,
+
             _ => false
         };
     }

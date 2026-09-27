@@ -475,6 +475,37 @@ public static class ErrorHookRegistry
             ErrorHookId.H031_EnterFirstUnknownRoomPlanisphere
                 => "When entering the first Unknown room,",
 
+            ErrorHookId.H032_AfterObtainedBigMushroom => "When obtained,",
+            ErrorHookId.H033_EnemyDeathGremlinHorn => "When an enemy dies,",
+            ErrorHookId.H034_Every3SkillsThisTurnLetterOpener => "Every 3 Skills you play this turn,",
+            ErrorHookId.H035_Every3AttacksThisTurnKusarigama => "Every 3 Attacks you play this turn,",
+            ErrorHookId.H036_Every3AttacksThisTurnOrnamentalFan => "Every 3 Attacks you play this turn,",
+            ErrorHookId.H037_Every10AttacksPersistentNunchaku => "Every 10 Attacks you play,",
+            ErrorHookId.H038_Every10SkillsPersistentTuningFork => "Every 10 Skills you play,",
+            ErrorHookId.H039_FirstTurnBeforeSideTurnStartBagOfMarbles => "Before your first turn starts,",
+            ErrorHookId.H040_FirstTurnBeforeSideTurnStartTwistedFunnel => "Before your first turn starts,",
+            ErrorHookId.H041_FirstTurnAfterSideTurnStartAkabeko => "After your first turn starts,",
+            ErrorHookId.H042_FirstUnblockedDamageEachCombatCentennialPuzzle => "The first time you take unblocked damage each combat,",
+            ErrorHookId.H043_EndTurnIfZeroBlockOrichalcum => "At end of turn if you had no Block at the early check,",
+            ErrorHookId.H044_EndTurnIfNoAttackRippleBasin => "At end of turn if you played no Attacks,",
+            ErrorHookId.H045_AfterTurnEndIfBlock10ParryingShield => "After your turn ends if you have at least 10 Block,",
+            ErrorHookId.H046_BeforeBossCombatPantograph => "Before a Boss combat,",
+            ErrorHookId.H047_FirstTurnStartLateBloodVial => "Late at the start of your first turn,",
+            ErrorHookId.H048_BeforeCombatStartAnchor => "Before combat starts,",
+            ErrorHookId.H049_EnterCombatDataDisk => "When entering a Combat room,",
+            ErrorHookId.H050_FirstTurnAfterPlayerTurnStartFestivePopper => "At the start of your first turn,",
+            ErrorHookId.H051_AfterObtainedLeesWaffle => "When obtained,",
+            ErrorHookId.H052_AfterShuffleTheAbacus => "After you shuffle your draw pile,",
+            ErrorHookId.H053_EndTurnEmptyHandScreamingFlagon => "At end of turn if your hand is empty,",
+            ErrorHookId.H054_PowerCardPlayedGamePiece => "After you play a Power card,",
+            ErrorHookId.H055_FirstTurnBeforeSideTurnStartRedMask => "Before your first turn starts,",
+            ErrorHookId.H056_AfterSideTurnStartBrimstone => "After your side's turn starts,",
+            ErrorHookId.H057_FirstTurnBeforeHandDrawNinjaScroll => "Before drawing your opening hand,",
+            ErrorHookId.H058_AfterCombatEndChosenCheese => "After combat ends,",
+            ErrorHookId.H059_VictoryAtHalfHpMeatOnTheBone => "After victory if you are at 50% HP or less,",
+            ErrorHookId.H060_AfterPotionUsedReptileTrinket => "After you use a Potion in combat,",
+            ErrorHookId.H061_FirstTurnAfterPlayerTurnStartRoyalPoison => "At the start of your first turn,",
+
             _ => "ERROR:"
         };
     }
