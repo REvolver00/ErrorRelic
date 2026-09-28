@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -436,7 +436,7 @@ public sealed class RelicSpawnConsoleCmd : AbstractConsoleCmd
             var partial = args[1];
 
             var candidates =
-                Enum.GetValues<ErrorEffectId>()
+                Enum.GetValues<ErrorEffectId>().Where(e => e != ErrorEffectId.E002_UpgradePlayedCard && e != ErrorEffectId.E007_Choose1Of3ColorlessToHand)  .ToArray()
                     .Select(effect => effect.ToString())
                     .OrderBy(value => value)
                     .ToList();
