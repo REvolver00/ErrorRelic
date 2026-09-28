@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+using MegaCrit.Sts2.Core.Localization;
+using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using MegaCrit.Sts2.Core.Entities.Relics;
@@ -136,71 +138,34 @@ public class ErrorRandomTestRelic : ErrorGeneratedRelic
         // 保留命令提前塞好的 H + E。
         if (!DefinitionLocked)
         {
-            var generated = ErrorGenerator.Generate();
+            var generated = ErrorGenerator.Generate(Owner, Id, $"obtained:{Owner.Relics.ToList().IndexOf(this)}");
 
             GeneratedHookId = generated.HookId;
             GeneratedEffectId = generated.EffectId;
+            DefinitionLocked = true;
         }
 
         // 这里非常重要。
         //
         // 继续进入 ErrorGeneratedRelic.AfterObtained()，
         // 因此 H004 也能正常触发它自己的 E。
+        MainFile.Logger.Info($"ERROR entered inventory: owner={Owner?.NetId}, pair={GeneratedHookId}/{GeneratedEffectId}, present={Owner?.Relics.Contains(this)}");
         await base.AfterObtained();
     }
 
 
-    // =========================================================
-    // DEBUG：每个遗物实例自己的悬停信息
-    //
-    // 同一个 Model ID 的 Localization 是共用的，
-    // 所以不能拿主描述判断不同实例。
-    //
-    // 这里读取的是当前这一件遗物自己的 SavedProperty，
-    // 因此可以看到它真正的 Hook / Effect。
-    // =========================================================
+    // The localization template is shared, but its variable is filled from
+    // this instance by ErrorRelicDescriptionPatch. Never rewrite the table.
+    public string FullDescription => DefinitionLocked || Owner != null
+        ? ErrorDescriptionText.Describe(GeneratedHookId, GeneratedEffectId, OriginalName,
+            LocManager.Instance == null ? "colorless" : RunManager.Instance.GetLocalCharacterEnergyIconPrefix() ?? "colorless")
+        : "获得时随机组合一个触发条件和一个效果。";
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips
-    {
-        get
-        {
-            string hookId =
-                GeneratedHookId
-                    .ToString()
-                    .Split('_')[0];
+    private static string? OriginalName(string table, string key) => LocManager.Instance == null
+        ? null : LocString.GetIfExists(table, key)?.GetFormattedText();
 
-            string effectId =
-                GeneratedEffectId
-                    .ToString()
-                    .Split('_')[0];
-
-            yield return new HoverTip(
-                Title,
-                $"[DEBUG]\n{hookId}-{effectId}"
-            );
-        }
-    }
-
-
-    // =========================================================
-    // 主描述故意固定
-    //
-    // 不再使用 GeneratedDescription，
-    // 否则多个相同 ID 的 RANDOM TEST 会显示同一份旧描述，
-    // 很容易把我们测试搞混。
-    // =========================================================
-
-    public override List<(string, string)>? Localization =>
-        new RelicLoc(
-            "ERROR",
-            "[当？将有？发生]",
-            ""
-        );
-
-
-    // =========================================================
-    // 图片
-    // =========================================================
+    public override List<(string, string)>? Localization => new RelicLoc(
+        "ERROR", "{ErrorDescription}", "");
 
     public override string PackedIconPath =>
         "relic.png".RelicImagePath();

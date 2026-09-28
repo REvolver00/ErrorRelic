@@ -1,3 +1,5 @@
+using BaseLib.Config;
+using ErrorRelics.ErrorRelicsCode.Config;
 using System.Reflection;
 using Godot;
 using HarmonyLib;
@@ -17,6 +19,7 @@ public partial class MainFile : Node
     public static void Initialize()
     {
         var assembly = Assembly.GetExecutingAssembly();
+        ModConfigRegistry.Register(ModId, new ErrorRelicsConfig());
 
         //If you want to use scripts defined in your mod for Godot scenes, uncomment the following line.
         //Godot.Bridge.ScriptManagerBridge.LookupScriptsInAssembly(assembly);

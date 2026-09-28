@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 
 using HarmonyLib;
@@ -46,7 +46,7 @@ public static class EventRelicOptionErrorModePatch
     [HarmonyPrefix]
     public static void Prefix(
         EventModel __instance,
-        ref RelicModel relic)
+        ref RelicModel relic, string pageName)
     {
         // Ancient events have their own stable ERROR path.
         if (__instance is AncientEventModel)
@@ -69,7 +69,7 @@ public static class EventRelicOptionErrorModePatch
         // actual option a newly locked ERROR.
         relic =
             ErrorModeState.CreateLockedError(
-                relic
+                relic, __instance.Owner, $"event:{__instance.Id.Entry}:{pageName}"
             );
     }
 }

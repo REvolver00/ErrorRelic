@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using ErrorRelics.ErrorRelicsCode.Fragments;
@@ -1568,6 +1568,16 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
     public override async Task BeforeCombatStart()
     {
+        // Peer inventories are reconstructed before combat. Reset the owner's
+        // transient fields at the same boundary as a newly reconstructed copy.
+        // Persistent SavedProperty counters deliberately remain untouched.
+        _centennialPuzzleUsedThisCombat = false;
+        _letterOpenerSkillsThisTurn = 0;
+        _kusarigamaAttacksThisTurn = 0;
+        _ornamentalFanAttacksThisTurn = 0;
+        _rippleBasinAttackPlayedThisTurn = false;
+        _orichalcumShouldTrigger = false;
+        _jossPaperEtherealCount = 0;
         var owner = Owner;
         if (owner is null) return;
 

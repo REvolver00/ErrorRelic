@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
@@ -49,9 +49,6 @@ public static class RelicRewardEliteErrorModePatch
             return;
         }
 
-        // ELITE1 is intentionally singleplayer-only.
-        if (player.RunState.Players.Count != 1)
-            return;
 
         // Leave predetermined relic rewards untouched.
         RelicModel? predetermined =
@@ -76,7 +73,7 @@ public static class RelicRewardEliteErrorModePatch
 
         RelicModel replacement =
             ErrorModeState.CreateLockedError(
-                source
+                source, player, "reward"
             );
 
         // RelicReward.OnSelect later passes _relic directly to

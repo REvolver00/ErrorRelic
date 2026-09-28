@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 using HarmonyLib;
 
@@ -48,7 +48,7 @@ public static class AncientRelicOptionErrorModePatch
     [HarmonyPrefix]
     public static void Prefix(
         AncientEventModel __instance,
-        ref RelicModel relic)
+        ref RelicModel relic, string pageName)
     {
         // Keep the already-tested Neow Proof implementation.
         if (__instance is Neow)
@@ -71,7 +71,7 @@ public static class AncientRelicOptionErrorModePatch
         // become three independently generated ERROR choices.
         relic =
             ErrorModeState.CreateLockedError(
-                relic
+                relic, __instance.Owner, $"ancient:{__instance.Id.Entry}:{pageName}"
             );
     }
 }

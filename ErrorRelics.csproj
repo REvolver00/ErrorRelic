@@ -1,4 +1,4 @@
-﻿<Project Sdk="Godot.NET.Sdk/4.5.1" InitialTargets="CheckDependencyPaths">
+<Project Sdk="Godot.NET.Sdk/4.5.1" InitialTargets="CheckDependencyPaths">
     <Import Project=".\Sts2PathDiscovery.props"/>
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
@@ -44,6 +44,7 @@
 
     <ItemGroup>
         <Compile Remove="ErrorRelics/**" />
+        <Compile Remove="tests/**" />
         <Compile Remove="materials/**" />
         <Compile Remove="shaders/**" />
         <Compile Remove="images/**" />
@@ -73,7 +74,7 @@
                 Condition="'$(Sts2DataDir)' == '' or !Exists('$(Sts2DataDir)')" />
     </Target>
 
-    <Target Name="UpdateDependencyVersions" BeforeTargets="BeforeBuild" Condition="Exists('.godot/mono/temp/obj/project.assets.json')">
+    <Target Name="UpdateDependencyVersions" BeforeTargets="BeforeBuild" Condition="'$(UpdateDependencyManifest)' != 'false' And Exists('.godot/mono/temp/obj/project.assets.json')">
         <PropertyGroup>
             <ManifestPath>$(MSBuildProjectName).json</ManifestPath>
         </PropertyGroup>
@@ -97,7 +98,7 @@
                  Importance="high" />
     </Target>
     
-    <Target Name="CopyToModsFolderOnBuild" AfterTargets="PostBuildEvent">
+    <Target Name="CopyToModsFolderOnBuild" AfterTargets="PostBuildEvent" Condition="'$(DeployModOnBuild)' != 'false'">
         <Message Text="Copying .dll .pdb and .json to mods folder." Importance="high" />
         <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
         <Copy SourceFiles="$(AssemblyName).json" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 using ErrorRelics.ErrorRelicsCode.Fragments;
 using ErrorRelics.ErrorRelicsCode.Relics;
@@ -186,6 +186,7 @@ public static class TreasureRoomBeginErrorPatch
         // sees ERROR, instead of only changing the UI.
         currentRelics[0] =
             errorRelic;
+        MainFile.Logger.Info($"ERROR chest shown: source={source.Id}, pair={generated.HookId}/{generated.EffectId}");
     }
 }
 
@@ -243,5 +244,34 @@ public static class TreasureRoomAwardBookkeepingPatch
                 source
             );
         }
+    }
+}
+
+// A failed mouse release and a failed obtain look the same to the player.
+// Log only ERROR chest choices so the next report identifies that boundary.
+[HarmonyPatch(typeof(NTreasureRoomRelicCollection), "PickRelic")]
+public static class ErrorChestClickTracePatch
+{
+    [HarmonyPrefix]
+    public static void Prefix(NTreasureRoomRelicHolder holder)
+    {
+        if (holder.Relic.Model is ErrorRandomTestRelic error)
+            MainFile.Logger.Info($"ERROR chest click received: index={holder.Index}, pair={error.GeneratedHookId}/{error.GeneratedEffectId}");
+    }
+}
+
+[HarmonyPatch(typeof(TreasureRoomRelicSynchronizer), nameof(TreasureRoomRelicSynchronizer.SkipRelicLocally))]
+public static class ErrorChestSkipTracePatch
+{
+    [HarmonyPrefix]
+    public static void Prefix(TreasureRoomRelicSynchronizer __instance)
+    {
+        if (__instance.CurrentRelics == null) return;
+        foreach (var relic in __instance.CurrentRelics)
+            if (relic is ErrorRandomTestRelic)
+            {
+                MainFile.Logger.Info("ERROR chest skipped before obtaining the relic.");
+                return;
+            }
     }
 }

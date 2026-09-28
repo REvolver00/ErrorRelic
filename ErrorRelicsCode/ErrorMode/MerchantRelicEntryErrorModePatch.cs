@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 
 using MegaCrit.Sts2.Core.Entities.Merchant;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -53,7 +53,7 @@ public static class MerchantRelicEntryErrorModePatch
 
         RelicModel replacement =
             ErrorModeState.CreateLockedError(
-                source
+                source, player, "merchant"
             );
 
         // Model has a private setter.

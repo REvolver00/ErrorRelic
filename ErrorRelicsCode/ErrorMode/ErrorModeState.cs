@@ -1,4 +1,5 @@
-﻿using System.Linq;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 using ErrorRelics.ErrorRelicsCode.Fragments;
 using ErrorRelics.ErrorRelicsCode.Relics;
@@ -23,9 +24,9 @@ namespace ErrorRelics.ErrorRelicsCode.ErrorMode;
 public static class ErrorModeState
 {
     public static bool IsEnabled(
-        Player player)
+        [NotNullWhen(true)] Player? player)
     {
-        return player.Relics.Any(
+        return player != null && player.Relics.Any(
             relic => relic is ErrorProofRelic
         );
     }
@@ -107,26 +108,19 @@ public static class ErrorModeState
     }
 
 
-    // VISUAL2 overload.
-    //
-    // H/E generation is still the exact stable ANCIENT1 method
-    // above. This overload only remembers the vanilla source
-    // AFTER the ERROR has already been created.
+    // Each source supplies the intended owner before the relic is obtained.
+    // No canonical model is mutated here.
     public static ErrorRandomTestRelic CreateLockedError(
-        RelicModel source)
+        RelicModel source, Player owner, string sourceKey)
     {
-        ErrorRandomTestRelic relic =
-            CreateLockedError(
-                source.Rarity
-            );
-
-        relic.SetVisualSource(
-            source
-        );
-
+        ErrorRandomTestRelic relic = CreateMutableForRarity(source.Rarity);
+        ErrorDefinition generated = ErrorGenerator.Generate(owner, source.Id, sourceKey);
+        relic.GeneratedHookId = generated.HookId;
+        relic.GeneratedEffectId = generated.EffectId;
+        relic.DefinitionLocked = true;
+        relic.SetVisualSource(source);
         return relic;
     }
-
 
     public static ErrorProofRelic CreateProof()
     {

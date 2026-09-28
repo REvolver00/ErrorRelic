@@ -1,21 +1,38 @@
 using System;
 using System.Linq;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Random;
 
 namespace ErrorRelics.ErrorRelicsCode.Fragments;
 
 public static class ErrorGenerator
 {
-    public static ErrorDefinition Generate()
+    private static readonly ErrorHookId[] Hooks = Enum.GetValues<ErrorHookId>();
+    private static readonly ErrorEffectId[] Effects = Enum.GetValues<ErrorEffectId>()
+        .Where(e => e != ErrorEffectId.E002_UpgradePlayedCard
+                 && e != ErrorEffectId.E007_Choose1Of3ColorlessToHand).ToArray();
+
+    // Keep the released singleplayer random pool and probabilities.
+    public static ErrorDefinition Generate() => new(
+        Hooks[Random.Shared.Next(Hooks.Length)],
+        Effects[Random.Shared.Next(Effects.Length)]);
+
+    public static ErrorDefinition Generate(Player owner, ModelId sourceId, string sourceKey)
     {
-        var hooks = Enum.GetValues<ErrorHookId>();
-        var effects = Enum.GetValues<ErrorEffectId>().Where(e => e != ErrorEffectId.E002_UpgradePlayedCard && e != ErrorEffectId.E007_Choose1Of3ColorlessToHand).ToArray();
+        if (owner.RunState.Players.Count == 1)
+            return Generate();
 
-        var hook = hooks[Random.Shared.Next(hooks.Length)];
-        var effect = effects[Random.Shared.Next(effects.Length)];
-
-        return new ErrorDefinition(
-            hook,
-            effect
-        );
+        // Use the game's content RNG: run seed + player slot + source model.
+        // Preview rebuilds must not advance shared combat/reward RNG streams.
+        // The source key distinguishes the room and obtaining path on every peer.
+        string key = FormattableString.Invariant($"ErrorRelics|{owner.RunState.TotalFloor}|{sourceKey}");
+        var rng = new Rng(owner, sourceId, StringHelper.GetDeterministicHashCode(key));
+        return Generate(rng);
     }
+
+    public static ErrorDefinition Generate(Rng rng) => new(
+        Hooks[rng.NextInt(Hooks.Length)],
+        Effects[rng.NextInt(Effects.Length)]);
 }
