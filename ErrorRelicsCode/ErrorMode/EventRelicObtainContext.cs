@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -66,8 +66,11 @@ public static class EventRelicObtainContext
 public static class EventOptionExplicitTextContextPatch
 {
     [HarmonyPrefix]
-    public static void Prefix(ref Func<Task>? onChosen)
+    public static void Prefix(EventModel eventModel, ref Func<Task>? onChosen)
     {
+        // Neow's displayed starting relic must be the one the player receives.
+        if (eventModel is MegaCrit.Sts2.Core.Models.Events.Neow)
+            return;
         onChosen = EventRelicObtainContext.Wrap(onChosen);
     }
 }
@@ -87,8 +90,11 @@ public static class EventOptionExplicitTextContextPatch
 public static class EventOptionTextKeyContextPatch
 {
     [HarmonyPrefix]
-    public static void Prefix(ref Func<Task>? onChosen)
+    public static void Prefix(EventModel eventModel, ref Func<Task>? onChosen)
     {
+        // Neow's displayed starting relic must be the one the player receives.
+        if (eventModel is MegaCrit.Sts2.Core.Models.Events.Neow)
+            return;
         onChosen = EventRelicObtainContext.Wrap(onChosen);
     }
 }

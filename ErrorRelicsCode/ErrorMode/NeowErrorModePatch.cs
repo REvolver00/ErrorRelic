@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 using ErrorRelics.ErrorRelicsCode.Relics;
+using ErrorRelics.ErrorRelicsCode.Config;
+using MegaCrit.Sts2.Core.Models;
 
 using HarmonyLib;
 
@@ -70,5 +72,25 @@ public static class NeowErrorModePatch
             proofOption;
 
         __result = options;
+    }
+}
+
+// Await the grant before generating choices, on every simulated player.
+[HarmonyPatch(typeof(AncientEventModel), "BeforeEventStarted")]
+public static class NeowStartingProofPatch
+{
+    [HarmonyPostfix]
+    public static void Postfix(AncientEventModel __instance, bool isPreFinished, ref Task __result)
+    {
+        if (__instance is Neow && !isPreFinished && ErrorRelicsConfig.StartWithRedPickaxe)
+            __result = GrantProof(__result, __instance);
+    }
+
+    private static async Task GrantProof(Task original, AncientEventModel ancient)
+    {
+        await original;
+        var owner = ancient.Owner;
+        if (owner != null && !ErrorModeState.IsEnabled(owner))
+            await RelicCmd.Obtain(ErrorModeState.CreateProof(), owner);
     }
 }

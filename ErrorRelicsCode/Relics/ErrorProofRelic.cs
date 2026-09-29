@@ -31,7 +31,7 @@ public sealed class ErrorProofRelic : ErrorRelicsRelic
     public override List<(string, string)>? Localization =>
         new RelicLoc(
             "ERROR",
-            "[ERROR · 0.92 Multiplayer Preview]\n本Mod会随机组合遗物的触发条件与效果，共有104种触发条件、109种效果，理论上可产生11,336种H/E组合。\n当前E002、E007暂不参与随机生成，因此实际随机池为11,128种组合。\n组合可能极强、极弱、奇怪，或在某些情况下没有效果。\n本Mod仍可能出现异常、报错、卡死、存档问题或无法继续游戏。\n若发现本应生效的ERROR没有效果，或发生严重异常，请记录ERROR编号（如H076-E028）及当时情况。\n反馈：Ciareay@outlook.com",
+            "[ERROR · 0.92.1 Multiplayer Preview]\n本Mod会随机组合遗物的触发条件与效果，共有104种触发条件、109种效果，理论上可产生11,336种H/E组合。\n当前E002、E007暂不参与随机生成，因此实际随机池为11,128种组合。\n组合可能极强、极弱、奇怪，或在某些情况下没有效果。\n本Mod仍可能出现异常、报错、卡死、存档问题或无法继续游戏。\n若发现本应生效的ERROR没有效果，或发生严重异常，请记录ERROR编号（如H076-E028）及当时情况。\n反馈：Ciareay@outlook.com",
             ""
         );
 
