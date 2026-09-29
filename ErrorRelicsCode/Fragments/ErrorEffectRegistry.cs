@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Combat;
@@ -19,6 +20,13 @@ using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
 using MegaCrit.Sts2.Core.ValueProps;
+using MegaCrit.Sts2.Core.Runs;
+using MegaCrit.Sts2.Core.Rewards;
+using MegaCrit.Sts2.Core.Models.Relics;
+using MegaCrit.Sts2.Core.Models.Orbs;
+using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Relics;
 
 namespace ErrorRelics.ErrorRelicsCode.Fragments;
 
@@ -1339,6 +1347,653 @@ public static class ErrorEffectRegistry
                     new DamageVar(4M, ValueProp.Unblockable | ValueProp.Unpowered),
                     null, null, null);
                 break;
+
+            case ErrorEffectId.E066_ShurikenGainStrength1:
+                await PowerCmd.Apply<StrengthPower>(
+                    context.ChoiceContext,
+                    context.Owner.Creature,
+                    context.Vars["ShurikenStrength"].BaseValue,
+                    context.Owner.Creature,
+                    null);
+                return;
+
+            case ErrorEffectId.E067_KunaiGainDexterity1:
+                await PowerCmd.Apply<DexterityPower>(
+                    context.ChoiceContext,
+                    context.Owner.Creature,
+                    context.Vars["KunaiDexterity"].BaseValue,
+                    context.Owner.Creature,
+                    null);
+                return;
+
+            case ErrorEffectId.E068_LanternGainEnergy1:
+                await PlayerCmd.GainEnergy(
+                    context.Vars["LanternEnergy"].BaseValue,
+                    context.Owner);
+                return;
+
+            case ErrorEffectId.E069_VeryHotCocoaGainEnergy4:
+                await PlayerCmd.GainEnergy(
+                    context.Vars["VeryHotCocoaEnergy"].BaseValue,
+                    context.Owner);
+                return;
+
+            case ErrorEffectId.E070_StrawberryGainMaxHp7:
+                await CreatureCmd.GainMaxHp(
+                    context.Owner.Creature,
+                    context.Vars["StrawberryMaxHp"].BaseValue);
+                return;
+
+            case ErrorEffectId.E071_PearGainMaxHp10:
+                await CreatureCmd.GainMaxHp(
+                    context.Owner.Creature,
+                    context.Vars["PearMaxHp"].BaseValue);
+                return;
+
+            case ErrorEffectId.E072_MangoGainMaxHp14:
+                await CreatureCmd.GainMaxHp(
+                    context.Owner.Creature,
+                    context.Vars["MangoMaxHp"].BaseValue);
+                return;
+
+            case ErrorEffectId.E073_LoomingFruitGainMaxHp31:
+                await CreatureCmd.GainMaxHp(
+                    context.Owner.Creature,
+                    context.Vars["LoomingFruitMaxHp"].BaseValue);
+                return;
+
+            case ErrorEffectId.E074_NutritiousOysterGainMaxHp11:
+                await CreatureCmd.GainMaxHp(
+                    context.Owner.Creature,
+                    context.Vars["NutritiousOysterMaxHp"].BaseValue);
+                return;
+
+            case ErrorEffectId.E075_GoldenPearlGainGold150:
+                await PlayerCmd.GainGold(
+                    context.Vars["GoldenPearlGold"].BaseValue,
+                    context.Owner);
+                return;
+
+            case ErrorEffectId.E076_SignetRingGainGold888:
+                await PlayerCmd.GainGold(
+                    context.Vars["SignetRingGold"].BaseValue,
+                    context.Owner);
+                return;
+
+            case ErrorEffectId.E077_IvoryTileGainEnergy1:
+                await PlayerCmd.GainEnergy(
+                    context.Vars["IvoryTileEnergy"].BaseValue,
+                    context.Owner);
+                return;
+
+            case ErrorEffectId.E078_SaiGainBlock7:
+                await CreatureCmd.GainBlock(
+                    context.Owner.Creature,
+                    new BlockVar(
+                        context.Vars["SaiBlock"].BaseValue,
+                        ValueProp.Unpowered),
+                    null);
+                return;
+
+            case ErrorEffectId.E079_ChandelierGainEnergy3:
+                await PlayerCmd.GainEnergy(
+                    context.Vars["ChandelierEnergy"].BaseValue,
+                    context.Owner);
+                return;
+
+            case ErrorEffectId.E080_SwordOfJadeGainStrength3:
+                await PowerCmd.Apply<StrengthPower>(
+                    context.ChoiceContext,
+                    context.Owner.Creature,
+                    context.Vars["SwordOfJadeStrength"].BaseValue,
+                    context.Owner.Creature,
+                    null);
+                return;
+
+            case ErrorEffectId.E081_DaughterOfTheWindGainBlock4:
+                await CreatureCmd.GainBlock(
+                    context.Owner.Creature,
+                    new BlockVar(
+                        context.Vars["DaughterOfTheWindBlock"].BaseValue,
+                        ValueProp.Unpowered),
+                    null,
+                    true);
+                return;
+
+            case ErrorEffectId.E082_LostWispDamageAllEnemies8:
+                await CreatureCmd.Damage(
+                    context.ChoiceContext,
+                    context.Owner.Creature.CombatState.HittableEnemies,
+                    new DamageVar(
+                        context.Vars["LostWispDamage"].BaseValue,
+                        ValueProp.Unpowered),
+                    context.Owner.Creature);
+                return;
+
+            case ErrorEffectId.E083_CharonsAshesDamageAllEnemies3:
+                await CreatureCmd.Damage(
+                    context.ChoiceContext,
+                    context.Owner.Creature.CombatState.HittableEnemies,
+                    new DamageVar(
+                        context.Vars["CharonsAshesDamage"].BaseValue,
+                        ValueProp.Unpowered),
+                    context.Owner.Creature);
+                return;
+
+            case ErrorEffectId.E084_ForgottenSoulDamageRandomEnemy4WithBluntVfx:
+            {
+                var target = context.Owner.RunState.Rng.CombatTargets.NextItem(
+                    context.Owner.Creature.CombatState.HittableEnemies);
+
+                if (target is null)
+                    return;
+
+                VfxCmd.PlayOnCreatureCenter(
+                    target,
+                    "vfx/vfx_attack_blunt");
+
+                await CreatureCmd.Damage(
+                    context.ChoiceContext,
+                    target,
+                    new DamageVar(
+                        context.Vars["ForgottenSoulDamage"].BaseValue,
+                        ValueProp.Unpowered),
+                    context.Owner.Creature);
+                return;
+            }
+
+            case ErrorEffectId.E085_IronClubDraw1:
+                await CardPileCmd.Draw(
+                    context.ChoiceContext,
+                    context.Vars["IronClubDraw"].BaseValue,
+                    context.Owner);
+                return;
+
+            case ErrorEffectId.E086_BronzeScalesApplyThorns3:
+                await PowerCmd.Apply<ThornsPower>(
+                    context.ChoiceContext,
+                    context.Owner.Creature,
+                    context.Vars["BronzeScalesThorns"].BaseValue,
+                    context.Owner.Creature,
+                    null);
+                return;
+
+            case ErrorEffectId.E087_GorgetApplyPlating4:
+                await PowerCmd.Apply<PlatingPower>(
+                    context.ChoiceContext,
+                    context.Owner.Creature,
+                    context.Vars["GorgetPlating"].BaseValue,
+                    context.Owner.Creature,
+                    null);
+                return;
+
+            case ErrorEffectId.E088_HelicalDartApplyHelicalDartPower1:
+                await PowerCmd.Apply<HelicalDartPower>(
+                    context.ChoiceContext,
+                    context.Owner.Creature,
+                    context.Vars["HelicalDartDexterity"].BaseValue,
+                    context.Owner.Creature,
+                    null);
+                return;
+
+            case ErrorEffectId.E089_PermafrostGainBlock7:
+                await CreatureCmd.GainBlock(
+                    context.Owner.Creature,
+                    new BlockVar(
+                        context.Vars["PermafrostBlock"].BaseValue,
+                        ValueProp.Unpowered),
+                    null);
+                return;
+
+            case ErrorEffectId.E090_EmptyCageRemove2FromDeck:
+            {
+                CardSelectorPrefs prefs = new(
+                    CardSelectorPrefs.RemoveSelectionPrompt,
+                    context.Vars["EmptyCageCards"].IntValue);
+
+                IEnumerable<CardModel> selected =
+                    await CardSelectCmd.FromDeckForRemoval(
+                        context.Owner,
+                        prefs,
+                        null);
+
+                foreach (CardModel card in selected)
+                    await CardPileCmd.RemoveFromDeck(card, true);
+
+                return;
+            }
+
+            case ErrorEffectId.E091_PomanderUpgrade1FromDeck:
+            {
+                CardSelectorPrefs prefs = new(
+                    CardSelectorPrefs.UpgradeSelectionPrompt,
+                    context.Vars["PomanderCards"].IntValue);
+
+                IEnumerable<CardModel> selected =
+                    await CardSelectCmd.FromDeckForUpgrade(
+                        context.Owner,
+                        prefs);
+
+                foreach (CardModel card in selected.ToList())
+                    CardCmd.Upgrade(card, CardPreviewStyle.HorizontalLayout);
+
+                return;
+            }
+
+            case ErrorEffectId.E092_BigHatAdd2RandomEtherealToHand:
+            {
+                IEnumerable<CardModel> candidates =
+                    context.Owner.Character.CardPool
+                        .GetUnlockedCards(
+                            context.Owner.UnlockState,
+                            context.Owner.RunState.CardMultiplayerConstraint)
+                        .Where(card => card.Keywords.Contains(CardKeyword.Ethereal));
+
+                if (!candidates.Any())
+                    return;
+
+                IEnumerable<CardModel> cards =
+                    CardFactory.GetDistinctForCombat(
+                        context.Owner,
+                        candidates,
+                        context.Vars["BigHatCards"].IntValue,
+                        context.Owner.RunState.Rng.CombatCardGeneration);
+
+                await CardPileCmd.AddGeneratedCardsToCombat(
+                    cards,
+                    PileType.Hand,
+                    context.Owner,
+                    CardPilePosition.Bottom);
+                return;
+            }
+
+            case ErrorEffectId.E093_OrangeDoughAdd2RandomColorlessToHand:
+            {
+                IEnumerable<CardModel> cards =
+                    CardFactory.GetDistinctForCombat(
+                        context.Owner,
+                        ModelDb.CardPool<ColorlessCardPool>()
+                            .GetUnlockedCards(
+                                context.Owner.UnlockState,
+                                context.Owner.RunState.CardMultiplayerConstraint),
+                        context.Vars["OrangeDoughCards"].IntValue,
+                        context.Owner.RunState.Rng.CombatCardGeneration);
+
+                await CardPileCmd.AddGeneratedCardsToCombat(
+                    cards,
+                    PileType.Hand,
+                    context.Owner,
+                    CardPilePosition.Bottom);
+                return;
+            }
+
+            case ErrorEffectId.E094_RadiantPearlAdd1LuminesceToHand:
+            {
+                List<CardModel> cards = new();
+
+                for (int i = 0; i < context.Vars["RadiantPearlCards"].IntValue; ++i)
+                {
+                    cards.Add(
+                        context.Owner.Creature.CombatState.CreateCard<Luminesce>(
+                            context.Owner));
+                }
+
+                await CardPileCmd.AddGeneratedCardsToCombat(
+                    cards,
+                    PileType.Hand,
+                    context.Owner,
+                    CardPilePosition.Bottom);
+                return;
+            }
+
+            case ErrorEffectId.E095_CrackedCoreChannel1Lightning:
+            {
+                int amount = context.Vars["CrackedCoreLightning"].IntValue;
+                for (int i = 0; i < amount; ++i)
+                {
+                    await OrbCmd.Channel<LightningOrb>(
+                        new BlockingPlayerChoiceContext(),
+                        context.Owner);
+                }
+                return;
+            }
+
+            case ErrorEffectId.E096_SymbioticVirusChannel1Dark:
+            {
+                int amount = context.Vars["SymbioticVirusDark"].IntValue;
+                for (int i = 0; i < amount; ++i)
+                {
+                    await OrbCmd.Channel<DarkOrb>(
+                        new BlockingPlayerChoiceContext(),
+                        context.Owner);
+                }
+                return;
+            }
+
+            case ErrorEffectId.E097_CallingBellAddCurseOfTheBell:
+                await CardPileCmd.AddCurseToDeck<CurseOfTheBell>(
+                    context.Owner);
+                return;
+
+            case ErrorEffectId.E098_CallingBellOfferThreeRelicRewards:
+            {
+                List<Reward> rewards = new()
+                {
+                    new RelicReward(RelicRarity.Common, context.Owner),
+                    new RelicReward(RelicRarity.Uncommon, context.Owner),
+                    new RelicReward(RelicRarity.Rare, context.Owner)
+                };
+
+                await RewardsCmd.OfferCustom(
+                    context.Owner,
+                    rewards);
+                return;
+            }
+
+            case ErrorEffectId.E099_ToyBoxOfferFiveWaxRelics:
+            {
+                List<Reward> rewards = new();
+
+                int amount = context.Vars["ToyBoxRelics"].IntValue;
+                for (int i = 0; i < amount; ++i)
+                {
+                    RelicModel relic =
+                        RelicFactory.PullNextRelicFromFront(context.Owner)
+                            .ToMutable();
+
+                    relic.IsWax = true;
+                    rewards.Add(new RelicReward(relic, context.Owner));
+                }
+
+                await RewardsCmd.OfferCustom(
+                    context.Owner,
+                    rewards);
+                return;
+            }
+
+            case ErrorEffectId.E100_ToyBoxMeltLeftmostWax:
+            {
+                RelicModel? relic = context.Owner.Relics.FirstOrDefault(
+                    candidate => candidate.IsWax && !candidate.IsMelted);
+
+                if (relic is null)
+                    return;
+
+                await RelicCmd.Melt(relic);
+
+                // Toy Box performs this scaled wait after Melt in the target DLL.
+                await Cmd.CustomScaledWait(
+                    0.5f,
+                    0.75f,
+                    false,
+                    CancellationToken.None);
+                return;
+            }
+
+
+            case ErrorEffectId.E101_DollysMirrorDuplicate1NonQuestCard:
+            {
+                CardSelectorPrefs prefs = new(
+                    new LocString(
+                        "relics",
+                        "DOLLYS_MIRROR.selectionScreenPrompt"),
+                    context.Vars["DollysMirrorCards"].IntValue);
+
+                CardModel? selected = (
+                    await CardSelectCmd.FromDeckGeneric(
+                        context.Owner,
+                        prefs,
+                        card => card.Type != CardType.Quest,
+                        null))
+                    .FirstOrDefault();
+
+                if (selected is null)
+                    return;
+
+                CardModel clone = context.Owner.RunState.CloneCard(selected);
+                CardPileAddResult addResult = await CardPileCmd.Add(
+                    clone,
+                    PileType.Deck,
+                    CardPilePosition.Bottom,
+                    null,
+                    false);
+
+                CardCmd.PreviewCardPileAdd(
+                    addResult,
+                    1.2f,
+                    CardPreviewStyle.HorizontalLayout);
+                return;
+            }
+
+            case ErrorEffectId.E102_GnarledHammerEnchantUpTo3Sharp3:
+            {
+                CardSelectorPrefs prefs = new(
+                    CardSelectorPrefs.EnchantSelectionPrompt,
+                    0,
+                    context.Vars["GnarledHammerCards"].IntValue)
+                {
+                    Cancelable = false,
+                    RequireManualConfirmation = true
+                };
+
+                EnchantmentModel sharp = ModelDb.Enchantment<Sharp>();
+                IEnumerable<CardModel> selected =
+                    await CardSelectCmd.FromDeckForEnchantment(
+                        context.Owner,
+                        sharp,
+                        context.Vars["GnarledHammerSharpAmount"].IntValue,
+                        prefs);
+
+                foreach (CardModel card in selected)
+                {
+                    CardCmd.Enchant(
+                        sharp.ToMutable(),
+                        card,
+                        context.Vars["GnarledHammerSharpAmount"].BaseValue);
+                    CardCmd.Preview(card, 1.2f, CardPreviewStyle.HorizontalLayout);
+                }
+
+                return;
+            }
+
+            case ErrorEffectId.E103_KifudaEnchantUpTo3Adroit3:
+            {
+                CardSelectorPrefs prefs = new(
+                    CardSelectorPrefs.EnchantSelectionPrompt,
+                    0,
+                    context.Vars["KifudaCards"].IntValue)
+                {
+                    Cancelable = false,
+                    RequireManualConfirmation = true
+                };
+
+                EnchantmentModel adroit = ModelDb.Enchantment<Adroit>();
+                IEnumerable<CardModel> selected =
+                    await CardSelectCmd.FromDeckForEnchantment(
+                        context.Owner,
+                        adroit,
+                        context.Vars["KifudaAdroitAmount"].IntValue,
+                        prefs);
+
+                foreach (CardModel card in selected)
+                {
+                    CardCmd.Enchant(
+                        adroit.ToMutable(),
+                        card,
+                        context.Vars["KifudaAdroitAmount"].BaseValue);
+                    CardCmd.Preview(card, 1.2f, CardPreviewStyle.HorizontalLayout);
+                }
+
+                return;
+            }
+
+            case ErrorEffectId.E104_PunchDaggerEnchant1Momentum5:
+            {
+                CardSelectorPrefs prefs = new(
+                    CardSelectorPrefs.EnchantSelectionPrompt,
+                    context.Vars["PunchDaggerCards"].IntValue);
+
+                EnchantmentModel momentum = ModelDb.Enchantment<Momentum>();
+                IEnumerable<CardModel> selected =
+                    await CardSelectCmd.FromDeckForEnchantment(
+                        context.Owner,
+                        momentum,
+                        context.Vars["PunchDaggerMomentum"].IntValue,
+                        prefs);
+
+                foreach (CardModel card in selected)
+                {
+                    CardCmd.Enchant(
+                        momentum.ToMutable(),
+                        card,
+                        context.Vars["PunchDaggerMomentum"].BaseValue);
+                    CardCmd.Preview(card, 1.2f, CardPreviewStyle.HorizontalLayout);
+                }
+
+                return;
+            }
+
+            case ErrorEffectId.E105_TriBoomerangEnchant3Instinct1:
+            {
+                CardSelectorPrefs prefs = new(
+                    CardSelectorPrefs.EnchantSelectionPrompt,
+                    context.Vars["TriBoomerangCards"].IntValue);
+
+                IEnumerable<CardModel> selected =
+                    await CardSelectCmd.FromDeckForEnchantment(
+                        context.Owner,
+                        ModelDb.Enchantment<Instinct>(),
+                        context.Vars["TriBoomerangInstinct"].IntValue,
+                        prefs);
+
+                foreach (CardModel card in selected)
+                {
+                    CardCmd.Enchant<Instinct>(
+                        card,
+                        context.Vars["TriBoomerangInstinct"].BaseValue);
+
+                    // Target TriBoomerang explicitly creates this enchant VFX
+                    // instead of using CardCmd.Preview.
+                    NCardEnchantVfx? vfx = NCardEnchantVfx.Create(card);
+                    if (vfx is not null && NRun.Instance is not null)
+                    {
+                        NRun.Instance.GlobalUi.CardPreviewContainer
+                            .AddChildSafely(vfx);
+                    }
+                }
+
+                return;
+            }
+
+            case ErrorEffectId.E106_OrreryOffer5CardRewards:
+            {
+                List<Reward> rewards = new();
+                CardCreationOptions options = new(
+                    new[] { context.Owner.Character.CardPool },
+                    CardCreationSource.Other,
+                    CardRarityOddsType.RegularEncounter,
+                    null);
+
+                int rewardCount = context.Vars["OrreryRewards"].IntValue;
+                int choices = context.Vars["OrreryChoicesPerReward"].IntValue;
+                for (int i = 0; i < rewardCount; ++i)
+                {
+                    rewards.Add(new CardReward(options, choices, context.Owner, null));
+                }
+
+                await RewardsCmd.OfferCustom(context.Owner, rewards);
+                return;
+            }
+
+            case ErrorEffectId.E107_GlassEyeOffer5RarityCardRewards:
+            {
+                // Target field RVA decodes to Common, Common,
+                // Uncommon, Uncommon, Rare in this exact order.
+                CardRarity[] rarities =
+                {
+                    CardRarity.Common,
+                    CardRarity.Common,
+                    CardRarity.Uncommon,
+                    CardRarity.Uncommon,
+                    CardRarity.Rare
+                };
+
+                List<Reward> rewards = new();
+                int choices = context.Vars["GlassEyeChoicesPerReward"].IntValue;
+
+                foreach (CardRarity rarity in rarities)
+                {
+                    CardCreationOptions options =
+                        CardCreationOptions.ForNonCombatWithUniformOdds(
+                                new[] { context.Owner.Character.CardPool },
+                                card => card.Rarity == rarity)
+                            .WithFlags(CardCreationFlags.NoRarityModification);
+
+                    rewards.Add(new CardReward(options, choices, context.Owner, null));
+                }
+
+                await RewardsCmd.OfferCustom(context.Owner, rewards);
+                return;
+            }
+
+            case ErrorEffectId.E108_SmallCapsuleOffer1RelicReward:
+                await RewardsCmd.OfferCustom(
+                    context.Owner,
+                    new List<Reward> { new RelicReward(context.Owner) });
+                return;
+
+            case ErrorEffectId.E109_ChoicesParadoxChoose1Of5RetainToHand:
+            {
+                // Some ERROR Hooks intentionally have no PlayerChoiceContext
+                // and use ThrowingPlayerChoiceContext. Do not defer or invent a
+                // later timing; in that invalid context this combination is a
+                // safe no-op rather than a crash/desync risk.
+                if (context.ChoiceContext is ThrowingPlayerChoiceContext)
+                    return;
+
+                List<CardModel> cards = CardFactory.GetDistinctForCombat(
+                        context.Owner,
+                        context.Owner.Character.CardPool.GetUnlockedCards(
+                            context.Owner.UnlockState,
+                            context.Owner.RunState.CardMultiplayerConstraint),
+                        context.Vars["ChoicesParadoxCards"].IntValue,
+                        context.Owner.RunState.Rng.CombatCardGeneration)
+                    .ToList();
+
+                // Vanilla has the same early-return intent: if no cards are
+                // generated, it reports a SoftlockException and returns.
+                if (cards.Count == 0)
+                    return;
+
+                foreach (CardModel card in cards)
+                    CardCmd.ApplyKeyword(card, new[] { CardKeyword.Retain });
+
+                LocString prompt = new(
+                    "relics",
+                    "CHOICES_PARADOX.selectionScreenPrompt");
+
+                IEnumerable<CardModel> selected = await CardSelectCmd.FromSimpleGrid(
+                    context.ChoiceContext,
+                    cards,
+                    context.Owner,
+                    new CardSelectorPrefs(
+                        prompt,
+                        context.Vars["ChoicesParadoxChoose"].IntValue));
+
+                foreach (CardModel card in selected)
+                {
+                    await CardPileCmd.AddGeneratedCardToCombat(
+                        card,
+                        PileType.Hand,
+                        context.Owner,
+                        CardPilePosition.Bottom);
+                }
+
+                return;
+            }
+
+            default:
+                break;
         }
     }
 
@@ -1482,6 +2137,51 @@ public static class ErrorEffectRegistry
             ErrorEffectId.E064_ApplyReptileTrinketPower3 => "gain Reptile Trinket's 3 Strength effect.",
             ErrorEffectId.E065_SelfDamage4Unblockable => "take 4 unblockable damage.",
 
+            ErrorEffectId.E066_ShurikenGainStrength1 => "gain 1 Strength.",
+            ErrorEffectId.E067_KunaiGainDexterity1 => "gain 1 Dexterity.",
+            ErrorEffectId.E068_LanternGainEnergy1 => "gain 1 Energy.",
+            ErrorEffectId.E069_VeryHotCocoaGainEnergy4 => "gain 4 Energy.",
+            ErrorEffectId.E070_StrawberryGainMaxHp7 => "gain 7 Max HP.",
+            ErrorEffectId.E071_PearGainMaxHp10 => "gain 10 Max HP.",
+            ErrorEffectId.E072_MangoGainMaxHp14 => "gain 14 Max HP.",
+            ErrorEffectId.E073_LoomingFruitGainMaxHp31 => "gain 31 Max HP.",
+            ErrorEffectId.E074_NutritiousOysterGainMaxHp11 => "gain 11 Max HP.",
+            ErrorEffectId.E075_GoldenPearlGainGold150 => "gain 150 Gold.",
+            ErrorEffectId.E076_SignetRingGainGold888 => "gain 888 Gold.",
+            ErrorEffectId.E077_IvoryTileGainEnergy1 => "gain 1 Energy.",
+            ErrorEffectId.E078_SaiGainBlock7 => "gain 7 Block.",
+            ErrorEffectId.E079_ChandelierGainEnergy3 => "gain 3 Energy.",
+            ErrorEffectId.E080_SwordOfJadeGainStrength3 => "gain 3 Strength.",
+            ErrorEffectId.E081_DaughterOfTheWindGainBlock4 => "gain 4 Block.",
+            ErrorEffectId.E082_LostWispDamageAllEnemies8 => "deal 8 damage to ALL enemies.",
+            ErrorEffectId.E083_CharonsAshesDamageAllEnemies3 => "deal 3 damage to ALL enemies.",
+            ErrorEffectId.E084_ForgottenSoulDamageRandomEnemy4WithBluntVfx => "play the blunt-hit VFX and deal 4 damage to a random enemy.",
+            ErrorEffectId.E085_IronClubDraw1 => "draw 1 card.",
+            ErrorEffectId.E086_BronzeScalesApplyThorns3 => "gain 3 Thorns.",
+            ErrorEffectId.E087_GorgetApplyPlating4 => "gain 4 Plating.",
+            ErrorEffectId.E088_HelicalDartApplyHelicalDartPower1 => "gain 1 Helical Dart temporary Dexterity.",
+            ErrorEffectId.E089_PermafrostGainBlock7 => "gain 7 Block.",
+            ErrorEffectId.E090_EmptyCageRemove2FromDeck => "choose 2 cards from your deck and remove them.",
+            ErrorEffectId.E091_PomanderUpgrade1FromDeck => "choose 1 card from your deck and upgrade it.",
+            ErrorEffectId.E092_BigHatAdd2RandomEtherealToHand => "create 2 different random Ethereal cards in your hand.",
+            ErrorEffectId.E093_OrangeDoughAdd2RandomColorlessToHand => "create 2 different random Colorless cards in your hand.",
+            ErrorEffectId.E094_RadiantPearlAdd1LuminesceToHand => "create 1 Luminesce in your hand.",
+            ErrorEffectId.E095_CrackedCoreChannel1Lightning => "Channel 1 Lightning.",
+            ErrorEffectId.E096_SymbioticVirusChannel1Dark => "Channel 1 Dark.",
+            ErrorEffectId.E097_CallingBellAddCurseOfTheBell => "add 1 Curse of the Bell to your deck.",
+            ErrorEffectId.E098_CallingBellOfferThreeRelicRewards => "offer a Common, Uncommon, and Rare relic reward.",
+            ErrorEffectId.E099_ToyBoxOfferFiveWaxRelics => "offer 5 Wax relics.",
+            ErrorEffectId.E100_ToyBoxMeltLeftmostWax => "melt the leftmost unmelted Wax relic.",
+
+            ErrorEffectId.E101_DollysMirrorDuplicate1NonQuestCard => "choose 1 non-Quest card in your deck, duplicate it, and add the copy to your deck.",
+            ErrorEffectId.E102_GnarledHammerEnchantUpTo3Sharp3 => "choose up to 3 cards and Enchant each with 3 Sharp.",
+            ErrorEffectId.E103_KifudaEnchantUpTo3Adroit3 => "choose up to 3 cards and Enchant each with 3 Adroit.",
+            ErrorEffectId.E104_PunchDaggerEnchant1Momentum5 => "choose 1 card and Enchant it with 5 Momentum.",
+            ErrorEffectId.E105_TriBoomerangEnchant3Instinct1 => "choose 3 cards and Enchant each with 1 Instinct.",
+            ErrorEffectId.E106_OrreryOffer5CardRewards => "offer 5 card rewards with 3 choices each.",
+            ErrorEffectId.E107_GlassEyeOffer5RarityCardRewards => "offer 5 card rewards: 2 Common, 2 Uncommon, and 1 Rare.",
+            ErrorEffectId.E108_SmallCapsuleOffer1RelicReward => "offer 1 random relic reward.",
+            ErrorEffectId.E109_ChoicesParadoxChoose1Of5RetainToHand => "generate 5 random character cards with Retain, choose 1, and add it to your hand.",
             _ => "do nothing."
         };
     }

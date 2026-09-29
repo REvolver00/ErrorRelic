@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -505,6 +505,50 @@ public static class ErrorHookRegistry
             ErrorHookId.H059_VictoryAtHalfHpMeatOnTheBone => "After victory if you are at 50% HP or less,",
             ErrorHookId.H060_AfterPotionUsedReptileTrinket => "After you use a Potion in combat,",
             ErrorHookId.H061_FirstTurnAfterPlayerTurnStartRoyalPoison => "At the start of your first turn,",
+
+            ErrorHookId.H062_Every3AttacksThisTurnShuriken => "Every 3 Attacks you play this turn,",
+            ErrorHookId.H063_Every3AttacksThisTurnKunai => "Every 3 Attacks you play this turn,",
+            ErrorHookId.H064_FirstTurnAfterSideTurnStartLantern => "At the start of your first turn,",
+            ErrorHookId.H065_FirstTurnAfterSideTurnStartVeryHotCocoa => "At the start of your first turn,",
+            ErrorHookId.H066_AfterObtainedStrawberry => "When obtained,",
+            ErrorHookId.H067_AfterObtainedPear => "When obtained,",
+            ErrorHookId.H068_AfterObtainedMango => "When obtained,",
+            ErrorHookId.H069_AfterObtainedLoomingFruit => "When obtained,",
+            ErrorHookId.H070_AfterObtainedNutritiousOyster => "When obtained,",
+            ErrorHookId.H071_AfterObtainedGoldenPearl => "When obtained,",
+            ErrorHookId.H072_AfterObtainedSignetRing => "When obtained,",
+            ErrorHookId.H073_PlayCardEnergy3PlusIvoryTile => "After you play a card using at least 3 Energy,",
+            ErrorHookId.H074_AfterSideTurnStartSai => "At the start of your side's turn,",
+            ErrorHookId.H075_Turn3AfterSideTurnStartChandelier => "At the start of turn 3,",
+            ErrorHookId.H076_EnterCombatSwordOfJade => "When entering a Combat room,",
+            ErrorHookId.H077_AttackCardPlayedDaughterOfTheWind => "After you play an Attack,",
+            ErrorHookId.H078_PowerCardPlayedLostWisp => "After you play a Power card,",
+            ErrorHookId.H079_CardExhaustedCharonsAshes => "After one of your cards is Exhausted,",
+            ErrorHookId.H080_CardExhaustedForgottenSoul => "After one of your cards is Exhausted,",
+            ErrorHookId.H081_Every4CardsPersistentIronClub => "Every 4 cards you play,",
+            ErrorHookId.H082_EnterCombatBronzeScales => "When entering a Combat room,",
+            ErrorHookId.H083_EnterCombatGorget => "When entering a Combat room,",
+            ErrorHookId.H084_ShivCardPlayedHelicalDart => "After you play a Shiv,",
+            ErrorHookId.H085_FirstPowerEachCombatPermafrost => "The first time you play a Power each combat,",
+            ErrorHookId.H086_AfterObtainedEmptyCage => "When obtained,",
+            ErrorHookId.H087_AfterObtainedDollysMirror => "When obtained,",
+            ErrorHookId.H088_AfterObtainedPomander => "When obtained,",
+            ErrorHookId.H089_AfterObtainedGnarledHammer => "When obtained,",
+            ErrorHookId.H090_AfterObtainedKifuda => "When obtained,",
+            ErrorHookId.H091_AfterObtainedPunchDagger => "When obtained,",
+            ErrorHookId.H092_AfterObtainedTriBoomerang => "When obtained,",
+            ErrorHookId.H093_FirstTurnAfterSideTurnStartBigHat => "At the start of your first turn,",
+            ErrorHookId.H094_FirstTurnAfterSideTurnStartOrangeDough => "At the start of your first turn,",
+            ErrorHookId.H095_FirstTurnBeforeHandDrawRadiantPearl => "Before drawing your opening hand,",
+            ErrorHookId.H096_FirstTurnBeforeSideTurnStartCrackedCore => "Before your first turn starts,",
+            ErrorHookId.H097_FirstTurnAfterSideTurnStartSymbioticVirus => "At the start of your first turn,",
+            ErrorHookId.H098_AfterObtainedOrrery => "When obtained,",
+            ErrorHookId.H099_AfterObtainedGlassEye => "When obtained,",
+            ErrorHookId.H100_AfterObtainedSmallCapsule => "When obtained,",
+            ErrorHookId.H101_FirstTurnAfterPlayerTurnStartChoicesParadox => "At the start of your first turn,",
+            ErrorHookId.H102_AfterObtainedCallingBell => "When obtained,",
+            ErrorHookId.H103_AfterObtainedToyBox => "When obtained,",
+            ErrorHookId.H104_Every3CombatsUpToFiveToyBox => "After every 3 combats, up to 5 times,",
 
             _ => "ERROR:"
         };

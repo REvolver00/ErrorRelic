@@ -1,4 +1,4 @@
-﻿public enum ErrorHookId
+public enum ErrorHookId
 {
     // =========================================================
     // H001
@@ -389,5 +389,53 @@
     H058_AfterCombatEndChosenCheese,
     H059_VictoryAtHalfHpMeatOnTheBone,
     H060_AfterPotionUsedReptileTrinket,
-    H061_FirstTurnAfterPlayerTurnStartRoyalPoison
+    H061_FirstTurnAfterPlayerTurnStartRoyalPoison,
+
+    // =========================================================
+    // H062-H104 expansion audited against the uploaded target sts2.dll.
+    // Duplicate native hook shapes remain independent source fragments.
+    // =========================================================
+    H062_Every3AttacksThisTurnShuriken,
+    H063_Every3AttacksThisTurnKunai,
+    H064_FirstTurnAfterSideTurnStartLantern,
+    H065_FirstTurnAfterSideTurnStartVeryHotCocoa,
+    H066_AfterObtainedStrawberry,
+    H067_AfterObtainedPear,
+    H068_AfterObtainedMango,
+    H069_AfterObtainedLoomingFruit,
+    H070_AfterObtainedNutritiousOyster,
+    H071_AfterObtainedGoldenPearl,
+    H072_AfterObtainedSignetRing,
+    H073_PlayCardEnergy3PlusIvoryTile,
+    H074_AfterSideTurnStartSai,
+    H075_Turn3AfterSideTurnStartChandelier,
+    H076_EnterCombatSwordOfJade,
+    H077_AttackCardPlayedDaughterOfTheWind,
+    H078_PowerCardPlayedLostWisp,
+    H079_CardExhaustedCharonsAshes,
+    H080_CardExhaustedForgottenSoul,
+    H081_Every4CardsPersistentIronClub,
+    H082_EnterCombatBronzeScales,
+    H083_EnterCombatGorget,
+    H084_ShivCardPlayedHelicalDart,
+    H085_FirstPowerEachCombatPermafrost,
+    H086_AfterObtainedEmptyCage,
+    H087_AfterObtainedDollysMirror,
+    H088_AfterObtainedPomander,
+    H089_AfterObtainedGnarledHammer,
+    H090_AfterObtainedKifuda,
+    H091_AfterObtainedPunchDagger,
+    H092_AfterObtainedTriBoomerang,
+    H093_FirstTurnAfterSideTurnStartBigHat,
+    H094_FirstTurnAfterSideTurnStartOrangeDough,
+    H095_FirstTurnBeforeHandDrawRadiantPearl,
+    H096_FirstTurnBeforeSideTurnStartCrackedCore,
+    H097_FirstTurnAfterSideTurnStartSymbioticVirus,
+    H098_AfterObtainedOrrery,
+    H099_AfterObtainedGlassEye,
+    H100_AfterObtainedSmallCapsule,
+    H101_FirstTurnAfterPlayerTurnStartChoicesParadox,
+    H102_AfterObtainedCallingBell,
+    H103_AfterObtainedToyBox,
+    H104_Every3CombatsUpToFiveToyBox
 }

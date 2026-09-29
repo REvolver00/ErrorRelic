@@ -1,4 +1,4 @@
-﻿namespace ErrorRelics.ErrorRelicsCode.Fragments;
+namespace ErrorRelics.ErrorRelicsCode.Fragments;
 
 public enum ErrorEffectId
 {
@@ -352,5 +352,56 @@ public enum ErrorEffectId
     E062_GainMaxHp1,
     E063_Heal12,
     E064_ApplyReptileTrinketPower3,
-    E065_SelfDamage4Unblockable
+    E065_SelfDamage4Unblockable,
+
+    // =========================================================
+    // H/E expansion audited against the uploaded target sts2.dll.
+    // E066-E100 preserve the source relic behavior and numbers.
+    // =========================================================
+    E066_ShurikenGainStrength1,
+    E067_KunaiGainDexterity1,
+    E068_LanternGainEnergy1,
+    E069_VeryHotCocoaGainEnergy4,
+    E070_StrawberryGainMaxHp7,
+    E071_PearGainMaxHp10,
+    E072_MangoGainMaxHp14,
+    E073_LoomingFruitGainMaxHp31,
+    E074_NutritiousOysterGainMaxHp11,
+    E075_GoldenPearlGainGold150,
+    E076_SignetRingGainGold888,
+    E077_IvoryTileGainEnergy1,
+    E078_SaiGainBlock7,
+    E079_ChandelierGainEnergy3,
+    E080_SwordOfJadeGainStrength3,
+    E081_DaughterOfTheWindGainBlock4,
+    E082_LostWispDamageAllEnemies8,
+    E083_CharonsAshesDamageAllEnemies3,
+    E084_ForgottenSoulDamageRandomEnemy4WithBluntVfx,
+    E085_IronClubDraw1,
+    E086_BronzeScalesApplyThorns3,
+    E087_GorgetApplyPlating4,
+    E088_HelicalDartApplyHelicalDartPower1,
+    E089_PermafrostGainBlock7,
+    E090_EmptyCageRemove2FromDeck,
+    E091_PomanderUpgrade1FromDeck,
+    E092_BigHatAdd2RandomEtherealToHand,
+    E093_OrangeDoughAdd2RandomColorlessToHand,
+    E094_RadiantPearlAdd1LuminesceToHand,
+    E095_CrackedCoreChannel1Lightning,
+    E096_SymbioticVirusChannel1Dark,
+    E097_CallingBellAddCurseOfTheBell,
+    E098_CallingBellOfferThreeRelicRewards,
+    E099_ToyBoxOfferFiveWaxRelics,
+    E100_ToyBoxMeltLeftmostWax,
+
+    // Additional faithful fragments from the same v0.111.0 audit batch.
+    E101_DollysMirrorDuplicate1NonQuestCard,
+    E102_GnarledHammerEnchantUpTo3Sharp3,
+    E103_KifudaEnchantUpTo3Adroit3,
+    E104_PunchDaggerEnchant1Momentum5,
+    E105_TriBoomerangEnchant3Instinct1,
+    E106_OrreryOffer5CardRewards,
+    E107_GlassEyeOffer5RarityCardRewards,
+    E108_SmallCapsuleOffer1RelicReward,
+    E109_ChoicesParadoxChoose1Of5RetainToHand
 }

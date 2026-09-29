@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 
 using MegaCrit.Sts2.Core.Combat;
 
@@ -167,6 +167,37 @@ public static class ErrorExecutionCompatibility
             ErrorEffectId.E061_Create3ShivsInHand => true,
             ErrorEffectId.E064_ApplyReptileTrinketPower3 => true,
             ErrorEffectId.E065_SelfDamage4Unblockable => true,
+
+            // E066-E100 target v0.111.0 expansion.
+            // Only effects that require an active CombatState are guarded here.
+            ErrorEffectId.E066_ShurikenGainStrength1 => true,
+            ErrorEffectId.E067_KunaiGainDexterity1 => true,
+            ErrorEffectId.E068_LanternGainEnergy1 => true,
+            ErrorEffectId.E069_VeryHotCocoaGainEnergy4 => true,
+            ErrorEffectId.E077_IvoryTileGainEnergy1 => true,
+            ErrorEffectId.E078_SaiGainBlock7 => true,
+            ErrorEffectId.E079_ChandelierGainEnergy3 => true,
+            ErrorEffectId.E080_SwordOfJadeGainStrength3 => true,
+            ErrorEffectId.E081_DaughterOfTheWindGainBlock4 => true,
+            ErrorEffectId.E082_LostWispDamageAllEnemies8 => true,
+            ErrorEffectId.E083_CharonsAshesDamageAllEnemies3 => true,
+            ErrorEffectId.E084_ForgottenSoulDamageRandomEnemy4WithBluntVfx => true,
+            ErrorEffectId.E085_IronClubDraw1 => true,
+            ErrorEffectId.E086_BronzeScalesApplyThorns3 => true,
+            ErrorEffectId.E087_GorgetApplyPlating4 => true,
+            ErrorEffectId.E088_HelicalDartApplyHelicalDartPower1 => true,
+            ErrorEffectId.E089_PermafrostGainBlock7 => true,
+            ErrorEffectId.E092_BigHatAdd2RandomEtherealToHand => true,
+            ErrorEffectId.E093_OrangeDoughAdd2RandomColorlessToHand => true,
+            ErrorEffectId.E094_RadiantPearlAdd1LuminesceToHand => true,
+            ErrorEffectId.E095_CrackedCoreChannel1Lightning => true,
+            ErrorEffectId.E096_SymbioticVirusChannel1Dark => true,
+
+            // E109 uses CombatCardGeneration + hand insertion + combat choice UI.
+            // Deck selectors and reward screens E101-E108 are intentionally
+            // allowed both in and out of combat, matching their self-contained
+            // vanilla flows.
+            ErrorEffectId.E109_ChoicesParadoxChoose1Of5RetainToHand => true,
 
             _ => false
         };
