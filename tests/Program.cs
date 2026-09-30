@@ -46,7 +46,7 @@ internal static class Program
                   && left.EffectId != ErrorEffectId.E007_Choose1Of3ColorlessToHand, "Disabled effects must stay excluded");
             seenH.Add(left.HookId); seenE.Add(left.EffectId);
         }
-        Check(seenH.Count == 61 && seenE.Count == 63, "All active fragments remain reachable");
+        Check(seenH.Count == 104 && seenE.Count == 107, "All 104 hooks and 107 active effects remain reachable");
         Check((int)ErrorEffectId.E010_Add2RandomCurses == 8 && (int)ErrorEffectId.E009_Enchant1CardRoyallyApproved == 9,
             "Historical enum storage order must not change");
         foreach (var h in Enum.GetValues<ErrorHookId>())
