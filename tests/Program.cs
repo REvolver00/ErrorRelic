@@ -102,6 +102,7 @@ internal static class Program
         original.GeneratedHookId = ErrorHookId.H021_Every3TurnsHappyFlower;
         original.GeneratedEffectId = ErrorEffectId.E010_Add2RandomCurses;
         original.DefinitionLocked = true;
+        original.EffectExecutions = 17;
         original.TurnsSeen = 2;
         original.NunchakuAttacksPlayed = 9;
         original.TuningForkSkillsPlayed = 8;
@@ -120,6 +121,14 @@ internal static class Program
         Check(restored.DefinitionLocked && restored.TurnsSeen == 2 && restored.JossPaperCardsExhausted == 4
             && restored.NunchakuAttacksPlayed == 9 && restored.TuningForkSkillsPlayed == 8,
             "Save restore must keep locking and persistent counters");
+        Check(restored.EffectExecutions == 17, "Network reconstruction must preserve the effect RNG ordinal");
+        var jsonOptions = new System.Text.Json.JsonSerializerOptions { IncludeFields = true };
+        string propsJson = System.Text.Json.JsonSerializer.Serialize(original.ToSerializable().Props, jsonOptions);
+        var diskProps = System.Text.Json.JsonSerializer.Deserialize<SavedProperties>(propsJson, jsonOptions)!;
+        var diskRestored = (ErrorRandomTestRelic)ModelDb.Relic<ErrorRandomTestRelic>().ToMutable();
+        diskProps.Fill(diskRestored);
+        Check(diskRestored.GeneratedHookId == original.GeneratedHookId && diskRestored.GeneratedEffectId == original.GeneratedEffectId
+            && diskRestored.DefinitionLocked && diskRestored.EffectExecutions == 17, "JSON save must retain H/E, lock and effect RNG ordinal");
         Check(restored.VisualSourceIconPath == "res://test.png", "Save restore must preserve source icon");
         Check(original.FullDescription == restored.FullDescription, "Description must survive reconstruction");
         var localOwner = (MegaCrit.Sts2.Core.Entities.Players.Player)

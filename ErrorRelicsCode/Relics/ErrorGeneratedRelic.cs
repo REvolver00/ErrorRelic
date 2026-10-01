@@ -17,6 +17,8 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Map;
+using MegaCrit.Sts2.Core.Nodes;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
@@ -365,6 +367,23 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
         set { AssertMutable(); _tuningForkSkillsPlayed = value; }
     }
 
+    [SavedProperty]
+    public int EffectExecutions { get; set; }
+
+    private ErrorContext CreateErrorContext(
+        Player owner, PlayerChoiceContext choiceContext, DynamicVarSet vars,
+        CardPlay? cardPlay = null)
+    {
+        // Reserve before any UI await. Each relic has its own saved sequence,
+        // so other players' asynchronous choices cannot consume this stream.
+        int execution = EffectExecutions++;
+        string key = System.FormattableString.Invariant(
+            $"ErrorRelicsEffect|{owner.RunState.TotalFloor}|{owner.Relics.ToList().IndexOf(this)}|{(int)HookId}|{(int)EffectId}|{execution}");
+        var rng = new MegaCrit.Sts2.Core.Random.Rng(owner, Id,
+            StringHelper.GetDeterministicHashCode(key));
+        return new ErrorContext(owner, choiceContext, vars, cardPlay, rng);
+    }
+
     private async Task ExecuteExpandedEffect(
         PlayerChoiceContext choiceContext,
         CardPlay? cardPlay = null)
@@ -373,7 +392,7 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
         if (owner is null) return;
         await ErrorExecutionCompatibility.ExecuteAsync(
             HookId, EffectId,
-            new ErrorContext(owner, choiceContext, DynamicVars, cardPlay));
+            CreateErrorContext(owner, choiceContext, DynamicVars, cardPlay));
     }
 
 
@@ -767,7 +786,7 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
         Flash();
 
-        var context = new ErrorContext(
+        var context = CreateErrorContext(
             owner,
             choiceContext,
             DynamicVars,
@@ -870,7 +889,7 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
         Flash();
 
-        var context = new ErrorContext(
+        var context = CreateErrorContext(
             owner,
             new ThrowingPlayerChoiceContext(),
             DynamicVars
@@ -949,9 +968,20 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
                 room))
             return;
 
+        // Room entry awaits this hook before its normal fade-in. E008 waits
+        // for a deck selection, which would otherwise sit under an opaque,
+        // input-blocking transition forever. Reveal this room before selecting;
+        // keep the effect awaited here, in the same room and hook order.
+        if (HookId == ErrorHookId.H031_EnterFirstUnknownRoomPlanisphere
+            && EffectId == ErrorEffectId.E008_Transform3AndUpgrade
+            && NGame.Instance?.Transition.InTransition == true)
+        {
+            await RunManager.Instance.FadeIn();
+        }
+
         Flash();
 
-        var context = new ErrorContext(
+        var context = CreateErrorContext(
             owner,
             new ThrowingPlayerChoiceContext(),
             DynamicVars
@@ -1022,7 +1052,7 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
             );
 
             var pendulumContext =
-                new ErrorContext(
+                CreateErrorContext(
                     owner,
                     choiceContext,
                     DynamicVars
@@ -1059,7 +1089,7 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
         Flash();
 
-        var context = new ErrorContext(
+        var context = CreateErrorContext(
             owner,
             choiceContext,
             DynamicVars
@@ -1158,7 +1188,7 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
             // Happy Flower 原版 Hook 没有 PlayerChoiceContext。
             var happyFlowerContext =
-                new ErrorContext(
+                CreateErrorContext(
                     owner,
                     new ThrowingPlayerChoiceContext(),
                     DynamicVars
@@ -1197,7 +1227,7 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
             Flash();
 
             var candelabraContext =
-                new ErrorContext(
+                CreateErrorContext(
                     owner,
                     new ThrowingPlayerChoiceContext(),
                     DynamicVars
@@ -1285,7 +1315,7 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
         );
 
         var context =
-            new ErrorContext(
+            CreateErrorContext(
                 owner,
                 choiceContext,
                 DynamicVars
@@ -1384,7 +1414,7 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
         Flash();
 
         var context =
-            new ErrorContext(
+            CreateErrorContext(
                 owner,
                 new ThrowingPlayerChoiceContext(),
                 DynamicVars
@@ -1548,7 +1578,7 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
             return;
 
         var context =
-            new ErrorContext(
+            CreateErrorContext(
                 owner,
                 choiceContext,
                 DynamicVars
@@ -1603,7 +1633,7 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
         Flash();
 
-        var context = new ErrorContext(
+        var context = CreateErrorContext(
             owner,
             new ThrowingPlayerChoiceContext(),
             DynamicVars,
@@ -1670,7 +1700,7 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
         Flash();
 
-        var context = new ErrorContext(
+        var context = CreateErrorContext(
             owner,
             choiceContext,
             DynamicVars

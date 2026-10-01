@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 
 using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Nodes;
+using MegaCrit.Sts2.Core.Runs;
 
 namespace ErrorRelics.ErrorRelicsCode.Fragments;
 
@@ -83,6 +85,23 @@ public static class ErrorExecutionCompatibility
             && RequiresActiveCombat(effectId))
         {
             return;
+        }
+
+        // Room-entry hooks are awaited before the normal fade-in. Reveal E101's
+        // selector here; combat-loop hooks run alongside that fade-in and must
+        // not start a competing tween that cancels it.
+        if (effectId == ErrorEffectId.E101_DollysMirrorDuplicate1NonQuestCard
+            && (hookId is ErrorHookId.H001_EnterCombat
+                or ErrorHookId.H025_EnterCombatOddlySmoothStone
+                or ErrorHookId.H029_EnterMerchantMealTicket
+                or ErrorHookId.H031_EnterFirstUnknownRoomPlanisphere
+                or ErrorHookId.H049_EnterCombatDataDisk
+                or ErrorHookId.H076_EnterCombatSwordOfJade
+                or ErrorHookId.H082_EnterCombatBronzeScales
+                or ErrorHookId.H083_EnterCombatGorget)
+            && NGame.Instance?.Transition.InTransition == true)
+        {
+            await RunManager.Instance.FadeIn();
         }
 
         await ErrorEffectRegistry.ExecuteAsync(

@@ -1,4 +1,5 @@
-﻿using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Random;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
@@ -11,7 +12,7 @@ public sealed class ErrorContext
         Player owner,
         PlayerChoiceContext choiceContext,
         DynamicVarSet vars,
-        CardPlay? cardPlay = null)
+        CardPlay? cardPlay = null, Rng? nicheRng = null)
     {
         Owner = owner;
         ChoiceContext = choiceContext;
@@ -22,7 +23,11 @@ public sealed class ErrorContext
         Gold = vars.Gold;
 
         CardPlay = cardPlay;
+        NicheRng = nicheRng;
     }
+
+    // Production relics supply an isolated, replayable stream.
+    public Rng? NicheRng { get; }
 
     public Player Owner { get; }
 

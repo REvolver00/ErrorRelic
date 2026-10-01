@@ -94,7 +94,9 @@ public static class MultiplayerSmokeDriver
     private static bool ChestFixture(string sourceKey, ref ErrorDefinition __result)
     {
         if (sourceKey != "treasure") return true;
-        __result = new ErrorDefinition(ErrorHookId.H002_PlayerTurnStart, ErrorEffectId.E001_GainStrength1);
+        __result = _single
+            ? new ErrorDefinition(ErrorHookId.H061_FirstTurnAfterPlayerTurnStartRoyalPoison, ErrorEffectId.E033_GainMaxHp20)
+            : new ErrorDefinition(ErrorHookId.H002_PlayerTurnStart, ErrorEffectId.E001_GainStrength1);
         return false;
     }
 

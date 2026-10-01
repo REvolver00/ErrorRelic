@@ -345,7 +345,7 @@ public static class ErrorEffectRegistry
                         CardFactory.CreateRandomCardForTransform(
                             original,
                             false,
-                            context.Owner.RunState.Rng.Niche
+                            (context.NicheRng ?? context.Owner.RunState.Rng.Niche)
                         );
 
                     CardCmd.Upgrade(
@@ -370,7 +370,7 @@ public static class ErrorEffectRegistry
             //
             // 1. 获取 RoyallyApproved Enchantment
             // 2. 找出牌组中所有可以被它附魔的牌
-            // 3. 使用 Niche RNG 执行 UnstableShuffle
+            // 3. 按原版选牌接口恢复牌组顺序，避免无作用的随机消耗
             // 4. 弹出 EnchantSelectionPrompt，选择 1 张
             // 5. CardCmd.Enchant<RoyallyApproved>(card, 1M)
             // 6. 创建 NCardEnchantVfx
@@ -402,11 +402,7 @@ public static class ErrorEffectRegistry
                 CardModel? card =
                     (
                         await CardSelectCmd.FromDeckForEnchantment(
-                            cards
-                                .UnstableShuffle(
-                                    context.Owner.RunState.Rng.Niche
-                                )
-                                .ToList(),
+                            cards,
                             royalStamp,
                             1,
                             prefs
@@ -414,7 +410,8 @@ public static class ErrorEffectRegistry
                     )
                     .FirstOrDefault();
 
-                if (card == null)
+                if (card == null || card.Owner != context.Owner
+                    || card.Pile?.Type != PileType.Deck || !royalStamp.CanEnchant(card))
                     break;
 
                 CardCmd.Enchant<RoyallyApproved>(
@@ -473,7 +470,7 @@ public static class ErrorEffectRegistry
                 for (int i = 0; i < 2; ++i)
                 {
                     CardModel canonicalCard =
-                        context.Owner.RunState.Rng.Niche
+                        (context.NicheRng ?? context.Owner.RunState.Rng.Niche)
                             .NextItem<CardModel>(
                                 availableCurses
                             );
@@ -590,12 +587,9 @@ public static class ErrorEffectRegistry
 
                         if (instance != null)
                         {
-                            instance
-                                .GlobalUi
-                                .CardPreviewContainer
-                                .AddChildSafely(
-                                    NCardEnchantVfx.Create(card)
-                                );
+                            NCardEnchantVfx? vfx = NCardEnchantVfx.Create(card);
+                            if (vfx != null)
+                                instance.GlobalUi.CardPreviewContainer.AddChildSafely(vfx);
                         }
                     }
                 }
@@ -625,7 +619,7 @@ public static class ErrorEffectRegistry
                         )
                         .ToList<CardModel>()
                         .StableShuffle(
-                            context.Owner.RunState.Rng.Niche
+                            (context.NicheRng ?? context.Owner.RunState.Rng.Niche)
                         )
                         .Take(6);
 
@@ -673,7 +667,7 @@ public static class ErrorEffectRegistry
                         )
                         .ToList<CardModel>()
                         .StableShuffle(
-                            context.Owner.RunState.Rng.Niche
+                            (context.NicheRng ?? context.Owner.RunState.Rng.Niche)
                         )
                         .Take(2);
 
@@ -711,7 +705,7 @@ public static class ErrorEffectRegistry
                         )
                         .ToList<CardModel>()
                         .StableShuffle(
-                            context.Owner.RunState.Rng.Niche
+                            (context.NicheRng ?? context.Owner.RunState.Rng.Niche)
                         )
                         .Take(2);
 
@@ -1684,9 +1678,7 @@ public static class ErrorEffectRegistry
                     new RelicReward(RelicRarity.Rare, context.Owner)
                 };
 
-                await RewardsCmd.OfferCustom(
-                    context.Owner,
-                    rewards);
+                await OfferCustomRewards(context, rewards);
                 return;
             }
 
@@ -1705,9 +1697,7 @@ public static class ErrorEffectRegistry
                     rewards.Add(new RelicReward(relic, context.Owner));
                 }
 
-                await RewardsCmd.OfferCustom(
-                    context.Owner,
-                    rewards);
+                await OfferCustomRewards(context, rewards);
                 return;
             }
 
@@ -1786,6 +1776,8 @@ public static class ErrorEffectRegistry
 
                 foreach (CardModel card in selected)
                 {
+                    if (card.Owner != context.Owner || card.Pile?.Type != PileType.Deck
+                        || !sharp.CanEnchant(card)) continue;
                     CardCmd.Enchant(
                         sharp.ToMutable(),
                         card,
@@ -1817,6 +1809,8 @@ public static class ErrorEffectRegistry
 
                 foreach (CardModel card in selected)
                 {
+                    if (card.Owner != context.Owner || card.Pile?.Type != PileType.Deck
+                        || !adroit.CanEnchant(card)) continue;
                     CardCmd.Enchant(
                         adroit.ToMutable(),
                         card,
@@ -1843,6 +1837,8 @@ public static class ErrorEffectRegistry
 
                 foreach (CardModel card in selected)
                 {
+                    if (card.Owner != context.Owner || card.Pile?.Type != PileType.Deck
+                        || !momentum.CanEnchant(card)) continue;
                     CardCmd.Enchant(
                         momentum.ToMutable(),
                         card,
@@ -1868,6 +1864,8 @@ public static class ErrorEffectRegistry
 
                 foreach (CardModel card in selected)
                 {
+                    if (card.Owner != context.Owner || card.Pile?.Type != PileType.Deck
+                        || !ModelDb.Enchantment<Instinct>().CanEnchant(card)) continue;
                     CardCmd.Enchant<Instinct>(
                         card,
                         context.Vars["TriBoomerangInstinct"].BaseValue);
@@ -1901,7 +1899,7 @@ public static class ErrorEffectRegistry
                     rewards.Add(new CardReward(options, choices, context.Owner, null));
                 }
 
-                await RewardsCmd.OfferCustom(context.Owner, rewards);
+                await OfferCustomRewards(context, rewards);
                 return;
             }
 
@@ -1932,13 +1930,13 @@ public static class ErrorEffectRegistry
                     rewards.Add(new CardReward(options, choices, context.Owner, null));
                 }
 
-                await RewardsCmd.OfferCustom(context.Owner, rewards);
+                await OfferCustomRewards(context, rewards);
                 return;
             }
 
             case ErrorEffectId.E108_SmallCapsuleOffer1RelicReward:
-                await RewardsCmd.OfferCustom(
-                    context.Owner,
+                await OfferCustomRewards(
+                    context,
                     new List<Reward> { new RelicReward(context.Owner) });
                 return;
 
@@ -1997,6 +1995,25 @@ public static class ErrorEffectRegistry
         }
     }
 
+
+    private static async Task OfferCustomRewards(
+        ErrorContext context,
+        List<Reward> rewards)
+    {
+        var manager = RunManager.Instance;
+        var location = context.Owner.RunState.RunLocation;
+        if (!manager.RunLocationTargetedBuffer.CurrentLocation.Equals(location))
+        {
+            manager.RunLocationTargetedBuffer.OnLocationChanged(location);
+        }
+
+        if (NGame.Instance?.Transition.InTransition == true)
+        {
+            await manager.FadeIn();
+        }
+
+        await RewardsCmd.OfferCustom(context.Owner, rewards);
+    }
 
     // =========================================================
     // 自动描述

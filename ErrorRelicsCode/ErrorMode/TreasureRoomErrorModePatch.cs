@@ -157,7 +157,7 @@ public static class TreasureRoomBeginErrorPatch
         }
 
         ErrorDefinition generated =
-            ErrorGenerator.Generate();
+            ErrorGenerator.Generate(localPlayer, source.Id, "treasure");
 
         errorRelic.GeneratedHookId =
             generated.HookId;

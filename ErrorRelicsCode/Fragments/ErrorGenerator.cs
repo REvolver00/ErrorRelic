@@ -14,17 +14,14 @@ public static class ErrorGenerator
         .Where(e => e != ErrorEffectId.E002_UpgradePlayedCard
                  && e != ErrorEffectId.E007_Choose1Of3ColorlessToHand).ToArray();
 
-    // Keep the released singleplayer random pool and probabilities.
+    // Ownerless generation is reserved for debug callers.
     public static ErrorDefinition Generate() => new(
         Hooks[Random.Shared.Next(Hooks.Length)],
         Effects[Random.Shared.Next(Effects.Length)]);
 
     public static ErrorDefinition Generate(Player owner, ModelId sourceId, string sourceKey)
     {
-        if (owner.RunState.Players.Count == 1)
-            return Generate();
-
-        // Use the game's content RNG: run seed + player slot + source model.
+        // Singleplayer and multiplayer use the same replayable content RNG.
         // Preview rebuilds must not advance shared combat/reward RNG streams.
         // The source key distinguishes the room and obtaining path on every peer.
         string key = FormattableString.Invariant($"ErrorRelics|{owner.RunState.TotalFloor}|{sourceKey}");
