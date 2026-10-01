@@ -1,440 +1,259 @@
-﻿using System;
-
+using System;
 using ErrorRelics.ErrorRelicsCode.Relics;
-
 using Godot;
-
 using HarmonyLib;
-
-using MegaCrit.Sts2.Core.Assets;
-using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Relics;
 using MegaCrit.Sts2.Core.Rewards;
 
 namespace ErrorRelics.ErrorRelicsCode.Visuals;
 
-
-// =============================================================
-// VISUAL2
-//
-// UI-ONLY.
-//
-// No RelicModel icon getter patches.
-// No image generation.
-// No RelicCmd / RelicFactory changes.
-//
-// The stable ERROR model keeps its original relic.png internally.
-// Only after a UI node has loaded normally do we:
-// 1. replace that TextureRect's displayed texture with the vanilla
-//    relic that this ERROR replaced;
-// 2. apply deterministic "wrong" presentation:
-//    - horizontal / vertical flip
-//    - 90/180/270 degree rotation sometimes
-//    - mild size error
-//    - color tint / brightness error
-//
-// Because the parameters are derived from saved source path + H/E,
-// save/load produces the same visual without another saved seed.
-// =============================================================
-
 internal readonly struct ErrorVisualParameters
 {
-    public ErrorVisualParameters(
-        bool flipH,
-        bool flipV,
-        float rotationDegrees,
-        float scale,
-        Color tint)
+    public ErrorVisualParameters(bool flipH, bool flipV, Color tint, float seed)
     {
         FlipH = flipH;
         FlipV = flipV;
-        RotationDegrees = rotationDegrees;
-        Scale = scale;
         Tint = tint;
+        Seed = seed;
     }
 
     public bool FlipH { get; }
-
     public bool FlipV { get; }
-
-    public float RotationDegrees { get; }
-
-    public float Scale { get; }
-
     public Color Tint { get; }
+    public float Seed { get; }
 
-
-    public static ErrorVisualParameters From(
-        ErrorRandomTestRelic relic)
+    public static ErrorVisualParameters From(ErrorRandomTestRelic relic)
     {
-        int seed =
-            StableHash(
-                relic.VisualSourceIconPath
-                + "|"
-                + relic.GeneratedHookId
-                + "|"
-                + relic.GeneratedEffectId
-            );
+        int hash = StableHash(
+            relic.VisualSourceIconPath + "|" +
+            relic.GeneratedHookId + "|" +
+            relic.GeneratedEffectId);
 
-        Random random =
-            new(seed);
+        var random = new Random(hash);
+        bool flipH = random.NextDouble() < 0.55;
+        bool flipV = random.NextDouble() < 0.28;
+        float red = 0.62f + (float)random.NextDouble() * 0.48f;
+        float green = 0.62f + (float)random.NextDouble() * 0.48f;
+        float blue = 0.62f + (float)random.NextDouble() * 0.48f;
+        if (Math.Abs(red-green) < .05f && Math.Abs(green-blue) < .05f)
+            blue *= .72f;
 
-        bool flipH =
-            random.NextDouble()
-            < 0.55;
-
-        bool flipV =
-            random.NextDouble()
-            < 0.28;
-
-        float rotation =
-            0f;
-
-        if (random.NextDouble() < 0.46)
-        {
-            int turn =
-                random.Next(
-                    1,
-                    4
-                );
-
-            rotation =
-                90f * turn;
-        }
-
-        float scale =
-            0.88f
-            + (float) random.NextDouble()
-            * 0.22f;
-
-        // Medium-strength tint. Keep alpha at 1 so silhouettes and
-        // hit testing are unaffected.
-        float red =
-            0.62f
-            + (float) random.NextDouble()
-            * 0.48f;
-
-        float green =
-            0.62f
-            + (float) random.NextDouble()
-            * 0.48f;
-
-        float blue =
-            0.62f
-            + (float) random.NextDouble()
-            * 0.48f;
-
-        // Guarantee visible color error when random channels happen
-        // to be too close to white.
-        if (Math.Abs(red - green) < 0.05f
-            && Math.Abs(green - blue) < 0.05f)
-        {
-            blue *= 0.72f;
-        }
-
-        return new ErrorVisualParameters(
-            flipH,
-            flipV,
-            rotation,
-            scale,
-            new Color(
-                red,
-                green,
-                blue,
-                1f
-            )
-        );
+        float seed = ((uint)hash & 0x00ffffffu) / 16777215f;
+        return new ErrorVisualParameters(flipH, flipV, new Color(red,green,blue,1f), seed);
     }
 
-
-    private static int StableHash(
-        string value)
+    private static int StableHash(string value)
     {
         unchecked
         {
-            uint hash =
-                2166136261u;
-
-            foreach (char c in value)
-            {
-                hash ^= c;
-                hash *= 16777619u;
-            }
-
-            return (int) hash;
+            uint h = 2166136261u;
+            foreach (char c in value) { h ^= c; h *= 16777619u; }
+            return (int)h;
         }
     }
 }
-
 
 internal static class ErrorVisualUi
 {
-    public static Texture2D? LoadSmall(
-        ErrorRandomTestRelic relic)
-    {
-        if (string.IsNullOrEmpty(
-                relic.VisualSourceIconPath))
-        {
-            return null;
-        }
+    private static Shader? _shader;
 
-        try
-        {
-            return ResourceLoader.Load<Texture2D>(
-                relic.VisualSourceIconPath
-            );
-        }
-        catch
-        {
-            return null;
-        }
+    private const string ShaderCode = """
+shader_type canvas_item;
+uniform float error_seed = 0.0;
+
+float h(float p) {
+    p = fract(p * 0.1031);
+    p *= p + 33.33;
+    p *= p + p;
+    return fract(p);
+}
+
+void fragment() {
+    vec2 uv = UV;
+
+    float band = floor(uv.y * 12.0);
+    float br = h(band + error_seed * 997.0);
+    if (br > 0.67)
+        uv.x = fract(uv.x + (br - 0.67) * 0.48);
+
+    vec2 cell = floor(uv * 3.0);
+    float tr = h(cell.x + cell.y * 11.0 + error_seed * 431.0);
+    if (tr > 0.79)
+        uv.x = fract(uv.x + 0.3333333 * (tr > 0.90 ? -1.0 : 1.0));
+
+    vec4 c = texture(TEXTURE, uv);
+
+    vec2 block = floor(UV * vec2(14.0, 14.0));
+    float gr = h(block.x + block.y * 23.0 + error_seed * 733.0);
+    if (gr > 0.955 && c.a > 0.04) {
+        vec3 noise = vec3(h(gr+1.0), h(gr+2.0), h(gr+3.0));
+        c.rgb = mix(c.rgb, noise, 0.90);
     }
 
+    COLOR = c * COLOR;
+}
+""";
 
-    public static Texture2D? LoadOutline(
-        ErrorRandomTestRelic relic)
+    private static Texture2D? Load(string path, bool preload)
     {
-        if (string.IsNullOrEmpty(
-                relic.VisualSourceOutlinePath))
-        {
-            return null;
-        }
-
+        if (string.IsNullOrEmpty(path)) return null;
         try
         {
-            return ResourceLoader.Load<Texture2D>(
-                relic.VisualSourceOutlinePath
-            );
+            // ERROR visuals may come from vanilla resources or this mod's PCK.
+            // ResourceLoader handles both. PreloadManager.Cache is only a cache
+            // and emits "Asset not cached" for valid mod-owned resources.
+            return ResourceLoader.Load<Texture2D>(path);
         }
-        catch
-        {
-            return null;
-        }
+        catch { return null; }
     }
 
-
-    public static Texture2D? LoadBig(
-        ErrorRandomTestRelic relic)
-    {
-        if (string.IsNullOrEmpty(
-                relic.VisualSourceBigIconPath))
-        {
-            return null;
-        }
-
-        try
-        {
-            return PreloadManager.Cache.GetTexture2D(
-                relic.VisualSourceBigIconPath
-            );
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
-
-    public static void Apply(
+    // This is deliberately the ONE appearance function used by both reward
+    // preview and inventory NRelic. No partial inventory-only styling.
+    public static void ApplyFullAppearance(
         TextureRect icon,
         TextureRect? outline,
-        ErrorRandomTestRelic relic)
+        ErrorRandomTestRelic relic,
+        bool useBigSource)
     {
-        ErrorVisualParameters visual =
-            ErrorVisualParameters.From(
-                relic
-            );
+        // 1) Explicitly restore the same source identity every time a UI node
+        // is rebuilt. This prevents NRelic.Reload from leaving the NOPE asset.
+        Texture2D? source = useBigSource
+            ? Load(relic.VisualSourceBigIconPath, true)
+            : Load(relic.VisualSourceIconPath, false);
 
-        ApplyTransform(
-            icon,
-            visual,
-            true
-        );
+        if (source == null && useBigSource)
+            source = Load(relic.VisualSourceIconPath, false);
 
-        if (outline != null
-            && outline.Visible)
+        if (source != null)
+            icon.Texture = source;
+
+        if (outline != null)
         {
-            ApplyTransform(
-                outline,
-                visual,
-                false
-            );
+            Texture2D? sourceOutline = Load(relic.VisualSourceOutlinePath, false);
+            if (sourceOutline != null)
+                outline.Texture = sourceOutline;
         }
-    }
 
+        // 2) Exact same deterministic transforms/material on every path.
+        var v = ErrorVisualParameters.From(relic);
 
-    private static void ApplyTransform(
-        TextureRect texture,
-        ErrorVisualParameters visual,
-        bool applyTint)
-    {
-        // VISUAL2.1:
-        // This node is presentation only. Never let the transformed
-        // TextureRect consume input that belongs to the relic holder.
-        texture.MouseFilter =
-            Control.MouseFilterEnum.Ignore;
+        icon.MouseFilter = Control.MouseFilterEnum.Ignore;
+        icon.FlipH = v.FlipH;
+        icon.FlipV = v.FlipV;
+        icon.RotationDegrees = 0f;
+        icon.Scale = Vector2.One;
+        icon.SelfModulate = v.Tint;
 
-        // Keep only transforms that do NOT move the Control's hit area.
-        // Rotation/Scale on a Godot Control can make the visible relic
-        // drift away from the merchant holder's actual click rectangle.
-        texture.FlipH =
-            visual.FlipH;
-
-        texture.FlipV =
-            visual.FlipV;
-
-        texture.RotationDegrees =
-            0f;
-
-        texture.Scale =
-            Vector2.One;
-
-        texture.SelfModulate =
-            applyTint
-                ? visual.Tint
-                : Colors.White;
-    }
-}
-
-
-// -------------------------------------------------------------
-// Most relic visuals: inventory, shop, treasure, etc.
-// -------------------------------------------------------------
-
-[HarmonyPatch(
-    typeof(NRelic),
-    "Reload"
-)]
-public static class NRelicErrorVisualPatch
-{
-    [HarmonyPostfix]
-    public static void Postfix(
-        NRelic __instance)
-    {
         try
         {
-            if (__instance.Model
-                is not ErrorRandomTestRelic errorRelic
-                || !errorRelic.HasVisualSource)
-            {
-                return;
-            }
-
-            // NRelic is documented as visuals-only. Explicitly
-            // make the wrapper pass mouse input through to RelicHolder.
-            __instance.MouseFilter =
-                Control.MouseFilterEnum.Ignore;
-
-            __instance.Icon.MouseFilter =
-                Control.MouseFilterEnum.Ignore;
-
-            __instance.Outline.MouseFilter =
-                Control.MouseFilterEnum.Ignore;
-
-            NRelic.IconSize iconSize =
-                Traverse.Create(__instance)
-                    .Field("_iconSize")
-                    .GetValue<NRelic.IconSize>();
-
-            if (iconSize
-                == NRelic.IconSize.Small)
-            {
-                Texture2D? small =
-                    ErrorVisualUi.LoadSmall(
-                        errorRelic
-                    );
-
-                if (small != null)
-                {
-                    __instance.Icon.Texture =
-                        small;
-                }
-
-                Texture2D? outline =
-                    ErrorVisualUi.LoadOutline(
-                        errorRelic
-                    );
-
-                if (outline != null)
-                {
-                    __instance.Outline.Texture =
-                        outline;
-                }
-            }
-            else
-            {
-                Texture2D? big =
-                    ErrorVisualUi.LoadBig(
-                        errorRelic
-                    );
-
-                if (big != null)
-                {
-                    __instance.Icon.Texture =
-                        big;
-                }
-            }
-
-            ErrorVisualUi.Apply(
-                __instance.Icon,
-                __instance.Outline,
-                errorRelic
-            );
+            _shader ??= new Shader { Code = ShaderCode };
+            var mat = new ShaderMaterial { Shader = _shader };
+            mat.SetShaderParameter("error_seed", v.Seed);
+            icon.Material = mat;
         }
         catch
         {
-            // Visuals are never allowed to break the run.
-            // Vanilla NRelic.Reload has already completed.
+            icon.Material = null;
+        }
+
+        if (outline != null && outline.Visible)
+        {
+            outline.MouseFilter = Control.MouseFilterEnum.Ignore;
+            outline.FlipH = v.FlipH;
+            outline.FlipV = v.FlipV;
+            outline.RotationDegrees = 0f;
+            outline.Scale = Vector2.One;
+            outline.SelfModulate = Colors.White;
+            outline.Material = null;
         }
     }
 }
 
+[HarmonyPatch(typeof(NRelic), "_Ready")]
+public static class NRelicErrorVisualReadyPatch
+{
+    [HarmonyPostfix]
+    public static void Postfix(NRelic __instance)
+    {
+        TryApply(__instance);
+        ReapplyDeferred(__instance);
+    }
 
-// -------------------------------------------------------------
-// RelicReward creates a TextureRect directly rather than NRelic.
-// Keep this patch presentation-only as well.
-// -------------------------------------------------------------
+    private static void TryApply(NRelic n)
+    {
+        try
+        {
+            object? model = Traverse.Create(n).Property("Model").GetValue();
+            if (model is not ErrorRandomTestRelic error || !error.HasVisualSource)
+                return;
 
-[HarmonyPatch(
-    typeof(RelicReward),
-    "CreateIcon"
-)]
+            ErrorVisualUi.ApplyFullAppearance(
+                n.Icon,
+                n.Outline,
+                error,
+                true);
+        }
+        catch { }
+    }
+
+    private static async void ReapplyDeferred(NRelic n)
+    {
+        try
+        {
+            await n.ToSignal(n.GetTree(), SceneTree.SignalName.ProcessFrame);
+            if (GodotObject.IsInstanceValid(n))
+                TryApply(n);
+
+            await n.ToSignal(n.GetTree(), SceneTree.SignalName.ProcessFrame);
+            if (GodotObject.IsInstanceValid(n))
+                TryApply(n);
+        }
+        catch { }
+    }
+}
+
+[HarmonyPatch(typeof(NRelic), "Reload")]
+public static class NRelicErrorVisualReloadPatch
+{
+    [HarmonyPostfix]
+    public static void Postfix(NRelic __instance)
+    {
+        try
+        {
+            object? model = Traverse.Create(__instance).Property("Model").GetValue();
+            if (model is not ErrorRandomTestRelic error || !error.HasVisualSource)
+                return;
+
+            ErrorVisualUi.ApplyFullAppearance(
+                __instance.Icon,
+                __instance.Outline,
+                error,
+                true);
+        }
+        catch { }
+    }
+}
+
+[HarmonyPatch(typeof(RelicReward), "CreateIcon")]
 public static class RelicRewardErrorVisualPatch
 {
     [HarmonyPostfix]
-    public static void Postfix(
-        RelicReward __instance,
-        ref TextureRect __result)
+    public static void Postfix(RelicReward __instance, ref TextureRect __result)
     {
         try
         {
-            if (__instance.Relic
-                is not ErrorRandomTestRelic errorRelic
-                || !errorRelic.HasVisualSource)
-            {
+            if (__instance.Relic is not ErrorRandomTestRelic error || !error.HasVisualSource)
                 return;
-            }
 
-            Texture2D? big =
-                ErrorVisualUi.LoadBig(
-                    errorRelic
-                );
-
-            if (big != null)
-            {
-                __result.Texture =
-                    big;
-            }
-
-            ErrorVisualUi.Apply(
+            ErrorVisualUi.ApplyFullAppearance(
                 __result,
                 null,
-                errorRelic
-            );
+                error,
+                true);
         }
         catch
         {
-            // Original reward icon remains usable.
+            // Reward remains usable even if presentation fails.
         }
     }
 }

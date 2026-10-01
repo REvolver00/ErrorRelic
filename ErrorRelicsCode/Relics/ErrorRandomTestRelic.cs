@@ -1,4 +1,4 @@
-using MegaCrit.Sts2.Core.Localization;
+﻿using MegaCrit.Sts2.Core.Localization;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -89,16 +89,11 @@ public class ErrorRandomTestRelic : ErrorGeneratedRelic
         // Outline / BigIcon paths are not both public, so read the
         // already-supported texture ResourcePath from the vanilla
         // source model. Failure only disables that one visual path.
-        try
-        {
-            VisualSourceOutlinePath =
-                source.IconOutline.ResourcePath;
-        }
-        catch
-        {
-            VisualSourceOutlinePath =
-                string.Empty;
-        }
+        // ERROR keeps the source relic artwork, but deliberately does
+        // not inherit the vanilla white outline.  The transparent
+        // ERROR outline resource is used instead.
+        VisualSourceOutlinePath =
+            "relic_outline.png".RelicImagePath();
 
         try
         {

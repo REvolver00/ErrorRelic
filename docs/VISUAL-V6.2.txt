@@ -1,0 +1,19 @@
+ERROR 0.93 Visual V6.2
+
+Root cause confirmed by runtime log + deployment inspection:
+the installed mod had DLL/JSON but no ErrorRelics.pck. Godot therefore could
+not resolve res://ErrorRelics/images/relics/relic.png and Proof rendered blank.
+
+V6.2:
+- keeps V6.1 Proof/resource fixes;
+- adds PackErrorRelicsAssetsOnBuild to normal dotnet build deployment;
+- invokes the installed SlayTheSpire2.exe headlessly with tools/pack-assets.gd;
+- writes mods/ErrorRelics/ErrorRelics.pck;
+- fails the build instead of silently deploying a broken asset-less mod if the
+  PCK cannot be created.
+
+Expected deployed files after a normal build:
+  ErrorRelics.dll
+  ErrorRelics.pdb
+  ErrorRelics.json
+  ErrorRelics.pck

@@ -12,7 +12,9 @@ func _init():
     var repository = args[0].replace("\\", "/")
     var output = args[1].replace("\\", "/")
     var temporary = output.get_base_dir().path_join("asset-import")
+    DirAccess.make_dir_recursive_absolute(output.get_base_dir())
     DirAccess.make_dir_recursive_absolute(temporary)
+    print("ERROR_ASSET_PACK_BEGIN: " + repository + " -> " + output)
     var packer = PCKPacker.new()
     if packer.pck_start(output) != OK:
         quit(1)

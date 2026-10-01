@@ -30,17 +30,22 @@ public sealed class ErrorProofRelic : ErrorRelicsRelic
 
     public override List<(string, string)>? Localization =>
         new RelicLoc(
-            "ERROR",
-            "[ERROR · 0.92.2 Multiplayer Preview]\n本Mod会随机组合遗物的触发条件与效果，共有104种触发条件、109种效果，理论上可产生11,336种H/E组合。\n当前E002、E007暂不参与随机生成，因此实际随机池为11,128种组合。\n组合可能极强、极弱、奇怪，或在某些情况下没有效果。\n本Mod仍可能出现异常、报错、卡死、存档问题或无法继续游戏。\n若发现本应生效的ERROR没有效果，或发生严重异常，请记录ERROR编号（如H076-E028）及当时情况。\n反馈：Ciareay@outlook.com",
+            "ERROR PROOF",
+            "[ERROR · 0.93 UI REFACTORING]\n" +
+            "红镐子是本局 ERROR 的启动凭证。ERROR 会把原版遗物的触发条件与效果重新接线。\n" +
+            "当前核心池：104 Hooks × 109 Effects = 11,336 个理论 H/E 组合。\n" +
+            "0.93 正在重构 ERROR 的表现层；H/E 的实际执行保持原有逻辑。\n" +
+            "ERROR 可能极强、极弱、无效或产生意外组合。若遇到严重异常，请记录 H/E 编号与当时场景。\n" +
+            "反馈：Ciareay@outlook.com",
             ""
         );
 
     public override string PackedIconPath =>
-        "relic.png".RelicImagePath();
+        "error_proof.png".RelicImagePath();
 
     protected override string PackedIconOutlinePath =>
-        "relic_outline.png".RelicImagePath();
+        "error_proof_outline.png".RelicImagePath();
 
     protected override string BigIconPath =>
-        "relic.png".BigRelicImagePath();
+        "error_proof.png".BigRelicImagePath();
 }

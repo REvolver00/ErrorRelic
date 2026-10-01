@@ -1,0 +1,7 @@
+ERROR 0.93 Visual V6.3
+
+Fixes Windows separators leaking into Godot res:// resource paths.
+- All mod asset helpers now use URI-safe ResJoin() and '/'.
+- Stored vanilla source icon/outline/big-icon paths are normalized too.
+- Keeps V6.2 PCK generation/deployment and Proof fix.
+- No H/E gameplay changes.

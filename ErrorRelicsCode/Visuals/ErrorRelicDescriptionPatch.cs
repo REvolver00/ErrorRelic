@@ -13,6 +13,7 @@ public static class ErrorRelicDescriptionPatch
 {
     private static IEnumerable<MethodBase> TargetMethods()
     {
+        yield return AccessTools.PropertyGetter(typeof(RelicModel), nameof(RelicModel.Title));
         yield return AccessTools.PropertyGetter(typeof(RelicModel), nameof(RelicModel.DynamicDescription));
         yield return AccessTools.PropertyGetter(typeof(RelicModel), nameof(RelicModel.DynamicEventDescription));
         yield return AccessTools.PropertyGetter(typeof(RelicModel), nameof(RelicModel.Flavor));
@@ -29,6 +30,9 @@ public static class ErrorRelicDescriptionPatch
             return;
         }
         if (__instance is ErrorRandomTestRelic error)
+        {
+            __result.Add("ErrorTitle", ErrorGlitchName.For(error));
             __result.Add("ErrorDescription", error.FullDescription);
+        }
     }
 }

@@ -105,6 +105,24 @@
         <Copy SourceFiles="$(TargetDir)$(TargetName).pdb" DestinationFolder="$(ModsPath)$(MSBuildProjectName)/" />
     </Target>
 
+    <!-- ERROR Relics owns non-trivial runtime assets. A normal `dotnet build`
+         must therefore deploy a PCK too; DLL+JSON alone leaves RelicModel.Icon
+         pointing at PNG paths that Godot cannot load at runtime. -->
+    <Target Name="PackErrorRelicsAssetsOnBuild"
+            AfterTargets="CopyToModsFolderOnBuild"
+            Condition="'$(DeployModOnBuild)' != 'false' And Exists('$(Sts2Path)\SlayTheSpire2.exe') And Exists('$(MSBuildProjectDirectory)\tools\pack-assets.gd')">
+        <PropertyGroup>
+            <ErrorRelicsPckOutput>$(ModsPath)$(MSBuildProjectName)\$(MSBuildProjectName).pck</ErrorRelicsPckOutput>
+        </PropertyGroup>
+        <MakeDir Directories="$(ModsPath)$(MSBuildProjectName)" />
+        <Message Text="Packing ERROR Relics runtime assets to $(ErrorRelicsPckOutput)" Importance="high" />
+        <Exec Command="&quot;$(Sts2Path)\SlayTheSpire2.exe&quot; --headless --audio-driver Dummy --path &quot;$(Sts2Path)&quot; --script &quot;$(MSBuildProjectDirectory)\tools\pack-assets.gd&quot; -- &quot;$(MSBuildProjectDirectory)&quot; &quot;$(ErrorRelicsPckOutput)&quot;"
+              WorkingDirectory="$(Sts2Path)"
+              IgnoreExitCode="false" />
+        <Error Text="ERROR Relics asset pack was not created at $(ErrorRelicsPckOutput)"
+               Condition="!Exists('$(ErrorRelicsPckOutput)')" />
+    </Target>
+
     <Target Name="CopyQuickPck" AfterTargets="PackPck" Condition="Exists('$(PckPackerOutputPath)') And '$(PckPackerSkipped)' != 'true'">
         <Message Text="Copying quick .pck to mods folder." Importance="high"/>
         <Copy SourceFiles="$(PckPackerOutputPath)"
