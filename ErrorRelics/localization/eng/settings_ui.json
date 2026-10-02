@@ -2,5 +2,6 @@
   "ERRORRELICS-START_WITH_RED_PICKAXE.title": "Start with the red pickaxe (keep Neow choices)",
   "ERRORRELICS-SHOW_FULL_EFFECTS.title": "Show full effects",
   "ERRORRELICS-PICKUP_RANDOM_ROTATION.title": "Randomly rotate visuals when picking up ERROR",
-  "ERRORRELICS-RANDOM_TRIGGER_SFX.title": "Randomize ERROR trigger SFX"
+  "ERRORRELICS-RANDOM_TRIGGER_SFX.title": "Randomize ERROR trigger SFX",
+  "ERRORRELICS-ALLOW_ANCIENT_SOURCE_EFFECTS.title": "Allow Ancient-source Effects"
 }

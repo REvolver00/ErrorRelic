@@ -4,20 +4,27 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Random;
+using ErrorRelics.ErrorRelicsCode.Config;
 
 namespace ErrorRelics.ErrorRelicsCode.Fragments;
 
 public static class ErrorGenerator
 {
     private static readonly ErrorHookId[] Hooks = Enum.GetValues<ErrorHookId>();
-    private static readonly ErrorEffectId[] Effects = Enum.GetValues<ErrorEffectId>()
+    private static readonly ErrorEffectId[] AllRandomEffects = Enum.GetValues<ErrorEffectId>()
         .Where(e => e != ErrorEffectId.E002_UpgradePlayedCard
                  && e != ErrorEffectId.E007_Choose1Of3ColorlessToHand).ToArray();
+
+    private static readonly ErrorEffectId[] NonAncientRandomEffects = AllRandomEffects
+        .Where(e => !ErrorEffectSourceMetadata.IsAncientSource(e)).ToArray();
+
+    private static ErrorEffectId[] ActiveEffects =>
+        ErrorRelicsConfig.AllowAncientSourceEffects ? AllRandomEffects : NonAncientRandomEffects;
 
     // Ownerless generation is reserved for debug callers.
     public static ErrorDefinition Generate() => new(
         Hooks[Random.Shared.Next(Hooks.Length)],
-        Effects[Random.Shared.Next(Effects.Length)]);
+        ActiveEffects[Random.Shared.Next(ActiveEffects.Length)]);
 
     public static ErrorDefinition Generate(Player owner, ModelId sourceId, string sourceKey, string generationIdentity = "")
     {
@@ -30,7 +37,11 @@ public static class ErrorGenerator
         return Generate(rng);
     }
 
-    public static ErrorDefinition Generate(Rng rng) => new(
-        Hooks[rng.NextInt(Hooks.Length)],
-        Effects[rng.NextInt(Effects.Length)]);
+    public static ErrorDefinition Generate(Rng rng)
+    {
+        ErrorEffectId[] effects = ActiveEffects;
+        return new ErrorDefinition(
+            Hooks[rng.NextInt(Hooks.Length)],
+            effects[rng.NextInt(effects.Length)]);
+    }
 }

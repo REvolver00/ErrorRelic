@@ -36,16 +36,27 @@ public static class ConfigSmokeDriver
             Require(ErrorRelicsConfig.ShowFullEffects, "Fresh config must default on");
             Require(ErrorRelicsConfig.PickupRandomRotation, "Pickup rotation must default on");
             Require(ErrorRelicsConfig.RandomTriggerSfx, "Random trigger SFX must default on");
+            Require(ErrorRelicsConfig.AllowAncientSourceEffects, "Ancient-source Effects must default on");
             string label = new LocString("settings_ui", config.ModPrefix + StringHelper.Slugify(nameof(ErrorRelicsConfig.ShowFullEffects)) + ".title").GetFormattedText();
             Require(label == "显示完整效果", "Settings label must be localized");
             string rotationLabel = new LocString("settings_ui", config.ModPrefix + StringHelper.Slugify(nameof(ErrorRelicsConfig.PickupRandomRotation)) + ".title").GetFormattedText();
             string sfxLabel = new LocString("settings_ui", config.ModPrefix + StringHelper.Slugify(nameof(ErrorRelicsConfig.RandomTriggerSfx)) + ".title").GetFormattedText();
             Require(rotationLabel == "拾取 ERROR 时随机旋转贴图", "Rotation setting label must be localized");
             Require(sfxLabel == "随机播放 ERROR 触发音效", "SFX setting label must be localized");
+            string ancientEffectLabel = new LocString("settings_ui", config.ModPrefix + StringHelper.Slugify(nameof(ErrorRelicsConfig.AllowAncientSourceEffects)) + ".title").GetFormattedText();
+            Require(ancientEffectLabel == "允许生成先古遗物来源的 Effect", "Ancient Effect setting label must be localized");
             var panel = new VBoxContainer();
             ((SceneTree)Engine.GetMainLoop()).Root.AddChild(panel);
             config.SetupConfigUI(panel);
             Require(HasCheckbox(panel), "BaseLib settings page must expose the checkbox");
+            ErrorRelicsConfig.AllowAncientSourceEffects = false;
+            for (int i = 0; i < 512; i++)
+            {
+                var filtered = ErrorRelics.ErrorRelicsCode.Fragments.ErrorGenerator.Generate();
+                Require(!ErrorRelics.ErrorRelicsCode.Fragments.ErrorEffectSourceMetadata.IsAncientSource(filtered.EffectId),
+                    "Ancient-source Effect leaked into disabled generation pool");
+            }
+            ErrorRelicsConfig.AllowAncientSourceEffects = true;
             panel.QueueFree();
             var relic = (ErrorRandomTestRelic)ModelDb.Relic<ErrorRandomTestRelic>().ToMutable();
             relic.GeneratedHookId = ErrorHookId.H037_Every10AttacksPersistentNunchaku;
@@ -75,6 +86,7 @@ public static class ConfigSmokeDriver
             ErrorRelicsConfig.ShowFullEffects = true;
             ErrorRelicsConfig.PickupRandomRotation = true;
             ErrorRelicsConfig.RandomTriggerSfx = true;
+            ErrorRelicsConfig.AllowAncientSourceEffects = true;
             config.Save();
         }
         ((SceneTree)Engine.GetMainLoop()).Quit(exit);
