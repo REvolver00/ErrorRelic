@@ -15,11 +15,12 @@ public static class ErrorGenerator
         .Where(e => e != ErrorEffectId.E002_UpgradePlayedCard
                  && e != ErrorEffectId.E007_Choose1Of3ColorlessToHand).ToArray();
 
-    private static readonly ErrorEffectId[] NonAncientRandomEffects = AllRandomEffects
-        .Where(e => !ErrorEffectSourceMetadata.IsAncientSource(e)).ToArray();
-
-    private static ErrorEffectId[] ActiveEffects =>
-        ErrorRelicsConfig.AllowAncientSourceEffects ? AllRandomEffects : NonAncientRandomEffects;
+    private static ErrorEffectId[] ActiveEffects => AllRandomEffects
+        .Where(e => ErrorRelicsConfig.AllowAncientSourceEffects
+                 || !ErrorEffectSourceMetadata.IsAncientSource(e))
+        .Where(e => ErrorRelicsConfig.AllowMultiplayerImpactEffects
+                 || !ErrorEffectGenerationMetadata.MayAffectMultiplayerFlow(e))
+        .ToArray();
 
     // Ownerless generation is reserved for debug callers.
     public static ErrorDefinition Generate() => new(

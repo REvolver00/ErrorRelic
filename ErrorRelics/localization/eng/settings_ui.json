@@ -3,5 +3,6 @@
   "ERRORRELICS-SHOW_FULL_EFFECTS.title": "Show full effects",
   "ERRORRELICS-PICKUP_RANDOM_ROTATION.title": "Randomly rotate visuals when picking up ERROR",
   "ERRORRELICS-RANDOM_TRIGGER_SFX.title": "Randomize ERROR trigger SFX",
-  "ERRORRELICS-ALLOW_ANCIENT_SOURCE_EFFECTS.title": "Allow Ancient-source Effects"
+  "ERRORRELICS-ALLOW_ANCIENT_SOURCE_EFFECTS.title": "Allow Ancient-source Effects",
+  "ERRORRELICS-ALLOW_MULTIPLAYER_IMPACT_EFFECTS.title": "Allow Effects that may affect multiplayer flow"
 }

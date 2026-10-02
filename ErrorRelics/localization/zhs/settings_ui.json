@@ -3,5 +3,6 @@
   "ERRORRELICS-SHOW_FULL_EFFECTS.title": "显示完整效果",
   "ERRORRELICS-PICKUP_RANDOM_ROTATION.title": "拾取 ERROR 时随机旋转贴图",
   "ERRORRELICS-RANDOM_TRIGGER_SFX.title": "随机播放 ERROR 触发音效",
-  "ERRORRELICS-ALLOW_ANCIENT_SOURCE_EFFECTS.title": "允许生成先古遗物来源的 Effect"
+  "ERRORRELICS-ALLOW_ANCIENT_SOURCE_EFFECTS.title": "允许生成先古遗物来源的 Effect",
+  "ERRORRELICS-ALLOW_MULTIPLAYER_IMPACT_EFFECTS.title": "允许生成可能造成多人游戏影响的 Effect"
 }

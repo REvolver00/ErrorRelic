@@ -37,6 +37,7 @@ public static class ConfigSmokeDriver
             Require(ErrorRelicsConfig.PickupRandomRotation, "Pickup rotation must default on");
             Require(ErrorRelicsConfig.RandomTriggerSfx, "Random trigger SFX must default on");
             Require(ErrorRelicsConfig.AllowAncientSourceEffects, "Ancient-source Effects must default on");
+            Require(ErrorRelicsConfig.AllowMultiplayerImpactEffects, "Multiplayer-impact Effects must default on");
             string label = new LocString("settings_ui", config.ModPrefix + StringHelper.Slugify(nameof(ErrorRelicsConfig.ShowFullEffects)) + ".title").GetFormattedText();
             Require(label == "显示完整效果", "Settings label must be localized");
             string rotationLabel = new LocString("settings_ui", config.ModPrefix + StringHelper.Slugify(nameof(ErrorRelicsConfig.PickupRandomRotation)) + ".title").GetFormattedText();
@@ -45,6 +46,8 @@ public static class ConfigSmokeDriver
             Require(sfxLabel == "随机播放 ERROR 触发音效", "SFX setting label must be localized");
             string ancientEffectLabel = new LocString("settings_ui", config.ModPrefix + StringHelper.Slugify(nameof(ErrorRelicsConfig.AllowAncientSourceEffects)) + ".title").GetFormattedText();
             Require(ancientEffectLabel == "允许生成先古遗物来源的 Effect", "Ancient Effect setting label must be localized");
+            string multiplayerEffectLabel = new LocString("settings_ui", config.ModPrefix + StringHelper.Slugify(nameof(ErrorRelicsConfig.AllowMultiplayerImpactEffects)) + ".title").GetFormattedText();
+            Require(multiplayerEffectLabel == "允许生成可能造成多人游戏影响的 Effect", "Multiplayer-impact Effect setting label must be localized");
             var panel = new VBoxContainer();
             ((SceneTree)Engine.GetMainLoop()).Root.AddChild(panel);
             config.SetupConfigUI(panel);
@@ -57,6 +60,26 @@ public static class ConfigSmokeDriver
                     "Ancient-source Effect leaked into disabled generation pool");
             }
             ErrorRelicsConfig.AllowAncientSourceEffects = true;
+            ErrorRelicsConfig.AllowMultiplayerImpactEffects = false;
+            for (int i = 0; i < 512; i++)
+            {
+                var filtered = ErrorRelics.ErrorRelicsCode.Fragments.ErrorGenerator.Generate();
+                Require(!ErrorRelics.ErrorRelicsCode.Fragments.ErrorEffectGenerationMetadata.MayAffectMultiplayerFlow(filtered.EffectId),
+                    "Multiplayer-impact Effect leaked into disabled generation pool");
+            }
+            // Filters must compose: disabling both excludes the union, including
+            // Effects tagged as both Ancient and multiplayer-impact.
+            ErrorRelicsConfig.AllowAncientSourceEffects = false;
+            for (int i = 0; i < 512; i++)
+            {
+                var filtered = ErrorRelics.ErrorRelicsCode.Fragments.ErrorGenerator.Generate();
+                Require(!ErrorRelics.ErrorRelicsCode.Fragments.ErrorEffectSourceMetadata.IsAncientSource(filtered.EffectId),
+                    "Ancient-source Effect leaked through combined filters");
+                Require(!ErrorRelics.ErrorRelicsCode.Fragments.ErrorEffectGenerationMetadata.MayAffectMultiplayerFlow(filtered.EffectId),
+                    "Multiplayer-impact Effect leaked through combined filters");
+            }
+            ErrorRelicsConfig.AllowAncientSourceEffects = true;
+            ErrorRelicsConfig.AllowMultiplayerImpactEffects = true;
             panel.QueueFree();
             var relic = (ErrorRandomTestRelic)ModelDb.Relic<ErrorRandomTestRelic>().ToMutable();
             relic.GeneratedHookId = ErrorHookId.H037_Every10AttacksPersistentNunchaku;
@@ -87,6 +110,7 @@ public static class ConfigSmokeDriver
             ErrorRelicsConfig.PickupRandomRotation = true;
             ErrorRelicsConfig.RandomTriggerSfx = true;
             ErrorRelicsConfig.AllowAncientSourceEffects = true;
+            ErrorRelicsConfig.AllowMultiplayerImpactEffects = true;
             config.Save();
         }
         ((SceneTree)Engine.GetMainLoop()).Quit(exit);
