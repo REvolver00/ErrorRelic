@@ -1,5 +1,6 @@
 using BaseLib.Config;
 using ErrorRelics.ErrorRelicsCode.Config;
+using ErrorRelics.ErrorRelicsCode.Presentation;
 using System.Reflection;
 using Godot;
 using HarmonyLib;
@@ -27,5 +28,6 @@ public partial class MainFile : Node
         Harmony harmony = new(ModId);
 
         harmony.PatchAll(assembly);
+        ErrorPresentationRuntime.EnsureInstalled();
     }
 }

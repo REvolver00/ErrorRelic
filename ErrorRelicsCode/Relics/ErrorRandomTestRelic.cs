@@ -160,7 +160,7 @@ public class ErrorRandomTestRelic : ErrorGeneratedRelic
         ? null : LocString.GetIfExists(table, key)?.GetFormattedText();
 
     public override List<(string, string)>? Localization => new RelicLoc(
-        "ERROR", "{ErrorDescription}", "");
+        "{ErrorTitle}", "{ErrorDescription}", "");
 
     public override string PackedIconPath =>
         "relic.png".RelicImagePath();

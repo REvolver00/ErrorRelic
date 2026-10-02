@@ -21,6 +21,11 @@ func _init():
         return
     var files: Array[String] = []
     collect(repository.path_join("ErrorRelics"), files)
+    var custom_audio_names: Array[String] = []
+    for candidate in files:
+        var candidate_relative = candidate.trim_prefix(repository + "/")
+        if candidate_relative.begins_with("ErrorRelics/audio/custom_sfx/") and (candidate.ends_with(".ogg") or candidate.ends_with(".wav")):
+            custom_audio_names.append(candidate.get_file())
     for file in files:
         var relative = file.trim_prefix(repository + "/")
         if file.ends_with(".png"):
@@ -37,10 +42,42 @@ func _init():
             if packer.add_file(packed, imported) != OK or packer.add_file("res://" + relative + ".remap", remap) != OK:
                 quit(1)
                 return
-        elif file.ends_with(".json"):
+        elif file.ends_with(".ogg") or file.ends_with(".wav"):
+            var stream: AudioStream = null
+            if file.ends_with(".ogg"):
+                stream = AudioStreamOggVorbis.load_from_file(file)
+            else:
+                stream = AudioStreamWAV.load_from_file(file)
+            if stream == null:
+                push_error("Could not import audio: " + file)
+                quit(1)
+                return
+            var imported_audio = temporary.path_join(relative.replace("/", "_") + ".res")
+            var packed_audio = "res://" + relative + ".res"
+            if ResourceSaver.save(stream, imported_audio) != OK:
+                quit(1)
+                return
+            var audio_remap = imported_audio + ".remap"
+            var audio_writer = FileAccess.open(audio_remap, FileAccess.WRITE)
+            audio_writer.store_string('[remap]\npath="' + packed_audio + '"\n')
+            audio_writer.close()
+            if packer.add_file(packed_audio, imported_audio) != OK or packer.add_file("res://" + relative + ".remap", audio_remap) != OK:
+                quit(1)
+                return
+        elif file.ends_with(".json") or file.ends_with(".txt"):
             if packer.add_file("res://" + relative, file) != OK:
                 quit(1)
                 return
+    # Always add a manifest, even when custom_sfx is empty. Runtime discovery
+    # therefore never depends on an empty directory surviving PCK packing.
+    var manifest = temporary.path_join("custom_sfx_manifest.txt")
+    var manifest_writer = FileAccess.open(manifest, FileAccess.WRITE)
+    for audio_name in custom_audio_names:
+        manifest_writer.store_line(audio_name)
+    manifest_writer.close()
+    if packer.add_file("res://ErrorRelics/audio/custom_sfx_manifest.txt", manifest) != OK:
+        quit(1)
+        return
     if packer.flush() != OK:
         quit(1)
         return

@@ -1,0 +1,10 @@
+0.92 — H104 / E109 component expansion
+
+- Added Chinese description splicing for H062-H104 and E066-E109.
+- Consolidated all H001-H104 hook text into ErrorHookRegistry.cs.
+- Consolidated all H001-H104 generated-relic hook handling into ErrorGeneratedRelic.cs.
+- Consolidated all E001-E109 effect handling into ErrorEffectRegistry.cs.
+- Updated the Proof relic to 0.92 and current pool counts.
+- Keeps E002 / E007 excluded from random generation.
+- Calling Bell, Toy Box and other experimental reward/selection effects remain implemented for live testing.
+- Target game assembly remains the uploaded v0.111.0 sts2.dll.

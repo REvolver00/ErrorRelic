@@ -1,3 +1,4 @@
+using ErrorRelics.ErrorRelicsCode.Presentation;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -607,12 +608,22 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     }
 
 
-    // Pendulum 原版使用抽牌遗物音效。
-    public override string FlashSfx =>
-        HookId == ErrorHookId.H023_Every3TurnsPendulum
-        || HookId == ErrorHookId.H030_Every5ExhaustsJossPaper
-            ? "event:/sfx/ui/relic_activate_draw"
-            : base.FlashSfx;
+    // ERROR presentation corruption: every Flash chooses a local-only random
+    // one-shot SFX from the current game build, plus optional mod-owned custom SFX.
+    // This does not consume gameplay RNG and does not affect H/E execution.
+    public override string FlashSfx
+    {
+        get
+        {
+            string fallback =
+                HookId == ErrorHookId.H023_Every3TurnsPendulum
+                || HookId == ErrorHookId.H030_Every5ExhaustsJossPaper
+                    ? "event:/sfx/ui/relic_activate_draw"
+                    : base.FlashSfx;
+
+            return ErrorPresentationCorruption.PickFlashSfx(fallback);
+        }
+    }
 
 
     private async Task DoCounterActivateVisuals()
@@ -873,6 +884,10 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     public override async Task AfterObtained()
     {
         await base.AfterObtained();
+
+        // Guaranteed pickup presentation bonus. It is local, transient, and
+        // restored automatically when CurrentScene changes.
+        ErrorPresentationCorruption.OnErrorPickedUp();
 
         var owner = Owner;
 
