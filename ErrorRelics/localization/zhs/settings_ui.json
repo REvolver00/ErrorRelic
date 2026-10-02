@@ -1,4 +1,6 @@
 {
   "ERRORRELICS-START_WITH_RED_PICKAXE.title": "开局直接获得红镐子（保留涅奥选项）",
-  "ERRORRELICS-SHOW_FULL_EFFECTS.title": "显示完整效果"
+  "ERRORRELICS-SHOW_FULL_EFFECTS.title": "显示完整效果",
+  "ERRORRELICS-PICKUP_RANDOM_ROTATION.title": "拾取 ERROR 时随机旋转贴图",
+  "ERRORRELICS-RANDOM_TRIGGER_SFX.title": "随机播放 ERROR 触发音效"
 }

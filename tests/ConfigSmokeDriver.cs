@@ -34,8 +34,14 @@ public static class ConfigSmokeDriver
         try
         {
             Require(ErrorRelicsConfig.ShowFullEffects, "Fresh config must default on");
+            Require(ErrorRelicsConfig.PickupRandomRotation, "Pickup rotation must default on");
+            Require(ErrorRelicsConfig.RandomTriggerSfx, "Random trigger SFX must default on");
             string label = new LocString("settings_ui", config.ModPrefix + StringHelper.Slugify(nameof(ErrorRelicsConfig.ShowFullEffects)) + ".title").GetFormattedText();
             Require(label == "显示完整效果", "Settings label must be localized");
+            string rotationLabel = new LocString("settings_ui", config.ModPrefix + StringHelper.Slugify(nameof(ErrorRelicsConfig.PickupRandomRotation)) + ".title").GetFormattedText();
+            string sfxLabel = new LocString("settings_ui", config.ModPrefix + StringHelper.Slugify(nameof(ErrorRelicsConfig.RandomTriggerSfx)) + ".title").GetFormattedText();
+            Require(rotationLabel == "拾取 ERROR 时随机旋转贴图", "Rotation setting label must be localized");
+            Require(sfxLabel == "随机播放 ERROR 触发音效", "SFX setting label must be localized");
             var panel = new VBoxContainer();
             ((SceneTree)Engine.GetMainLoop()).Root.AddChild(panel);
             config.SetupConfigUI(panel);
@@ -64,7 +70,13 @@ public static class ConfigSmokeDriver
             GD.Print("ERROR_CONFIG_SMOKE_PASS: checkbox, default, persistence, hidden inventory/event/flavor, unchanged data");
         }
         catch (Exception error) { exit = 1; GD.Print("ERROR_CONFIG_SMOKE_FAIL: " + error); }
-        finally { ErrorRelicsConfig.ShowFullEffects = true; config.Save(); }
+        finally
+        {
+            ErrorRelicsConfig.ShowFullEffects = true;
+            ErrorRelicsConfig.PickupRandomRotation = true;
+            ErrorRelicsConfig.RandomTriggerSfx = true;
+            config.Save();
+        }
         ((SceneTree)Engine.GetMainLoop()).Quit(exit);
     }
 }

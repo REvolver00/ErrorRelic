@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using ErrorRelics.ErrorRelicsCode.Config;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Nodes.Audio;
@@ -20,12 +21,18 @@ internal static class ErrorPresentationCorruption
 
     public static void OnErrorPickedUp()
     {
+        if (!ErrorRelicsConfig.PickupRandomRotation)
+            return;
+
         ErrorPresentationRuntime.EnsureInstalled();
         ErrorPresentationRuntime.Instance?.CorruptCurrentScene();
     }
 
     public static string PickFlashSfx(string fallback)
     {
+        if (!ErrorRelicsConfig.RandomTriggerSfx)
+            return fallback;
+
         ErrorPresentationRuntime.EnsureInstalled();
         return ErrorPresentationRuntime.Instance?.PickFlashSfx(fallback) ?? fallback;
     }
