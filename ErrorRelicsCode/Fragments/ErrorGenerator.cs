@@ -19,12 +19,13 @@ public static class ErrorGenerator
         Hooks[Random.Shared.Next(Hooks.Length)],
         Effects[Random.Shared.Next(Effects.Length)]);
 
-    public static ErrorDefinition Generate(Player owner, ModelId sourceId, string sourceKey)
+    public static ErrorDefinition Generate(Player owner, ModelId sourceId, string sourceKey, string generationIdentity = "")
     {
         // Singleplayer and multiplayer use the same replayable content RNG.
         // Preview rebuilds must not advance shared combat/reward RNG streams.
         // The source key distinguishes the room and obtaining path on every peer.
         string key = FormattableString.Invariant($"ErrorRelics|{owner.RunState.TotalFloor}|{sourceKey}");
+        if (generationIdentity.Length != 0) key += "|" + generationIdentity;
         var rng = new Rng(owner, sourceId, StringHelper.GetDeterministicHashCode(key));
         return Generate(rng);
     }

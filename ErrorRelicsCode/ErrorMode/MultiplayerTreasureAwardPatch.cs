@@ -47,6 +47,10 @@ public static class MultiplayerTreasureAwardPatch
 
     public static RelicModel CreateAwardRelic(RelicPickingResult result)
     {
+        // Singleplayer has already built a mutable, locked preview. Award it as-is.
+        if (result.relic is ErrorRelics.ErrorRelicsCode.Relics.ErrorRandomTestRelic preview
+            && preview.IsMutable)
+            return preview;
         var player = result.player;
         if (result.type == RelicPickingResultType.Skipped || player == null
             || player.RunState.Players.Count == 1 || !ErrorModeState.IsEnabled(player)

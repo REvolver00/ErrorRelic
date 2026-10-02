@@ -5,6 +5,7 @@ using System.Reflection;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Nodes.Audio;
+using MegaCrit.Sts2.Core.Nodes;
 
 namespace ErrorRelics.ErrorRelicsCode.Presentation;
 
@@ -42,6 +43,8 @@ internal static class ErrorPresentationCorruption
 internal sealed partial class ErrorPresentationRuntime : Node
 {
     internal const string CustomMarker = "errorrelics-custom://";
+    internal const string VanillaMarker = "errorrelics-vanilla://";
+    private const double VanillaMaxSeconds = 3.0;
     private const string VanillaListPath = "res://ErrorRelics/audio/vanilla_sfx.txt";
     private const string CustomDirPath = "res://ErrorRelics/audio/custom_sfx";
     private const string CustomManifestPath = "res://ErrorRelics/audio/custom_sfx_manifest.txt";
@@ -52,7 +55,9 @@ internal sealed partial class ErrorPresentationRuntime : Node
     private readonly List<string> _vanillaSfx = new();
     private readonly List<string> _customSfx = new();
     private ulong _sceneId;
+    private bool _pendingCorruption;
     private AudioStreamPlayer? _customPlayer;
+    private readonly List<(GodotObject Instance, ulong Deadline)> _vanillaEvents = new();
 
     public static ErrorPresentationRuntime? Instance { get; private set; }
 
@@ -86,10 +91,18 @@ internal sealed partial class ErrorPresentationRuntime : Node
 
         if (GetTree().CurrentScene is Node scene)
             _sceneId = scene.GetInstanceId();
+        if (_pendingCorruption) Callable.From(CorruptCurrentScene).CallDeferred();
     }
 
     public override void _Process(double delta)
     {
+        ulong ticks = Time.GetTicksMsec();
+        for (int i = _vanillaEvents.Count - 1; i >= 0; i--)
+        {
+            if (ticks < _vanillaEvents[i].Deadline) continue;
+            StopVanillaInstance(_vanillaEvents[i].Instance);
+            _vanillaEvents.RemoveAt(i);
+        }
         Node? scene = GetTree().CurrentScene;
         ulong now = scene?.GetInstanceId() ?? 0;
         if (now == _sceneId)
@@ -101,12 +114,32 @@ internal sealed partial class ErrorPresentationRuntime : Node
         _sceneId = now;
     }
 
+    public override void _ExitTree()
+    {
+        ResetScene();
+        if (Instance == this) Instance = null;
+    }
+
+    public void ResetScene()
+    {
+        RestoreRotations();
+        StopVanilla();
+        _pendingCorruption = false;
+    }
+
     public void CorruptCurrentScene()
     {
+        if (!IsInsideTree() || !IsNodeReady())
+        {
+            _pendingCorruption = true;
+            return;
+        }
+        _pendingCorruption = false;
         Node? scene = GetTree().CurrentScene;
         if (scene == null)
             return;
 
+        if (_sceneId != scene.GetInstanceId()) RestoreRotations();
         _sceneId = scene.GetInstanceId();
 
         foreach (TextureRect texture in EnumerateTextureRects(scene))
@@ -126,6 +159,9 @@ internal sealed partial class ErrorPresentationRuntime : Node
 
     public string PickFlashSfx(string fallback)
     {
+        // Any later ERROR sound ends our previous custom sound, never game audio.
+        if (_customPlayer != null && GodotObject.IsInstanceValid(_customPlayer))
+            _customPlayer.Stop();
         // EnsureInstalled() can create this runtime before its deferred AddChild has
         // reached _Ready().  Lazy-loading here makes the very first ERROR flash work.
         if (_vanillaSfx.Count == 0 && _customSfx.Count == 0)
@@ -143,12 +179,47 @@ internal sealed partial class ErrorPresentationRuntime : Node
         {
             string selected = _vanillaSfx[index];
             MainFile.Logger.Info($"ERROR audio: selected vanilla {selected}");
-            return selected;
+            return VanillaMarker + selected;
         }
 
         string custom = _customSfx[index - _vanillaSfx.Count];
         MainFile.Logger.Info($"ERROR audio: selected custom {custom}");
         return CustomMarker + custom;
+    }
+
+    public void PlayVanilla(string path, float volume)
+    {
+        // Own only the instance we start. A malformed/long bank event cannot keep
+        // playing indefinitely and stopping it cannot affect the game's instances.
+        var fmod = Engine.GetSingleton("FmodServer");
+        var description = fmod.Call("get_event", path).AsGodotObject();
+        if (description == null || !description.Call("is_valid").AsBool()
+            || !description.Call("is_one_shot").AsBool() || description.Call("has_sustain_point").AsBool())
+        {
+            MainFile.Logger.Info($"ERROR audio rejected non-one-shot or missing event: {path}");
+            return;
+        }
+        var instance = fmod.Call("create_event_instance", path).AsGodotObject();
+        if (instance == null) return;
+        _vanillaEvents.Add((instance, Time.GetTicksMsec() + (ulong)(VanillaMaxSeconds * 1000)));
+        instance.Call("set_volume", volume);
+        instance.Call("start");
+    }
+
+    private void StopVanilla()
+    {
+        foreach (var item in _vanillaEvents) StopVanillaInstance(item.Instance);
+        _vanillaEvents.Clear();
+    }
+
+    private static void StopVanillaInstance(GodotObject instance)
+    {
+        if (!GodotObject.IsInstanceValid(instance)) return;
+        if (instance.Call("is_valid").AsBool())
+        {
+            instance.Call("stop", false);
+            instance.Call("release");
+        }
     }
 
     public void PlayCustom(string resourcePath)
@@ -166,9 +237,9 @@ internal sealed partial class ErrorPresentationRuntime : Node
             _customPlayer.Stream = stream;
             _customPlayer.Play();
         }
-        catch
+        catch (Exception ex)
         {
-            // Presentation failure must never affect gameplay.
+            MainFile.Logger.Info($"ERROR custom audio failed: {ex}");
         }
     }
 
@@ -288,8 +359,7 @@ internal sealed partial class ErrorPresentationRuntime : Node
 }
 
 /// <summary>
-/// Intercepts only ERROR's private marker. Vanilla FMOD event paths continue
-/// through the game's normal PlayOneShot implementation.
+/// Intercepts only ERROR's private markers; ordinary game audio is untouched.
 /// </summary>
 [HarmonyPatch]
 internal static class ErrorCustomSfxPlayOneShotPatch
@@ -305,13 +375,28 @@ internal static class ErrorCustomSfxPlayOneShotPatch
 
     private static bool Prefix(object[] __args)
     {
-        if (__args.Length == 0 || __args[0] is not string path
-            || !path.StartsWith(ErrorPresentationRuntime.CustomMarker, StringComparison.Ordinal))
-            return true;
-
-        string resourcePath = path[ErrorPresentationRuntime.CustomMarker.Length..];
+        if (__args.Length == 0 || __args[0] is not string path) return true;
+        bool custom = path.StartsWith(ErrorPresentationRuntime.CustomMarker, StringComparison.Ordinal);
+        bool vanilla = path.StartsWith(ErrorPresentationRuntime.VanillaMarker, StringComparison.Ordinal);
+        if (!custom && !vanilla) return true;
         ErrorPresentationRuntime.EnsureInstalled();
-        ErrorPresentationRuntime.Instance?.PlayCustom(resourcePath);
+        if (custom)
+            ErrorPresentationRuntime.Instance?.PlayCustom(path[ErrorPresentationRuntime.CustomMarker.Length..]);
+        else
+            ErrorPresentationRuntime.Instance?.PlayVanilla(path[ErrorPresentationRuntime.VanillaMarker.Length..], __args.OfType<float>().LastOrDefault(1f));
         return false;
+    }
+}
+
+// The game swaps its own scene containers while SceneTree.CurrentScene stays
+// unchanged. Restore surviving HUD/menu TextureRects before those transitions.
+[HarmonyPatch(typeof(NSceneContainer), nameof(NSceneContainer.SetCurrentScene))]
+internal static class ErrorPresentationScenePatch
+{
+    [HarmonyPrefix]
+    private static void Prefix()
+    {
+        var runtime = ErrorPresentationRuntime.Instance;
+        if (runtime != null && GodotObject.IsInstanceValid(runtime)) runtime.ResetScene();
     }
 }

@@ -13,7 +13,6 @@ public static class ErrorRelicDescriptionPatch
 {
     private static IEnumerable<MethodBase> TargetMethods()
     {
-        yield return AccessTools.PropertyGetter(typeof(RelicModel), nameof(RelicModel.Title));
         yield return AccessTools.PropertyGetter(typeof(RelicModel), nameof(RelicModel.DynamicDescription));
         yield return AccessTools.PropertyGetter(typeof(RelicModel), nameof(RelicModel.DynamicEventDescription));
         yield return AccessTools.PropertyGetter(typeof(RelicModel), nameof(RelicModel.Flavor));
@@ -31,8 +30,20 @@ public static class ErrorRelicDescriptionPatch
         }
         if (__instance is ErrorRandomTestRelic error)
         {
-            __result.Add("ErrorTitle", ErrorGlitchName.For(error));
             __result.Add("ErrorDescription", error.FullDescription);
         }
+    }
+}
+
+// Titles must remain visible when effect descriptions are hidden, and reading a
+// title (including a canonical history entry) must not evaluate a description.
+[HarmonyPatch(typeof(RelicModel), nameof(RelicModel.Title), MethodType.Getter)]
+public static class ErrorRelicTitlePatch
+{
+    [HarmonyPostfix]
+    public static void Postfix(RelicModel __instance, ref LocString __result)
+    {
+        if (__instance is ErrorRandomTestRelic error)
+            __result.Add("ErrorTitle", ErrorGlitchName.For(error));
     }
 }

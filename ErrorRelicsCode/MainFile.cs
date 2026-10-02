@@ -19,6 +19,7 @@ public partial class MainFile : Node
 
     public static void Initialize()
     {
+        ErrorRelics.ErrorRelicsCode.ErrorMode.ErrorRunState.RegisterSaves();
         var assembly = Assembly.GetExecutingAssembly();
         ModConfigRegistry.Register(ModId, new ErrorRelicsConfig());
 

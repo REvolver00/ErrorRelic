@@ -40,6 +40,23 @@ public static class ErrorExecutionCompatibility
     /// 做精确兼容，而不用再次修改 ErrorGeneratedRelic。
     /// </summary>
     public static async Task ExecuteAsync(
+        ErrorHookId hookId, ErrorEffectId effectId, ErrorContext context)
+    {
+        bool trace = ErrorRelicsCode.Debug.ErrorLoadDiagnostics.IsLoading;
+        if (trace) MainFile.Logger.Info($"ERROR load effect begin: owner={context.Owner.NetId}, {hookId}/{effectId}");
+        try
+        {
+            await ExecuteCoreAsync(hookId, effectId, context);
+            if (trace) MainFile.Logger.Info($"ERROR load effect end: owner={context.Owner.NetId}, {hookId}/{effectId}");
+        }
+        catch (System.Exception ex)
+        {
+            if (trace) MainFile.Logger.Info($"ERROR load effect failed: owner={context.Owner.NetId}, {hookId}/{effectId}, {ex}");
+            throw;
+        }
+    }
+
+    private static async Task ExecuteCoreAsync(
         ErrorHookId hookId,
         ErrorEffectId effectId,
         ErrorContext context)

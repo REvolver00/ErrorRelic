@@ -15,7 +15,7 @@ namespace ErrorRelics.ErrorRelicsCode.ErrorMode;
 // SHOP1 CLEAN
 //
 // Stable mode switch:
-// player owns ErrorProofRelic => ERROR Mode ON.
+// a player has obtained ErrorProofRelic => ERROR Mode stays ON for the run.
 //
 // This file contains only state/helper methods.
 // It does NOT patch rewards, treasure, RelicCmd, or RelicFactory.
@@ -26,9 +26,7 @@ public static class ErrorModeState
     public static bool IsEnabled(
         [NotNullWhen(true)] Player? player)
     {
-        return player != null && player.Relics.Any(
-            relic => relic is ErrorProofRelic
-        );
+        return player?.RunState is { } run && ErrorRunState.IsActivated(run);
     }
 
 
@@ -114,7 +112,8 @@ public static class ErrorModeState
         RelicModel source, Player owner, string sourceKey)
     {
         ErrorRandomTestRelic relic = CreateMutableForRarity(source.Rarity);
-        ErrorDefinition generated = ErrorGenerator.Generate(owner, source.Id, sourceKey);
+        ErrorRunState.AssignIdentity(relic, owner, sourceKey);
+        ErrorDefinition generated = ErrorGenerator.Generate(owner, source.Id, sourceKey, relic.GenerationIdentity);
         relic.GeneratedHookId = generated.HookId;
         relic.GeneratedEffectId = generated.EffectId;
         relic.DefinitionLocked = true;

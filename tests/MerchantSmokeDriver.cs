@@ -109,7 +109,7 @@ public static class MerchantSmokeDriver
                     if (run.Players.Any(p => ErrorModeState.IsEnabled(p) != (p.NetId == 1))) return;
                     foreach (var player in run.Players)
                     {
-                        bool hasProof = ErrorModeState.IsEnabled(player);
+                        bool hasProof = player.Relics.Any(r => r is ErrorProofRelic);
                         if (hasProof != (player.NetId == 1)) throw new Exception("Opening config was not synchronized per owner");
                         GD.Print($"ERROR_START_PROOF peer={me.NetId} owner={player.NetId} enabled={hasProof}");
                     }

@@ -14,41 +14,8 @@ using MegaCrit.Sts2.Core.Nodes.Screens.TreasureRoomRelic;
 namespace ErrorRelics.ErrorRelicsCode.ErrorMode;
 
 
-// =============================================================
-// CHEST2 - SINGLEPLAYER TREASURE
-//
-// CHEST1 tried to patch the tiny CurrentRelics getter.
-// In the user's test the chest still displayed the vanilla relic,
-// so CHEST2 removes that approach completely.
-//
-// Vanilla BeginRelicPicking already:
-// 1. rolls rarity;
-// 2. pulls the vanilla source relic from SharedRelicGrabBag;
-// 3. stores it in _currentRelics.
-//
-// CHEST2 changes ONLY step 3's final stored choice, in a postfix:
-// source relic -> canonical ERROR shell with one locked H/E.
-//
-// This means every later vanilla treasure step sees the SAME
-// canonical ERROR object:
-// - InitializeRelics display
-// - voting by index
-// - AwardRelics result.relic
-// - holder lookup
-// - result.relic.ToMutable()
-// - RelicCmd.Obtain
-//
-// We remember the vanilla source only so that, when the player
-// actually takes the ERROR, we also remove that source relic from
-// the player's personal RelicGrabBag. Vanilla already removed it
-// from the shared bag when the chest was generated.
-//
-// No RelicFactory patch.
-// No RelicCmd patch.
-// No RelicReward patch.
-// No CurrentRelics getter patch.
-// =============================================================
-
+// Singleplayer preview and award share one mutable ERROR instance.
+// MultiplayerTreasureAwardPatch handles the award clone boundary for both modes.
 
 internal static class TreasureRoomErrorModeState
 {
@@ -87,19 +54,7 @@ internal static class TreasureRoomErrorModeState
 }
 
 
-// -------------------------------------------------------------
-// Generate the treasure normally first, then replace only the
-// finished singleplayer treasure choice stored in _currentRelics.
-//
-// We deliberately use the canonical ERROR shell here because
-// vanilla AnimateRelicAwards later calls result.relic.ToMutable().
-// Canonical -> ToMutable is the game's normal relic flow.
-//
-// GeneratedHookId / GeneratedEffectId / DefinitionLocked are our
-// own properties and are copied into the mutable relic by the
-// normal model clone.
-// -------------------------------------------------------------
-
+// Replace only the finished singleplayer choice, after vanilla generation.
 [HarmonyPatch(
     typeof(TreasureRoomRelicSynchronizer),
     nameof(TreasureRoomRelicSynchronizer.BeginRelicPicking)
@@ -145,34 +100,9 @@ public static class TreasureRoomBeginErrorPatch
             return;
         }
 
-        RelicModel canonical =
-            ErrorModeState.GetCanonicalForRarity(
-                source.Rarity
-            );
-
-        if (canonical
-            is not ErrorRandomTestRelic errorRelic)
-        {
-            return;
-        }
-
-        ErrorDefinition generated =
-            ErrorGenerator.Generate(localPlayer, source.Id, "treasure");
-
-        errorRelic.GeneratedHookId =
-            generated.HookId;
-
-        errorRelic.GeneratedEffectId =
-            generated.EffectId;
-
-        errorRelic.DefinitionLocked =
-            true;
-
-        // VISUAL2 metadata only. The canonical ERROR still follows
-        // the exact CHEST2 award flow that already passed testing.
-        errorRelic.SetVisualSource(
-            source
-        );
+        // A preview owns its data; never write H/E or identity into ModelDb.
+        ErrorRandomTestRelic errorRelic = ErrorModeState.CreateLockedError(
+            source, localPlayer, "treasure");
 
         TreasureRoomErrorModeState.Reset();
 
@@ -186,7 +116,7 @@ public static class TreasureRoomBeginErrorPatch
         // sees ERROR, instead of only changing the UI.
         currentRelics[0] =
             errorRelic;
-        MainFile.Logger.Info($"ERROR chest shown: source={source.Id}, pair={generated.HookId}/{generated.EffectId}");
+        MainFile.Logger.Info($"ERROR chest shown: source={source.Id}, pair={errorRelic.GeneratedHookId}/{errorRelic.GeneratedEffectId}");
     }
 }
 

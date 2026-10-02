@@ -102,6 +102,8 @@ internal static class Program
         original.GeneratedHookId = ErrorHookId.H021_Every3TurnsHappyFlower;
         original.GeneratedEffectId = ErrorEffectId.E010_Add2RandomCurses;
         original.DefinitionLocked = true;
+        original.GenerationIdentity = "generated:41";
+        original.GenerationSequence = 41;
         original.EffectExecutions = 17;
         original.TurnsSeen = 2;
         original.NunchakuAttacksPlayed = 9;
@@ -121,6 +123,7 @@ internal static class Program
         Check(restored.DefinitionLocked && restored.TurnsSeen == 2 && restored.JossPaperCardsExhausted == 4
             && restored.NunchakuAttacksPlayed == 9 && restored.TuningForkSkillsPlayed == 8,
             "Save restore must keep locking and persistent counters");
+        Check(restored.GenerationIdentity == "generated:41" && restored.GenerationSequence == 41, "Network restore preserves generation identity");
         Check(restored.EffectExecutions == 17, "Network reconstruction must preserve the effect RNG ordinal");
         var jsonOptions = new System.Text.Json.JsonSerializerOptions { IncludeFields = true };
         string propsJson = System.Text.Json.JsonSerializer.Serialize(original.ToSerializable().Props, jsonOptions);
@@ -146,6 +149,12 @@ internal static class Program
         Check(original.TurnsSeen == 2 && original.JossPaperCardsExhausted == 4 && original.NunchakuAttacksPlayed == 9,
             "Combat start must not clear persistent counters");
         harmony.PatchAll(typeof(MultiplayerTreasureAwardPatch).Assembly);
+        Check(ModelDb.Relic<ErrorRandomTestRelic>().FullDescription.Contains("获得时"), "Canonical descriptions must not read Owner");
+        var canonicalTitle = ModelDb.Relic<ErrorRandomTestRelic>().Title;
+        Check(canonicalTitle.Variables.ContainsKey("ErrorTitle") && !canonicalTitle.Variables.ContainsKey("ErrorDescription"), "Canonical title does not evaluate effects");
+        ErrorRelics.ErrorRelicsCode.Config.ErrorRelicsConfig.ShowFullEffects = false;
+        Check(original.Title.Variables.ContainsKey("ErrorTitle"), "Hiding effects must preserve title");
+        ErrorRelics.ErrorRelicsCode.Config.ErrorRelicsConfig.ShowFullEffects = true;
         var firstDescription = new MegaCrit.Sts2.Core.Localization.LocString("relics", "test.description");
         ErrorRelicDescriptionPatch.Postfix(original, ref firstDescription);
         restored.GeneratedHookId = ErrorHookId.H002_PlayerTurnStart;

@@ -35,7 +35,7 @@ public static class MultiplayerSmokeDriver
         // Isolate the chest conversion/ownership test from effects that need UI.
         // The production generator is checked independently on both live peers.
         new Harmony("ErrorRelics.SmokeFixture").Patch(AccessTools.Method(typeof(ErrorGenerator), nameof(ErrorGenerator.Generate),
-            new[] { typeof(MegaCrit.Sts2.Core.Entities.Players.Player), typeof(ModelId), typeof(string) }),
+            new[] { typeof(MegaCrit.Sts2.Core.Entities.Players.Player), typeof(ModelId), typeof(string), typeof(string) }),
             prefix: new HarmonyMethod(typeof(MultiplayerSmokeDriver), nameof(ChestFixture)));
         if (_single)
             new Harmony("ErrorRelics.SingleSmokeFixture").Patch(AccessTools.Method(typeof(ErrorGenerator), nameof(ErrorGenerator.Generate), Type.EmptyTypes),
@@ -236,6 +236,14 @@ public static class MultiplayerSmokeDriver
             {
                 var generated = ErrorGenerator.Generate(player, ModelDb.Relic<Vajra>().Id, "smoke-consistency");
                 GD.Print($"ERROR_MP_GENERATION peer={me.NetId} owner={player.NetId} {generated.HookId}|{generated.EffectId}");
+                foreach (var proof in player.Relics.OfType<ErrorProofRelic>().ToList())
+                    player.RemoveRelicInternal(proof, silent: true);
+                if (!ErrorModeState.IsEnabled(player)) throw new Exception("Removing Proof deactivated the multiplayer run");
+                for (int i = 0; i < 8; i++)
+                {
+                    var fresh = ErrorModeState.CreateLockedError(ModelDb.Relic<Circlet>(), player, "mp-circlet");
+                    GD.Print($"ERROR_MP_CIRCLET peer={me.NetId} owner={player.NetId} identity={fresh.GenerationIdentity} pair={fresh.GeneratedHookId}/{fresh.GeneratedEffectId}");
+                }
             }
             GD.Print($"ERROR_MP_SMOKE_PASS peer={me.NetId}");
             _timer?.Stop();

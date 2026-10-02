@@ -106,7 +106,7 @@ public static class NeowStartingProofPatch
             else
                 enabled = (await synchronizer.WaitForRemoteChoice(owner, choiceId)).AsIndex() == 1;
         }
-        if (enabled && !ErrorModeState.IsEnabled(owner))
+        if (enabled && !owner.Relics.Any(relic => relic is ErrorProofRelic))
             await RelicCmd.Obtain(ErrorModeState.CreateProof(), owner);
     }
 }

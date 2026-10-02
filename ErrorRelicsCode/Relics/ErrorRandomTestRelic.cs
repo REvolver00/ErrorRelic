@@ -1,4 +1,4 @@
-﻿using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Localization;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -44,6 +44,12 @@ public class ErrorRandomTestRelic : ErrorGeneratedRelic
 
     [SavedProperty]
     public ErrorEffectId GeneratedEffectId { get; set; }
+
+    [SavedProperty]
+    public string GenerationIdentity { get; set; } = string.Empty;
+
+    [SavedProperty]
+    public int GenerationSequence { get; set; }
 
     [SavedProperty]
     public bool DefinitionLocked { get; set; }
@@ -133,7 +139,8 @@ public class ErrorRandomTestRelic : ErrorGeneratedRelic
         // 保留命令提前塞好的 H + E。
         if (!DefinitionLocked)
         {
-            var generated = ErrorGenerator.Generate(Owner, Id, $"obtained:{Owner.Relics.ToList().IndexOf(this)}");
+            ErrorRelicsCode.ErrorMode.ErrorRunState.AssignIdentity(this, Owner, "obtained");
+            var generated = ErrorGenerator.Generate(Owner, Id, "obtained", GenerationIdentity);
 
             GeneratedHookId = generated.HookId;
             GeneratedEffectId = generated.EffectId;
@@ -151,7 +158,7 @@ public class ErrorRandomTestRelic : ErrorGeneratedRelic
 
     // The localization template is shared, but its variable is filled from
     // this instance by ErrorRelicDescriptionPatch. Never rewrite the table.
-    public string FullDescription => DefinitionLocked || Owner != null
+    public string FullDescription => DefinitionLocked
         ? ErrorDescriptionText.Describe(GeneratedHookId, GeneratedEffectId, OriginalName,
             LocManager.Instance == null ? "colorless" : RunManager.Instance.GetLocalCharacterEnergyIconPrefix() ?? "colorless")
         : "获得时随机组合一个触发条件和一个效果。";
