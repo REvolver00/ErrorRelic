@@ -1,0 +1,11 @@
+ERROR Relics 0.93 Visual V3
+- Reward and inventory paths now share one full appearance routine.
+- NRelic.Reload explicitly restores source texture before ERROR styling.
+- Removed V2 model-level source-icon override.
+- Deterministic TM-style names retained.
+- Proof excluded from ERROR source material.
+- Proof outline asset repaired.
+
+Visual V4
+- Top-bar ERROR now uses the exact same Big source texture as reward preview.
+- Reapply ERROR appearance after NRelicInventoryHolder lifecycle refreshes.

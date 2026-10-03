@@ -1,0 +1,14 @@
+ERROR 0.93 Visual V6.4
+
+Now that PCK deployment and res:// slash normalization are fixed, re-test the
+actual Reward -> inventory mismatch under valid resource conditions.
+
+Changes:
+- ERROR visual replacement uses ResourceLoader for both vanilla and mod PCK
+  resources instead of depending on PreloadManager.Cache.
+- NRelic top-bar rendering now uses the exact same VisualSourceBigIconPath that
+  RelicReward.CreateIcon uses.
+- Reward and top bar therefore receive the same source texture, deterministic
+  flip/tint, and the same shader.
+- Keeps working Proof/PCK/path fixes from V6.2/V6.3.
+- No H/E gameplay changes.

@@ -100,6 +100,7 @@ public static class ErrorModeState
         relic.GeneratedEffectId =
             generated.EffectId;
 
+        relic.InitializeDiscoveryForNewGeneration();
         relic.DefinitionLocked = true;
 
         return relic;
@@ -116,6 +117,7 @@ public static class ErrorModeState
         ErrorDefinition generated = ErrorGenerator.Generate(owner, source.Id, sourceKey, relic.GenerationIdentity);
         relic.GeneratedHookId = generated.HookId;
         relic.GeneratedEffectId = generated.EffectId;
+        relic.InitializeDiscoveryForNewGeneration();
         relic.DefinitionLocked = true;
         relic.SetVisualSource(source);
         return relic;

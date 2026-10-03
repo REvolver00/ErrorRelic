@@ -4,5 +4,9 @@
   "ERRORRELICS-PICKUP_RANDOM_ROTATION.title": "Randomly rotate visuals when picking up ERROR",
   "ERRORRELICS-RANDOM_TRIGGER_SFX.title": "Randomize ERROR trigger SFX",
   "ERRORRELICS-ALLOW_ANCIENT_SOURCE_EFFECTS.title": "Allow Ancient-source Effects",
-  "ERRORRELICS-ALLOW_MULTIPLAYER_IMPACT_EFFECTS.title": "Allow Effects that may affect multiplayer flow"
+  "ERRORRELICS-ALLOW_MULTIPLAYER_IMPACT_EFFECTS.title": "Allow Effects that may affect multiplayer flow",
+  "ERRORRELICS-GENERATION_SECTION.title": "Generation",
+  "ERRORRELICS-GAMEPLAY_SECTION.title": "Gameplay",
+  "ERRORRELICS-DISPLAY_SECTION.title": "Display",
+  "ERRORRELICS-DATA_CRACK_REVEAL_MODE.title": "Discovery Mode (only when “Show full effects” is off)"
 }

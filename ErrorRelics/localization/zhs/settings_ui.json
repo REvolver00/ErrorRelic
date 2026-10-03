@@ -4,5 +4,9 @@
   "ERRORRELICS-PICKUP_RANDOM_ROTATION.title": "拾取 ERROR 时随机旋转贴图",
   "ERRORRELICS-RANDOM_TRIGGER_SFX.title": "随机播放 ERROR 触发音效",
   "ERRORRELICS-ALLOW_ANCIENT_SOURCE_EFFECTS.title": "允许生成先古遗物来源的 Effect",
-  "ERRORRELICS-ALLOW_MULTIPLAYER_IMPACT_EFFECTS.title": "允许生成可能造成多人游戏影响的 Effect"
+  "ERRORRELICS-ALLOW_MULTIPLAYER_IMPACT_EFFECTS.title": "允许生成可能造成多人游戏影响的 Effect",
+  "ERRORRELICS-GENERATION_SECTION.title": "生成",
+  "ERRORRELICS-GAMEPLAY_SECTION.title": "玩法",
+  "ERRORRELICS-DISPLAY_SECTION.title": "显示",
+  "ERRORRELICS-DATA_CRACK_REVEAL_MODE.title": "发现模式（仅在关闭“显示完整效果”时生效）"
 }
