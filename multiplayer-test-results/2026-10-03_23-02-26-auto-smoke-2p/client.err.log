@@ -1,0 +1,10 @@
+ERROR: Invalid Task ID
+   at: wait_for_task_completion (core/object/worker_thread_pool.cpp:418)
+ERROR: Invalid Task ID
+   C# backtrace (most recent call first):
+       [0] void Godot.Bridge.ScriptManagerBridge.GetOrLoadOrCreateScriptForType(System.Type, Godot.NativeInterop.godot_ref*)
+       [1] void Godot.Bridge.ScriptManagerBridge.UpdateScriptClassInfo(nint, Godot.NativeInterop.godot_csharp_type_info*, Godot.NativeInterop.godot_array*, Godot.NativeInterop.godot_dictionary*, Godot.NativeInterop.godot_dictionary*, Godot.NativeInterop.godot_ref*)
+       [2] void Godot.NativeInterop.NativeFuncs.godotsharp_internal_reload_registered_script(nint)
+       [3] void Godot.Bridge.ScriptManagerBridge.GetOrCreateScriptBridgeForType(System.Type, Godot.NativeInterop.godot_ref*)
+       [4] void Godot.Bridge.ScriptManagerBridge.GetOrCreateScriptBridgeForPath(Godot.NativeInterop.godot_string*, Godot.NativeInterop.godot_ref*)
+   at: wait_for_task_completion (core/object/worker_thread_pool.cpp:418)

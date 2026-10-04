@@ -14,6 +14,7 @@ using BaseLib.Utils;
 
 using ErrorRelics.ErrorRelicsCode.Extensions;
 using ErrorRelics.ErrorRelicsCode.Fragments;
+using ErrorRelics.ErrorRelicsCode.Config;
 
 
 namespace ErrorRelics.ErrorRelicsCode.Relics;
@@ -53,6 +54,42 @@ public class ErrorRandomTestRelic : ErrorGeneratedRelic
 
     [SavedProperty]
     public bool DefinitionLocked { get; set; }
+
+    // Discovery state is saved per ERROR. Keeping EffectRevealed preserves
+    // compatibility with the first Data Crack build. HookRevealed is new and
+    // defaults true so old saves keep their previously-visible Hook. Newly
+    // generated ERRORs in Discovery Mode explicitly set both to false.
+    [SavedProperty]
+    public bool EffectRevealed { get; set; } = true;
+
+    [SavedProperty]
+    public bool HookRevealed { get; set; } = true;
+
+    // Initialize discovery only when a brand-new ERROR definition is generated.
+    // Do NOT call this during save reconstruction or Gift transfer: those paths
+    // must preserve the relic's existing SavedProperty discovery state.
+    public void InitializeDiscoveryForNewGeneration()
+    {
+        AssertMutable();
+        bool discovery = !ErrorRelicsConfig.ShowFullEffects
+            && ErrorRelicsConfig.DataCrackRevealMode;
+        EffectRevealed = !discovery;
+        HookRevealed = !discovery;
+    }
+
+    public void RevealEffect()
+    {
+        AssertMutable();
+        EffectRevealed = true;
+        InvokeDisplayAmountChanged();
+    }
+
+    public void RevealHook()
+    {
+        AssertMutable();
+        HookRevealed = true;
+        InvokeDisplayAmountChanged();
+    }
 
 
     // =========================================================
@@ -144,6 +181,7 @@ public class ErrorRandomTestRelic : ErrorGeneratedRelic
 
             GeneratedHookId = generated.HookId;
             GeneratedEffectId = generated.EffectId;
+            InitializeDiscoveryForNewGeneration();
             DefinitionLocked = true;
         }
 
@@ -162,6 +200,16 @@ public class ErrorRandomTestRelic : ErrorGeneratedRelic
         ? ErrorDescriptionText.Describe(GeneratedHookId, GeneratedEffectId, OriginalName,
             LocManager.Instance == null ? "colorless" : RunManager.Instance.GetLocalCharacterEnergyIconPrefix() ?? "colorless")
         : "获得时随机组合一个触发条件和一个效果。";
+
+    public string HookOnlyDescription => DefinitionLocked
+        ? ErrorDescriptionText.DescribeHookOnly(GeneratedHookId,
+            LocManager.Instance == null ? "colorless" : RunManager.Instance.GetLocalCharacterEnergyIconPrefix() ?? "colorless")
+        : "获得时随机组合一个触发条件和一个未知效果。";
+
+    public string EffectOnlyDescription => DefinitionLocked
+        ? ErrorDescriptionText.DescribeEffectOnly(GeneratedEffectId, OriginalName,
+            LocManager.Instance == null ? "colorless" : RunManager.Instance.GetLocalCharacterEnergyIconPrefix() ?? "colorless")
+        : "获得时随机组合一个未知触发条件和一个效果。";
 
     private static string? OriginalName(string table, string key) => LocManager.Instance == null
         ? null : LocString.GetIfExists(table, key)?.GetFormattedText();

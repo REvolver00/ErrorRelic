@@ -1,0 +1,56 @@
+WARNING: PSO caching is not implemented yet in the Direct3D 12 driver.
+   at: pipeline_cache_create (drivers/d3d12/rendering_device_driver_d3d12.cpp:4469)
+[ERROR] Mod manifest for mod ErrorRelics.Tests declares that it should load an assembly, but no assembly at path E:\SteamLibrary\steamapps\common\Slay the Spire 2\.errorrelic-multiplayer-tests\mods\ErrorRelics.Tests\ErrorRelics.Tests.dll was found!
+   at MegaCrit.Sts2.Core.Modding.ModManager.TryLoadMod(Mod mod)
+   at MegaCrit.Sts2.Core.Modding.ModManager.Initialize(IModManagerFileIo fileIo, ModSettings settings, SemanticVersion gameVersion)
+   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start[TStateMachine](TStateMachine& stateMachine)
+   at MegaCrit.Sts2.Core.Modding.ModManager.Initialize(IModManagerFileIo fileIo, ModSettings settings, SemanticVersion gameVersion)
+   at MegaCrit.Sts2.Core.Helpers.OneTimeInitialization.ExecuteVeryEarly()
+   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start[TStateMachine](TStateMachine& stateMachine)
+   at MegaCrit.Sts2.Core.Helpers.OneTimeInitialization.ExecuteVeryEarly()
+   at MegaCrit.Sts2.Core.Nodes.NGame.GameStartup()
+   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start[TStateMachine](TStateMachine& stateMachine)
+   at MegaCrit.Sts2.Core.Nodes.NGame.GameStartup()
+   at MegaCrit.Sts2.Core.Nodes.NGame.GameStartupWrapper()
+   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start[TStateMachine](TStateMachine& stateMachine)
+   at MegaCrit.Sts2.Core.Nodes.NGame.GameStartupWrapper()
+   at MegaCrit.Sts2.Core.Nodes.NGame._EnterTree()
+   at Godot.Node.InvokeGodotClassMethod(godot_string_name& method, NativeVariantPtrArgs args, godot_variant& ret)
+   at Godot.CanvasItem.InvokeGodotClassMethod(godot_string_name& method, NativeVariantPtrArgs args, godot_variant& ret)
+   at Godot.Control.InvokeGodotClassMethod(godot_string_name& method, NativeVariantPtrArgs args, godot_variant& ret)
+   at MegaCrit.Sts2.Core.Nodes.NGame.InvokeGodotClassMethod(godot_string_name& method, NativeVariantPtrArgs args, godot_variant& ret)
+   at Godot.Bridge.CSharpInstanceBridge.Call(IntPtr godotObjectGCHandle, godot_string_name* method, godot_variant** args, Int32 argCount, godot_variant_call_error* refCallError, godot_variant* ret)
+
+ERROR: Invalid Task ID
+   at: wait_for_task_completion (core/object/worker_thread_pool.cpp:418)
+ERROR: Invalid Task ID
+   at: wait_for_task_completion (core/object/worker_thread_pool.cpp:418)
+   C# backtrace (most recent call first):
+       [0] void Godot.Bridge.ScriptManagerBridge.GetOrLoadOrCreateScriptForType(System.Type, Godot.NativeInterop.godot_ref*)
+       [1] void Godot.Bridge.ScriptManagerBridge.UpdateScriptClassInfo(nint, Godot.NativeInterop.godot_csharp_type_info*, Godot.NativeInterop.godot_array*, Godot.NativeInterop.godot_dictionary*, Godot.NativeInterop.godot_dictionary*, Godot.NativeInterop.godot_ref*)
+       [2] void Godot.NativeInterop.NativeFuncs.godotsharp_internal_reload_registered_script(nint)
+       [3] void Godot.Bridge.ScriptManagerBridge.GetOrCreateScriptBridgeForType(System.Type, Godot.NativeInterop.godot_ref*)
+       [4] void Godot.Bridge.ScriptManagerBridge.GetOrCreateScriptBridgeForPath(Godot.NativeInterop.godot_string*, Godot.NativeInterop.godot_ref*)
+WARNING: 1080 RIDs of type "CanvasItem" were leaked.
+   at: _free_rids (servers/rendering/renderer_canvas_cull.cpp:2678)
+ERROR: 1 RID allocations of type 'N26RendererEnvironmentStorage11EnvironmentE' were leaked at exit.
+ERROR: 5 shaders of type CanvasShaderRD were never freed
+   at: ~ShaderRD (servers/rendering/renderer_rd/shader_rd.cpp:1044)
+ERROR: 30 RID allocations of type 'N10RendererRD16ParticlesStorage9ParticlesE' were leaked at exit.
+ERROR: 1 shaders of type ParticlesShaderRD were never freed
+   at: ~ShaderRD (servers/rendering/renderer_rd/shader_rd.cpp:1044)
+ERROR: 30 RID allocations of type 'N10RendererRD11MeshStorage4MeshE' were leaked at exit.
+ERROR: 97 RID allocations of type 'N10RendererRD15MaterialStorage8MaterialE' were leaked at exit.
+ERROR: 6 RID allocations of type 'N10RendererRD15MaterialStorage6ShaderE' were leaked at exit.
+ERROR: 27 RID allocations of type 'N10RendererRD14TextureStorage7TextureE' were leaked at exit.
+WARNING: 187 RIDs of type "UniformBuffer" were leaked.
+   at: _free_rids (servers/rendering/rendering_device.cpp:6981)
+WARNING: 50 RIDs of type "Texture" were leaked.
+   at: finalize (servers/rendering/rendering_device.cpp:7191)
+ERROR: 360 RID allocations of type 'PN18TextServerAdvanced22ShapedTextDataAdvancedE' were leaked at exit.
+ERROR: 3 RID allocations of type 'PN18TextServerAdvanced12FontAdvancedE' were leaked at exit.
+ERROR: 4 RID allocations of type 'PN18TextServerAdvanced27FontAdvancedLinkedVariationE' were leaked at exit.
+WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
+   at: cleanup (core/object/object.cpp:2514)
+ERROR: 66 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:795)

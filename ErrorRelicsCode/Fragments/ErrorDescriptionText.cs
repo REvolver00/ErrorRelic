@@ -242,6 +242,38 @@ public static class ErrorDescriptionText
         ("Shiv", "cards", "SHIV.title", "小刀"),
     };
 
+    public static string DescribeHookOnly(ErrorHookId hook, string energyIconPrefix = "colorless")
+    {
+        string h = hook.ToString().Split('_')[0];
+        string text = Lookup(Hooks, h, 'H');
+        string energyIcon = $"[img]res://images/packed/sprite_fonts/{energyIconPrefix}_energy_icon.png[/img]";
+        text = text.Replace("{Energy1}", energyIcon, StringComparison.Ordinal)
+            .Replace("{Energy2}", energyIcon + energyIcon, StringComparison.Ordinal)
+            .Replace("{Energy3}", energyIcon + energyIcon + energyIcon, StringComparison.Ordinal)
+            .Replace("{Energy4}", energyIcon + energyIcon + energyIcon + energyIcon, StringComparison.Ordinal);
+        return $"{text}，???\n[color=#9b9b9b]({h}-E???)[/color]";
+    }
+
+    public static string DescribeEffectOnly(ErrorEffectId effect,
+        Func<string, string, string?>? localize = null, string energyIconPrefix = "colorless")
+    {
+        string e = effect.ToString().Split('_')[0];
+        string text = Lookup(Effects, e, 'E');
+        foreach (var name in Names)
+        {
+            string token = "{" + name.Token + "}";
+            if (text.Contains(token, StringComparison.Ordinal))
+                text = text.Replace(token, localize?.Invoke(name.Table, name.Key) ?? name.Fallback,
+                    StringComparison.Ordinal);
+        }
+        string energyIcon = $"[img]res://images/packed/sprite_fonts/{energyIconPrefix}_energy_icon.png[/img]";
+        text = text.Replace("{Energy1}", energyIcon, StringComparison.Ordinal)
+            .Replace("{Energy2}", energyIcon + energyIcon, StringComparison.Ordinal)
+            .Replace("{Energy3}", energyIcon + energyIcon + energyIcon, StringComparison.Ordinal)
+            .Replace("{Energy4}", energyIcon + energyIcon + energyIcon + energyIcon, StringComparison.Ordinal);
+        return $"???，{text}\n[color=#9b9b9b](H???-{e})[/color]";
+    }
+
     public static string Describe(ErrorHookId hook, ErrorEffectId effect,
         Func<string, string, string?>? localize = null, string energyIconPrefix = "colorless")
     {

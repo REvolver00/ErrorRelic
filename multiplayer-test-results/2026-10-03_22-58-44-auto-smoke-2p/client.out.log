@@ -1,0 +1,507 @@
+MegaDot v4.5.1.m.14.mono.custom_build - https://godotengine.org
+
+FMOD Sound System: Successfully initialized
+[INFO] Found release_info.json at: E:\SteamLibrary\steamapps\common\Slay the Spire 2\.errorrelic-multiplayer-tests\release_info.json
+[INFO] [Sentry.NET] Initialized: env=unknown, release=v0.111.0
+[INFO] Steam initialization skipped (editor mode). Use --force-steam to enable.
+[INFO] Registered 22 migrations
+[INFO] Current save versions: PrefsSave v2; ProfileSave v2; SerializableProgress v24; RunHistory v10; SerializableRun v20; SettingsSave v8
+[INFO] Found mod manifest file E:\SteamLibrary\steamapps\common\Slay the Spire 2\.errorrelic-multiplayer-tests\mods\BaseLib\BaseLib.json
+[INFO] Found mod manifest file E:\SteamLibrary\steamapps\common\Slay the Spire 2\.errorrelic-multiplayer-tests\mods\ErrorRelics\ErrorRelics.json
+[INFO] Found mod manifest file E:\SteamLibrary\steamapps\common\Slay the Spire 2\.errorrelic-multiplayer-tests\mods\ErrorRelics.Tests\ErrorRelics.Tests.json
+[INFO] Mods have been re-sorted because we detected a change or dependency order was broken. New sorting order:
+[INFO]   0: BaseLib (BaseLib)
+[INFO]   1: ErrorRelics (ErrorRelics)
+[INFO]   2: ERROR multiplayer test driver (ErrorRelics.Tests)
+[INFO] Loading assembly DLL E:\SteamLibrary\steamapps\common\Slay the Spire 2\.errorrelic-multiplayer-tests\mods\BaseLib\BaseLib.dll
+[INFO] Loading Godot PCK E:\SteamLibrary\steamapps\common\Slay the Spire 2\.errorrelic-multiplayer-tests\mods\BaseLib\BaseLib.pck
+[INFO] Calling initializer method of type BaseLib.BaseLibMain for BaseLib, Version=3.4.7.0, Culture=neutral, PublicKeyToken=null
+[INFO] [BaseLib] Created node factory for Control.
+[INFO] [BaseLib] Created node factory for NCreatureVisuals.
+[INFO] [BaseLib] Created node factory for NRestSiteCharacter.
+[INFO] [BaseLib] Created node factory for NMerchantCharacter.
+[INFO] [BaseLib] Created node factory for NEnergyCounter.
+[INFO] [BaseLib] Created node factory for NCustomTreasureRoomChest.
+[INFO] [BaseLib] Registered config for mod BaseLib
+[INFO] [BaseLib] Performing CustomPile Add patch
+[INFO] [BaseLib] Naive game version: v0.111.0
+[INFO] [BaseLib] Starting PatchAll for assembly BaseLib, Version=3.4.7.0, Culture=neutral, PublicKeyToken=null
+[INFO] [BaseLib] Reading state machine type [MegaCrit.Sts2.Core.Nodes.Combat.NCreature+<AnimDie>d__106]
+[INFO] [BaseLib] Adding new state 5 for method CustomAnimationPatch.WaitCustomAnim before Wait with result type None ()
+[INFO] [BaseLib] Reading state machine type [MegaCrit.Sts2.Core.Hooks.Hook+<AfterCardPlayed>d__16]
+[INFO] [BaseLib] Adding new state 2 for method AfterCardPlayedPatch.BeforeAfterPlayHooks before AfterCardPlayed with result type None ()
+[INFO] [BaseLib] Skipping SentryService shutdown patch; no match found.
+[INFO] [BaseLib] Reading state machine type [MegaCrit.Sts2.Core.Models.CardModel+<SpendResources>d__336]
+[INFO] [BaseLib] Adding new state 2 for method CustomResourcePatches.SpendAdditionalCosts after SpendStars with result type None ()
+[INFO] [BaseLib] Reading state machine type [MegaCrit.Sts2.Core.Hooks.Hook+<AfterEnergyReset>d__31]
+[INFO] [BaseLib] Adding new state 2 for method CustomResourcePatches.BeforeEnergyResetHook before AfterEnergyReset with result type None ()
+[INFO] [BaseLib] No valid target found, skipping old ExhaustivePatch
+[INFO] [BaseLib] No valid target found, skipping old PurgePatch
+[INFO] [BaseLib] Applied 282 patches successfully, 0 failed
+[INFO] Finished mod initialization for 'BaseLib' (BaseLib).
+[INFO] Loading assembly DLL E:\SteamLibrary\steamapps\common\Slay the Spire 2\.errorrelic-multiplayer-tests\mods\ErrorRelics\ErrorRelics.dll
+[INFO] Loading Godot PCK E:\SteamLibrary\steamapps\common\Slay the Spire 2\.errorrelic-multiplayer-tests\mods\ErrorRelics\ErrorRelics.pck
+[INFO] Calling initializer method of type ErrorRelics.ErrorRelicsCode.MainFile for ErrorRelics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+[INFO] [BaseLib] Registered config for mod ErrorRelics
+[INFO] Finished mod initialization for 'ErrorRelics' (ErrorRelics).
+[INFO] Loading assembly DLL E:\SteamLibrary\steamapps\common\Slay the Spire 2\.errorrelic-multiplayer-tests\mods\ErrorRelics.Tests\ErrorRelics.Tests.dll
+[INFO] Calling initializer method of type CombatDuplicateSmokeDriver for ErrorRelics.Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+[INFO] Calling initializer method of type ConfigSmokeDriver for ErrorRelics.Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+[INFO] Calling initializer method of type MaintenanceSmokeDriver for ErrorRelics.Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+[INFO] Calling initializer method of type MerchantSmokeDriver for ErrorRelics.Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+[INFO] Calling initializer method of type MultiplayerSmokeDriver for ErrorRelics.Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+[INFO] Calling initializer method of type NeowSmokeDriver for ErrorRelics.Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+[INFO] Calling initializer method of type RoomEntryRewardsSmokeDriver for ErrorRelics.Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+[INFO] Calling initializer method of type UnknownTransformSmokeDriver for ErrorRelics.Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+[INFO] Finished mod initialization for 'ERROR multiplayer test driver' (ErrorRelics.Tests).
+[INFO]  --- RUNNING MODDED! --- Loaded 3 mods (3 total)
+[INFO] Player is playing modded for the first time. Checking if we need to copy unmodded save files
+[INFO] Modded saves don't exist, but neither do unmodded saves. Skipping first-time copy
+[WARN] Asset not cached: res://scenes/debug/dev_console.tscn
+[WARN] Asset not cached: res://scenes/cards/card.tscn
+[WARN] Asset not cached: res://scenes/cards/holders/grid_card_holder.tscn
+[INFO] AtlasManager: Loaded ui_atlas with 102 sprites
+[INFO] AtlasManager: Loaded compressed with 45 sprites
+[INFO] [BaseLib] Performing early post-mod init
+[INFO] [BaseLib] Mod ErrorRelics that modifies gameplay has BaseLib dependency; gameplay modification enabled.
+[INFO] [BaseLib] Patching act types for custom encounters and events | DeprecatedAct | Glory | Hive | Overgrowth | Underdocks
+[INFO] [BaseLib] Generating interop methods and properties
+[INFO] Loading locale path=res://localization/eng
+[INFO] Found loc table from mod: eng ancients.json. Merging with base loc table
+[INFO] Found loc table from mod: eng card_keywords.json. Merging with base loc table
+[INFO] Found loc table from mod: eng card_keywords.json. Merging with base loc table
+[INFO] Found loc table from mod: eng card_selection.json. Merging with base loc table
+[INFO] Found loc table from mod: eng cards.json. Merging with base loc table
+[INFO] Found loc table from mod: eng credits.json. Merging with base loc table
+[INFO] Found loc table from mod: eng gameplay_ui.json. Merging with base loc table
+[INFO] Found loc table from mod: eng main_menu_ui.json. Merging with base loc table
+[INFO] Found loc table from mod: eng powers.json. Merging with base loc table
+[INFO] Found loc table from mod: eng powers.json. Merging with base loc table
+[INFO] Found loc table from mod: eng relics.json. Merging with base loc table
+[INFO] Found loc table from mod: eng rest_site_ui.json. Merging with base loc table
+[INFO] Found loc table from mod: eng settings_ui.json. Merging with base loc table
+[INFO] Found loc table from mod: eng settings_ui.json. Merging with base loc table
+[INFO] Found loc table from mod: eng static_hover_tips.json. Merging with base loc table
+[INFO] Found loc table from mod: eng static_hover_tips.json. Merging with base loc table
+[INFO] Loading locale path=res://localization/zhs
+[INFO] Found loc table from mod: zhs card_keywords.json. Merging with base loc table
+[INFO] Found loc table from mod: zhs card_selection.json. Merging with base loc table
+[INFO] Found loc table from mod: zhs gameplay_ui.json. Merging with base loc table
+[INFO] Found loc table from mod: zhs main_menu_ui.json. Merging with base loc table
+[INFO] Found loc table from mod: zhs powers.json. Merging with base loc table
+[INFO] Found loc table from mod: zhs rest_site_ui.json. Merging with base loc table
+[INFO] Found loc table from mod: zhs settings_ui.json. Merging with base loc table
+[INFO] Found loc table from mod: zhs settings_ui.json. Merging with base loc table
+[INFO] Found loc table from mod: zhs static_hover_tips.json. Merging with base loc table
+[INFO] Found loc table from mod: zhs static_hover_tips.json. Merging with base loc table
+[INFO] [BaseLib] Starting custom enum generation for 1358 modded types
+[INFO] [BaseLib] Generated KeyGenerator for enum MegaCrit.Sts2.Core.Entities.Cards.TargetType with starting value 10 | IsFlag: False | Half-Size: 16
+[INFO] [BaseLib] Generated KeyGenerator for enum MegaCrit.Sts2.Core.Rewards.RewardType with starting value 7 | IsFlag: False | Half-Size: 16
+[INFO] [BaseLib] Registering CustomReward deserializer for BaseLib.Common.Rewards.CardTransformReward
+[INFO] [BaseLib] Registering RewardType CardTransform
+[INFO] [BaseLib] Registering CustomReward deserializer for BaseLib.Common.Rewards.CardUpgradeReward
+[INFO] [BaseLib] Registering RewardType CardUpgrade
+[INFO] [BaseLib] Registering CustomReward deserializer for BaseLib.Common.Rewards.LinkedRewardSet.CustomLinkedRewardSet
+[INFO] [BaseLib] Registering RewardType CustomLinkedRewardType
+[INFO] [BaseLib] Generated KeyGenerator for enum MegaCrit.Sts2.Core.HoverTips.StaticHoverTip with starting value 17 | IsFlag: False | Half-Size: 16
+[INFO] [BaseLib] Generated KeyGenerator for enum MegaCrit.Sts2.Core.Entities.Cards.CardKeyword with starting value 8 | IsFlag: False | Half-Size: 16
+[INFO] [BaseLib] Registering CustomReward deserializer for BaseLib.Common.Rewards.RandomCardUpgradeReward
+[INFO] [BaseLib] Registering RewardType RandomCardUpgrade
+[INFO] ModelIdSerializationCache initialized. Categories: 20 Entries: 1664 Epochs: 57 Properties: 64 Hash: 568948152
+[INFO]   There are mods included that do not affect gameplay. Hash may not include all IDs.
+[INFO] [BaseLib] Performing late post-mod init
+[INFO] [BaseLib] Patching type NRewardButton to add nodes.
+[INFO] [BaseLib] Adding postfix static System.Void BaseLib.Utils.IAddedNodes`1<MegaCrit.Sts2.Core.Nodes.Rewards.NRewardButton>::UnconditionalAdd(MegaCrit.Sts2.Core.Nodes.Rewards.NRewardButton __instance)
+[INFO] [BaseLib] Found 0 SavedSpireFields.
+[INFO] [BaseLib] Adjusting keys of custom message wrappers.
+[INFO] [BaseLib] Using IDs 128 and 129 for custom message wrappers.
+[WARN] Tried to read file at user://default/1001/leaderboards.save, but there was no such file
+[INFO] Profile-scoped data path initialized: user://default/1001/modded/profile1
+[INFO] Wrote 811 bytes to path=user://default/1001/modded/profile1/saves/progress.save save_dir=user://default/1001
+[INFO] Wrote 365 bytes to path=user://default/1001/modded/profile1/saves/prefs.save save_dir=user://default/1001
+[INFO] [Sentry.NET] Steam not initialized
+[INFO] [Sentry.NET] Shutting down because event reporting is disabled.
+[INFO] [Sentry.NET] Shutting down
+[INFO] [BaseLib] Adding 0 custom acts to act list.
+[INFO] [BaseLib] Result: ACT.OVERGROWTH (2468506),ACT.UNDERDOCKS (22216562),ACT.HIVE (65731330),ACT.GLORY (54711060)
+[INFO] AtlasManager: Loaded controller_atlas with 112 sprites
+[INFO] [ErrorRelics] ERROR audio pools loaded: vanilla=106, custom=0
+[WARN] Cannot initialize Steam Input because Steamworks is not initialized. Falling back to standard input.
+[INFO] Wrote 1847 bytes to path=user://default/1001/settings.save save_dir=user://default/1001
+[INFO] Wrote 2681 bytes to path=user://default/1001/settings.save save_dir=user://default/1001
+[INFO] Wrote 3687 bytes to path=user://default/1001/settings.save save_dir=user://default/1001
+[INFO] === Godot OS Debug Information ===
+Timestamp: 10/03/2026 22:58:47
+OS: Windows
+OS Version: 10.0.26200
+Distribution Name: Windows
+Device Model: JiguangX Series GM6AR50C
+Is Debug Build: False
+Is Sandboxed: False
+Executable Path: E:/SteamLibrary/steamapps/common/Slay the Spire 2/.errorrelic-multiplayer-tests/SlayTheSpire2.exe
+Data Directory: C:/Users/Ciare.DESKTOP-STRM8PB/AppData/Roaming
+User Data Directory: C:/Users/Ciare.DESKTOP-STRM8PB/AppData/Roaming/ErrorRelics-MultiplayerTests
+Command Line Args: --force-steam off -fastmp join -clientId 1001 --errorrelic-smoke
+User Command Line Args: 
+OS Locale: zh_CN
+OS Language: zh
+Game Locale: zh_CN
+Is UserFS Persistent: True
+Is Stdout Verbose: False
+Is Low Processor Usage Mode: False
+Architecture: x86_64
+Engine Version: 4.5.1-m.14 (custom_build)
+Is Editor: False
+Release Version: v0.111.0
+Release Commit: 41cef1ea
+Release Date: 08/14/2026 00:39:18
+Processor Count: 24
+Processor Name: 12th Gen Intel(R) Core(TM) i7-12800HX
+Main assembly hash: 222455745
+Rendering device name: N/A (headless)
+  Graphics adapter 0: NVIDIA GeForce RTX 4060 Laptop GPU
+  version: 32.0.16.0
+  Graphics adapter 1: NVIDIA GeForce RTX 4060 Laptop GPU
+  version: 32.0.16.0
+  Graphics adapter 2: NVIDIA GeForce RTX 4060 Laptop GPU
+  version: 32.0.16.0
+  Graphics adapter 3: Microsoft Basic Render Driver
+  version: 10.0.26100.0
+Screen info (primary 0):
+Video Memory Used: 0.0B
+Memory Info:
+  physical: 15.7GB
+  free: 4.5GB
+  available: 35.7GB
+  stack: 8.0MB
+  Static Memory Usage: 0.0B
+  Static Memory Peak Usage: 0.0B
+Disk Info:
+  Index 0: Name: C:\ Type: Fixed Format: NTFS Available: 9.1GB Total Free: 9.1GB Total Size: 200.0GB
+  Index 1: Name: D:\ Type: Fixed Format: NTFS Available: 125.2GB Total Free: 125.2GB Total Size: 275.9GB
+  Index 2: Name: E:\ Type: Fixed Format: NTFS Available: 443.2GB Total Free: 443.2GB Total Size: 0.9TB
+Important Environment Variables:
+  PATH: C:\Program Files (x86)\VMware\VMware Workstation\bin\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\dotnet\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\110\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\120\Tools\Binn\;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;C:\Program Files\Microsoft SQL Server\120\DTS\Binn\;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;D:\LINGO64_12\;C:\Program Files\NVIDIA Corporation\NVIDIA App\NvDLISR;E:\MATLAB\runtime\win64;E:\MATLAB\bin;E:\1;%USERPROFILE%\AppData\Local\Programs\Python\Python313\Scripts\;%USERPROFILE%\AppData\Local\Programs\Python\Python313\;%USERPROFILE%\AppData\Local\Programs\Python\Launcher\;C:\Program Files\MongoDB\Server\8.0\bin;%USERPROFILE%\AppData\Local\Microsoft\WindowsApps;E:\Microsoft VS Code\bin;E:\1;%USERPROFILE%\AppData\Local\GitHubDesktop\bin;D:\Kiro\bin;D:\STS2errorrelic\JetBrains 2025\JetBrains Rider\JetBrains Rider 2025.1\bin;;%USERPROFILE%\.dotnet\tools
+  GODOT_ROOT_DIR: 
+  HOME: 
+  DYLD_LIBRARY_PATH: 
+  LD_LIBRARY_PATH: 
+
+[INFO] Preloading 'MainMenuEssentials' assets... count=7 vfx=0
+[INFO] Preloading 'MainMenuEssentials' Complete: assets=7 time_elapsed=168ms
+[INFO] [Startup] Time to main menu (Godot ticks): 5117ms
+[WARN] Asset not cached: res://scenes/screens/multiplayer_submenu.tscn
+[WARN] Asset not cached: res://scenes/screens/join_friend_submenu.tscn
+[INFO] Attempting to join game with connection initializer MegaCrit.Sts2.Core.Multiplayer.Connection.ENetClientConnectionInitializer
+[INFO] [JoinFlow] Beginning join with initializer MegaCrit.Sts2.Core.Multiplayer.Connection.ENetClientConnectionInitializer
+[INFO] [Startup] Time to main menu: 5,162ms
+[INFO] [Startup] Resource stats (main menu loaded (essential)): StaticMem=0B, VRAM=0B, Objects=8,880, Resources=638, Nodes=1,664, CachedAssets=12
+[INFO] AtlasManager: Loaded epoch_atlas with 57 sprites
+[INFO] AtlasManager: Loaded relic_atlas with 346 sprites
+[INFO] AtlasManager: Loaded relic_outline_atlas with 346 sprites
+[INFO] AtlasManager: Loaded power_atlas with 271 sprites
+[INFO] AtlasManager: Loaded card_atlas with 626 sprites
+[INFO] AtlasManager: Loaded potion_atlas with 64 sprites
+[INFO] AtlasManager: Loaded potion_outline_atlas with 64 sprites
+[INFO] AtlasManager: Loaded stats_screen_atlas with 16 sprites
+[INFO] AtlasManager: Loaded intent_atlas with 310 sprites
+[INFO] AtlasManager: Loaded era_atlas with 27 sprites
+[INFO] Unloading 5 missed cache assets
+[INFO] [ENetClient] Sending handshake with net ID 1001
+[INFO] Preloading 'Common' assets... count=698 vfx=94
+[INFO] [Startup] Resource stats (main menu loaded (complete)): StaticMem=0B, VRAM=0B, Objects=8,902, Resources=649, Nodes=1,664, CachedAssets=5
+[INFO] [JoinFlow] Initializer connection completed, awaiting initial game info message
+[INFO] [HandshakeManager] Got handshake from sender 1. Version: v0.111.0 Branch: None Hash: 568948152
+[INFO] [NetMessageBus] Received message MegaCrit.Sts2.Core.Multiplayer.Messages.Lobby.InitialGameInfoMessage, sending to 1 handlers
+[INFO] [JoinFlow] Sending ClientLobbyJoinRequestMessage and waiting for response message
+[INFO] [NetMessageBus] Received message ClientLobbyJoinResponseMessage Players: 2 Ascension: 0, sending to 1 handlers
+[INFO] [JoinFlow] Received ClientLobbyJoinResponseMessage: ClientLobbyJoinResponseMessage Players: 2 Ascension: 0
+[INFO] Max ascension changed to 0
+[WARN] Asset not cached: res://scenes/ui/remote_lobby_player.tscn
+[INFO] [StartRunLobby] Local player 1001 is ready
+ERROR_MP_SMOKE_READY
+[DEBUG] [StartRunLobby] Received LobbyPlayerSetReadyMessage for player 1 with value True
+[DEBUG] [StartRunLobby] Received LobbyBeginRunMessage
+[DEBUG] [NetMessageBus] NetMessageBus is starting to buffer messages.
+[INFO] Embarking on a multiplayer run. Players: Player 1, IRONCLAD,Player 1001, IRONCLAD. Ascension: 0 Seed: 2Z5D2VQ0YM7P
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[MegaCrit.Sts2.Core.Multiplayer.Messages.Game.RequestEnqueueActionMessage] for MegaCrit.Sts2.Core.Multiplayer.Messages.Game.RequestEnqueueActionMessage
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[MegaCrit.Sts2.Core.Multiplayer.Messages.Game.ActionEnqueuedMessage] for MegaCrit.Sts2.Core.Multiplayer.Messages.Game.ActionEnqueuedMessage
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[MegaCrit.Sts2.Core.Multiplayer.Messages.Game.RequestEnqueueHookActionMessage] for MegaCrit.Sts2.Core.Multiplayer.Messages.Game.RequestEnqueueHookActionMessage
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[MegaCrit.Sts2.Core.Multiplayer.Messages.Game.HookActionEnqueuedMessage] for MegaCrit.Sts2.Core.Multiplayer.Messages.Game.HookActionEnqueuedMessage
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[MegaCrit.Sts2.Core.Multiplayer.Messages.Game.RequestResumeActionAfterPlayerChoiceMessage] for MegaCrit.Sts2.Core.Multiplayer.Messages.Game.RequestResumeActionAfterPlayerChoiceMessage
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[MegaCrit.Sts2.Core.Multiplayer.Messages.Game.ResumeActionAfterPlayerChoiceMessage] for MegaCrit.Sts2.Core.Multiplayer.Messages.Game.ResumeActionAfterPlayerChoiceMessage
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync.OptionIndexChosenMessage] for MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync.OptionIndexChosenMessage
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync.VotedForSharedEventOptionMessage] for MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync.VotedForSharedEventOptionMessage
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync.SharedEventOptionChosenMessage] for MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync.SharedEventOptionChosenMessage
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync.RewardObtainedMessage] for MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync.RewardObtainedMessage
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync.GoldLostMessage] for MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync.GoldLostMessage
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[MegaCrit.Sts2.Core.Multiplayer.Messages.Game.CardRemovedMessage] for MegaCrit.Sts2.Core.Multiplayer.Messages.Game.CardRemovedMessage
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync.RewardSelectedMessage] for MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync.RewardSelectedMessage
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync.RewardSetSkippedMessage] for MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync.RewardSetSkippedMessage
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[MegaCrit.Sts2.Core.Multiplayer.Messages.Game.MerchantCardRemovalMessage] for MegaCrit.Sts2.Core.Multiplayer.Messages.Game.MerchantCardRemovalMessage
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[MegaCrit.Sts2.Core.Multiplayer.Messages.Game.TreasureChestOpenedMessage] for MegaCrit.Sts2.Core.Multiplayer.Messages.Game.TreasureChestOpenedMessage
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[MegaCrit.Sts2.Core.Multiplayer.Messages.Game.CrystalSphereRewardsMessage] for MegaCrit.Sts2.Core.Multiplayer.Messages.Game.CrystalSphereRewardsMessage
+[DEBUG] [ActionExecutor] Pausing queue
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[BaseLib.Abstracts.CustomTargetedMessageWrapper] for BaseLib.Abstracts.CustomTargetedMessageWrapper
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync.OptionIndexChosenMessage] for MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync.OptionIndexChosenMessage
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Flavor.RestSiteOptionHoveredMessage] for MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Flavor.RestSiteOptionHoveredMessage
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Register message handler MegaCrit.Sts2.Core.Multiplayer.Game.MessageHandlerDelegate`1[MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync.RestSiteSkippedMessage] for MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Sync.RestSiteSkippedMessage
+[INFO] First run ever. Presenting rooms in a set order.
+[INFO] Preloading 'characters=IRONCLAD,IRONCLAD' assets... count=37 vfx=82
+[INFO] Preloading 'Common' Complete: assets=792 time_elapsed=6,848ms
+[WARN] Asset not cached: res://scenes/ui/multiplayer/remote_mouse_cursor.tscn
+[DEBUG] [NetMessageBus] Received message of type MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Flavor.MapDrawingModeChangedMessage but we are currently buffering messages.
+[DEBUG] [NetMessageBus] Received message of type MegaCrit.Sts2.Core.Multiplayer.Messages.Game.SyncPlayerDataMessage but we are currently buffering messages.
+[DEBUG] [NetMessageBus] Received message of type MegaCrit.Sts2.Core.Multiplayer.Messages.Game.SyncRngMessage but we are currently buffering messages.
+[DEBUG] [NetMessageBus] Received message of type MegaCrit.Sts2.Core.Multiplayer.Messages.Game.Flavor.MapDrawingMessage but we are currently buffering messages.
+[INFO] Preloading 'characters=IRONCLAD,IRONCLAD' Complete: assets=46 time_elapsed=6,110ms
+[INFO] Preloading 'Act=OVERGROWTH' assets... count=6 vfx=0
+[INFO] Preloading 'Act=OVERGROWTH' Complete: assets=6 time_elapsed=101ms
+[DEBUG] [NetMessageBus] NetMessageBus is releasing 4 buffered messages.
+[DEBUG] [CombatStateSynchronizer] Received sync player message from 1
+[DEBUG] [CombatStateSynchronizer] Received sync RNG message from 1
+[WARN] Asset not cached: res://images/packed/run_history/attack_portrait.png
+[WARN] Asset not cached: res://images/packed/run_history/attack_portrait_shadow.png
+[DEBUG] [RunLocationTargetedMessageBuffer] Run location changed to act 0 coord (null) room  (previously at: act 0 coord (null) room ), checking if we have enqueued messages
+[INFO] Preloading 'Act=OVERGROWTH' assets... count=0 vfx=0
+[INFO] Preloading 'Act=OVERGROWTH' Complete: assets=0 time_elapsed=62ms
+[DEBUG] [RunLocationTargetedMessageBuffer] Run location changed to act 0 coord (null) room 0 (previously at: act 0 coord (null) room ), checking if we have enqueued messages
+[DEBUG] [ActionExecutor] Un-pausing queue
+[INFO] Player has seen ftue combat_rules_ftue!
+[INFO] Wrote 840 bytes to path=user://default/1001/modded/profile1/saves/progress.save save_dir=user://default/1001
+[INFO] Player has seen ftue obtain_relic_ftue!
+[INFO] Wrote 866 bytes to path=user://default/1001/modded/profile1/saves/progress.save save_dir=user://default/1001
+[INFO] Player has seen ftue map_select_ftue!
+[INFO] Wrote 890 bytes to path=user://default/1001/modded/profile1/saves/progress.save save_dir=user://default/1001
+[INFO] Player has seen ftue shuffle_ftue!
+[INFO] Wrote 911 bytes to path=user://default/1001/modded/profile1/saves/progress.save save_dir=user://default/1001
+[WARN] Asset not cached: res://images/relics/vajra.png
+[INFO] [ErrorRelics] ERROR entered inventory: owner=1001, pair=H002_PlayerTurnStart/E033_GainMaxHp20, present=True
+[INFO] [ErrorRelics] ERROR entered inventory: owner=1001, pair=H003_PlayCardEnergy2Plus/E026_GainDexterity1, present=True
+ERROR_MP_DESCRIPTION peer=1001 在你的回合开始时，将你的最大生命值提升[blue]20[/blue]。
+[color=#9b9b9b](H002-E033)[/color]
+ERROR_MP_ENTER peer=1001 encounter=ENCOUNTER.SLIMED_BERSERKER_NORMAL stage=2
+[DEBUG] [CombatStateSynchronizer] Broadcasting combat sync message to all peers
+[DEBUG] [CombatStateSynchronizer] Waiting to receive all sync messages from all clients
+[INFO] Unloading 5 missed cache assets
+[INFO] Preloading 'Combat Room' assets... count=11 vfx=0
+[INFO] Preloading 'Combat Room' Complete: assets=11 time_elapsed=135ms
+[INFO] Creating NCombatRoom with mode=ActiveCombat encounter=SLIMED_BERSERKER_NORMAL.
+[WARN] Asset not cached: res://scenes/combat/multiplayer_player_intent.tscn
+[DEBUG] [ActionQueueSynchronizer] Combat state becomes PreCombatSetup. Allowing non-combat actions to execute, but not combat actions.
+[DEBUG] [ActionQueueSet] Setting up for combat.
+[DEBUG] [ActionExecutor] Un-pausing queue
+[DEBUG] [ActionExecutor] Pausing queue
+[DEBUG] [ActionQueueSynchronizer] Combat becomes NotPlayPhase from PreCombatSetup. Signaling queues that combat has begun
+[DEBUG] [ActionQueueSet] Combat started.
+[DEBUG] [ActionQueueSynchronizer] Combat state becomes NotPlayPhase. Pausing all player queues
+[DEBUG] [ActionQueueSet] Pausing all player queues
+[DEBUG] [ActionExecutor] Action queue changed, beginning ExecuteActions
+[VERYDEBUG] [ActionQueueSet] Attempting to find ready action
+[VERYDEBUG] [ActionQueueSet] Queue for player 1 is empty
+[VERYDEBUG] [ActionQueueSet] Queue for player 1001 is empty
+[VERYDEBUG] [ActionQueueSet] No action is ready
+[DEBUG] [RunLocationTargetedMessageBuffer] Run location changed to act 0 coord (null) room 1 (previously at: act 0 coord (null) room 0), checking if we have enqueued messages
+[INFO] [ErrorRelics] ERROR audio: selected vanilla event:/sfx/enemy/enemy_attacks/living_fog/living_fog_minion_die
+[INFO] [ErrorRelics] ERROR audio: selected vanilla event:/sfx/enemy/enemy_attacks/obscura/obscura_hologram_die
+[DEBUG] [ChecksumTracker] Generating checksum for context: After player turn start action:  id: 0
+[WARN] Warning: Packet writer is growing from 1024 bytes to 2048 bytes!
+[DEBUG] [ActionExecutor] Un-pausing queue
+[DEBUG] [ActionQueueSynchronizer] Combat state becomes PlayPhase. Requesting 0 actions and unpausing action queues
+[DEBUG] [ActionQueueSet] Unpausing all player queues
+[DEBUG] [ActionExecutor] Action queue changed, beginning ExecuteActions
+[VERYDEBUG] [ActionQueueSet] Attempting to find ready action
+[VERYDEBUG] [ActionQueueSet] Queue for player 1 is empty
+[VERYDEBUG] [ActionQueueSet] Queue for player 1001 is empty
+[VERYDEBUG] [ActionQueueSet] No action is ready
+ERROR_MP_COMBAT_PASS peer=1001 combat=1 gold=99 maxHp=100
+[DEBUG] [CombatStateSynchronizer] Received sync player message from 1
+[DEBUG] [CombatStateSynchronizer] Received sync RNG message from 1
+ERROR_MP_ENTER peer=1001 encounter=ENCOUNTER.SLIMED_BERSERKER_NORMAL stage=4
+[DEBUG] [ActionQueueSynchronizer] Combat state becomes NotInCombat. Cancelling deferred actions and cancelling all remaining combat actions
+[DEBUG] [ActionQueueSet] Combat ended. Cancelling all non-executing combat actions in all queues
+[DEBUG] [ActionExecutor] Action queue changed, beginning ExecuteActions
+[VERYDEBUG] [ActionQueueSet] Attempting to find ready action
+[VERYDEBUG] [ActionQueueSet] Queue for player 1 is empty
+[VERYDEBUG] [ActionQueueSet] Queue for player 1001 is empty
+[VERYDEBUG] [ActionQueueSet] No action is ready
+[DEBUG] [ActionQueueSet] Unpausing all player queues
+[DEBUG] [ActionExecutor] Action queue changed, beginning ExecuteActions
+[VERYDEBUG] [ActionQueueSet] Attempting to find ready action
+[VERYDEBUG] [ActionQueueSet] Queue for player 1 is empty
+[VERYDEBUG] [ActionQueueSet] Queue for player 1001 is empty
+[VERYDEBUG] [ActionQueueSet] No action is ready
+[DEBUG] [CombatStateSynchronizer] Broadcasting combat sync message to all peers
+[DEBUG] [CombatStateSynchronizer] Waiting to receive all sync messages from all clients
+[INFO] Unloading 1 missed cache assets
+[INFO] Preloading 'Combat Room' assets... count=0 vfx=0
+[INFO] Preloading 'Combat Room' Complete: assets=0 time_elapsed=59ms
+[INFO] Creating NCombatRoom with mode=ActiveCombat encounter=SLIMED_BERSERKER_NORMAL.
+[WARN] Asset not cached: res://scenes/combat/multiplayer_player_intent.tscn
+[DEBUG] [ActionQueueSynchronizer] Combat state becomes PreCombatSetup. Allowing non-combat actions to execute, but not combat actions.
+[DEBUG] [ActionQueueSet] Setting up for combat.
+[DEBUG] [ActionExecutor] Un-pausing queue
+[DEBUG] [ActionExecutor] Pausing queue
+[DEBUG] [ActionQueueSynchronizer] Combat becomes NotPlayPhase from PreCombatSetup. Signaling queues that combat has begun
+[DEBUG] [ActionQueueSet] Combat started.
+[DEBUG] [ActionQueueSynchronizer] Combat state becomes NotPlayPhase. Pausing all player queues
+[DEBUG] [ActionQueueSet] Pausing all player queues
+[DEBUG] [ActionExecutor] Action queue changed, beginning ExecuteActions
+[VERYDEBUG] [ActionQueueSet] Attempting to find ready action
+[VERYDEBUG] [ActionQueueSet] Queue for player 1 is empty
+[VERYDEBUG] [ActionQueueSet] Queue for player 1001 is empty
+[VERYDEBUG] [ActionQueueSet] No action is ready
+[DEBUG] [RunLocationTargetedMessageBuffer] Run location changed to act 0 coord (null) room 2 (previously at: act 0 coord (null) room 1), checking if we have enqueued messages
+[INFO] [ErrorRelics] ERROR audio: selected vanilla event:/sfx/enemy/enemy_attacks/infested_prisms/infested_prisms_attack_spin
+[INFO] [ErrorRelics] ERROR audio: selected vanilla event:/sfx/ui/clicks/ui_hover
+[DEBUG] [ChecksumTracker] Generating checksum for context: After player turn start action:  id: 1
+[DEBUG] [ActionExecutor] Un-pausing queue
+[DEBUG] [ActionQueueSynchronizer] Combat state becomes PlayPhase. Requesting 0 actions and unpausing action queues
+[DEBUG] [ActionQueueSet] Unpausing all player queues
+[DEBUG] [ActionExecutor] Action queue changed, beginning ExecuteActions
+[VERYDEBUG] [ActionQueueSet] Attempting to find ready action
+[VERYDEBUG] [ActionQueueSet] Queue for player 1 is empty
+[VERYDEBUG] [ActionQueueSet] Queue for player 1001 is empty
+[VERYDEBUG] [ActionQueueSet] No action is ready
+ERROR_MP_COMBAT_PASS peer=1001 combat=2 gold=99 maxHp=120
+[DEBUG] [ActionQueueSynchronizer] Combat state becomes NotInCombat. Cancelling deferred actions and cancelling all remaining combat actions
+[DEBUG] [ActionQueueSet] Combat ended. Cancelling all non-executing combat actions in all queues
+[DEBUG] [ActionExecutor] Action queue changed, beginning ExecuteActions
+[VERYDEBUG] [ActionQueueSet] Attempting to find ready action
+[VERYDEBUG] [ActionQueueSet] Queue for player 1 is empty
+[VERYDEBUG] [ActionQueueSet] Queue for player 1001 is empty
+[VERYDEBUG] [ActionQueueSet] No action is ready
+[DEBUG] [ActionQueueSet] Unpausing all player queues
+[DEBUG] [ActionExecutor] Action queue changed, beginning ExecuteActions
+[VERYDEBUG] [ActionQueueSet] Attempting to find ready action
+[VERYDEBUG] [ActionQueueSet] Queue for player 1 is empty
+[VERYDEBUG] [ActionQueueSet] Queue for player 1001 is empty
+[VERYDEBUG] [ActionQueueSet] No action is ready
+[DEBUG] [CombatStateSynchronizer] Broadcasting combat sync message to all peers
+[DEBUG] [CombatStateSynchronizer] Waiting to receive all sync messages from all clients
+[DEBUG] [CombatStateSynchronizer] Received sync player message from 1
+[DEBUG] [CombatStateSynchronizer] Received sync RNG message from 1
+[INFO] Unloading 1 missed cache assets
+[INFO] Preloading 'Treasure Room' assets... count=2 vfx=0
+[INFO] Preloading 'Treasure Room' Complete: assets=2 time_elapsed=129ms
+[WARN] Asset not cached: res://scenes/ui/hand_image.tscn
+[WARN] Asset not cached: res://images/ui/hands/multiplayer_hand_ironclad_point.png
+[DEBUG] [RunLocationTargetedMessageBuffer] Run location changed to act 0 coord (null) room 3 (previously at: act 0 coord (null) room 2), checking if we have enqueued messages
+[DEBUG] [ActionExecutor] Un-pausing queue
+[DEBUG] [NetMessageBus] Received message MegaCrit.Sts2.Core.Multiplayer.Messages.Game.TreasureChestOpenedMessage, sending to 1 handlers
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Handling map-targeted message MegaCrit.Sts2.Core.Multiplayer.Messages.Game.TreasureChestOpenedMessage from 1 for location act 0 coord (null) room 3
+[WARN] Asset not cached: res://images/ui/reward_screen/reward_icon_shared_relic.png
+[DEBUG] [RewardsSetSynchronizer] Beginning rewards set Id: 0 Owner: 1 Rewards: 
+[DEBUG] [RewardsSetSynchronizer] Reward set Id: 0 Owner: 1 Rewards:  completed with state: Completed
+[DEBUG] [RewardsSetSynchronizer] Beginning rewards set Id: 0 Owner: 1001 Rewards: 
+[DEBUG] [RewardsSetSynchronizer] Reward set Id: 0 Owner: 1001 Rewards:  completed with state: Completed
+[DEBUG] [NetQualityTracker] Connection statistics at 14:59:12:
+[DEBUG] [NetQualityTracker] 	1 - Ping: 66.03548. Packet Loss: 0.
+[DEBUG] [NetMessageBus] Received message ActionEnqueuedMessage PlayerID: 1 Action: NetPickRelicAction index: 0 Source Location: act 0 coord (null) room 3 , sending to 1 handlers
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Handling map-targeted message ActionEnqueuedMessage PlayerID: 1 Action: NetPickRelicAction index: 0 Source Location: act 0 coord (null) room 3  from 1 for location act 0 coord (null) room 3
+[DEBUG] [ActionQueueSynchronizer] Received handle action enqueued message ActionEnqueuedMessage PlayerID: 1 Action: NetPickRelicAction index: 0 Source Location: act 0 coord (null) room 3  at 14:59:12
+[DEBUG] [ActionQueueSynchronizer] Enqueueing action NetPickRelicAction for player 1 index 0 from owner 1
+[DEBUG] [ActionQueueSet] Enqueueing action NetPickRelicAction for player 1 index 0 to player queue owned by 1
+[DEBUG] [ActionExecutor] Action queue changed, beginning ExecuteActions
+[VERYDEBUG] [ActionQueueSet] Attempting to find ready action
+[VERYDEBUG] [ActionQueueSet] Action NetPickRelicAction for player 1 index 0 with id 0 belonging to 1 becomes new ready action
+[VERYDEBUG] [ActionQueueSet] Queue for player 1001 is empty
+[VERYDEBUG] [ActionQueueSet] Got ready action NetPickRelicAction for player 1 index 0 (0)
+[DEBUG] [ActionExecutor] Executing action: NetPickRelicAction for player 1 index 0
+[VERYDEBUG] [GameAction] Action NetPickRelicAction for player 1 index 0 began executing
+[DEBUG] [TreasureRoomRelicSynchronizer] Player MegaCrit.Sts2.Core.Entities.Players.Player picked relic at index 0: RELIC.STONE_CRACKER (33120337)
+[WARN] Asset not cached: res://images/ui/top_panel/character_icon_ironclad_outline.png
+[VERYDEBUG] [GameAction] Action NetPickRelicAction for player 1 index 0 finished execution
+[DEBUG] [ActionExecutor] Completed execution of action NetPickRelicAction for player 1 index 0, attempting to find new action
+[VERYDEBUG] [ActionQueueSet] Attempting to find ready action
+[VERYDEBUG] [ActionQueueSet] Queue for player 1 is empty
+[VERYDEBUG] [ActionQueueSet] Queue for player 1001 is empty
+[VERYDEBUG] [ActionQueueSet] No action is ready
+[DEBUG] [TreasureRoomRelicSynchronizer] Relic index 1 (RELIC.PEAR (46395966)) is being picked by local player 1001
+[DEBUG] [ActionQueueSynchronizer] Sending message to host requesting to enqueue action NetPickRelicAction for player 1001 index 1 at 14:59:12
+[DEBUG] [NetMessageBus] Received message ActionEnqueuedMessage PlayerID: 1001 Action: NetPickRelicAction index: 1 Source Location: act 0 coord (null) room 3 , sending to 1 handlers
+[VERYDEBUG] [RunLocationTargetedMessageBuffer] Handling map-targeted message ActionEnqueuedMessage PlayerID: 1001 Action: NetPickRelicAction index: 1 Source Location: act 0 coord (null) room 3  from 1 for location act 0 coord (null) room 3
+[DEBUG] [ActionQueueSynchronizer] Received handle action enqueued message ActionEnqueuedMessage PlayerID: 1001 Action: NetPickRelicAction index: 1 Source Location: act 0 coord (null) room 3  at 14:59:12
+[DEBUG] [ActionQueueSynchronizer] Enqueueing action NetPickRelicAction for player 1001 index 1 from owner 1001
+[DEBUG] [ActionQueueSet] Enqueueing action NetPickRelicAction for player 1001 index 1 to player queue owned by 1001
+[DEBUG] [ActionExecutor] Action queue changed, beginning ExecuteActions
+[VERYDEBUG] [ActionQueueSet] Attempting to find ready action
+[VERYDEBUG] [ActionQueueSet] Queue for player 1 is empty
+[VERYDEBUG] [ActionQueueSet] Action NetPickRelicAction for player 1001 index 1 with id 1 belonging to 1001 becomes new ready action
+[VERYDEBUG] [ActionQueueSet] Got ready action NetPickRelicAction for player 1001 index 1 (1)
+[DEBUG] [ActionExecutor] Executing action: NetPickRelicAction for player 1001 index 1
+[VERYDEBUG] [GameAction] Action NetPickRelicAction for player 1001 index 1 began executing
+[DEBUG] [TreasureRoomRelicSynchronizer] Player MegaCrit.Sts2.Core.Entities.Players.Player picked relic at index 1: RELIC.PEAR (46395966)
+[WARN] Asset not cached: res://images/ui/hands/multiplayer_hand_ironclad_paper.png
+[VERYDEBUG] [GameAction] Action NetPickRelicAction for player 1001 index 1 finished execution
+[DEBUG] [ActionExecutor] Completed execution of action NetPickRelicAction for player 1001 index 1, attempting to find new action
+[VERYDEBUG] [ActionQueueSet] Attempting to find ready action
+[VERYDEBUG] [ActionQueueSet] Queue for player 1 is empty
+[VERYDEBUG] [ActionQueueSet] Queue for player 1001 is empty
+[VERYDEBUG] [ActionQueueSet] No action is ready
+[WARN] Asset not cached: res://images/ui/hands/multiplayer_hand_ironclad_rock.png
+[WARN] Asset not cached: res://images/relics/stone_cracker.png
+[INFO] [ErrorRelics] ERROR entered inventory: owner=1, pair=H002_PlayerTurnStart/E001_GainStrength1, present=True
+[WARN] Asset not cached: res://images/relics/pear.png
+[INFO] [ErrorRelics] ERROR entered inventory: owner=1001, pair=H002_PlayerTurnStart/E001_GainStrength1, present=True
+ERROR_MP_CHEST_PASS peer=1001 rarity=Uncommon
+[DEBUG] [CombatStateSynchronizer] Received sync player message from 1
+[DEBUG] [CombatStateSynchronizer] Received sync RNG message from 1
+ERROR_MP_ENTER peer=1001 encounter=ENCOUNTER.SLIMED_BERSERKER_NORMAL stage=9
+[DEBUG] [CombatStateSynchronizer] Broadcasting combat sync message to all peers
+[DEBUG] [CombatStateSynchronizer] Waiting to receive all sync messages from all clients
+[INFO] Unloading 8 missed cache assets
+[INFO] Preloading 'Combat Room' assets... count=11 vfx=0
+[INFO] Preloading 'Combat Room' Complete: assets=11 time_elapsed=130ms
+[INFO] Creating NCombatRoom with mode=ActiveCombat encounter=SLIMED_BERSERKER_NORMAL.
+[WARN] Asset not cached: res://scenes/combat/multiplayer_player_intent.tscn
+[DEBUG] [ActionQueueSynchronizer] Combat state becomes PreCombatSetup. Allowing non-combat actions to execute, but not combat actions.
+[DEBUG] [ActionQueueSet] Setting up for combat.
+[DEBUG] [ActionExecutor] Un-pausing queue
+[DEBUG] [ActionExecutor] Pausing queue
+[DEBUG] [ActionQueueSynchronizer] Combat becomes NotPlayPhase from PreCombatSetup. Signaling queues that combat has begun
+[DEBUG] [ActionQueueSet] Combat started.
+[DEBUG] [ActionQueueSynchronizer] Combat state becomes NotPlayPhase. Pausing all player queues
+[DEBUG] [ActionQueueSet] Pausing all player queues
+[DEBUG] [ActionExecutor] Action queue changed, beginning ExecuteActions
+[VERYDEBUG] [ActionQueueSet] Attempting to find ready action
+[VERYDEBUG] [ActionQueueSet] Queue for player 1 is empty
+[VERYDEBUG] [ActionQueueSet] Queue for player 1001 is empty
+[VERYDEBUG] [ActionQueueSet] No action is ready
+[DEBUG] [RunLocationTargetedMessageBuffer] Run location changed to act 0 coord (null) room 4 (previously at: act 0 coord (null) room 3), checking if we have enqueued messages
+[INFO] [ErrorRelics] ERROR audio: selected vanilla event:/sfx/enemy/enemy_attacks/vantom/vantom_extend_1
+[INFO] [ErrorRelics] ERROR audio: selected vanilla event:/sfx/enemy/enemy_attacks/flail_knight/flail_knight_ram
+[WARN] Asset not cached: res://images/powers/strength_power.png
+[INFO] [ErrorRelics] ERROR audio: selected vanilla event:/sfx/byrdpip/byrdpip_attack
+[INFO] [ErrorRelics] ERROR audio: selected vanilla event:/sfx/enemy/enemy_attacks/hunter_killer/hunter_killer_hurt
+[DEBUG] [ChecksumTracker] Generating checksum for context: After player turn start action:  id: 2
+[WARN] Warning: Packet writer is growing from 2048 bytes to 4096 bytes!
+[DEBUG] [ActionExecutor] Un-pausing queue
+[DEBUG] [ActionQueueSynchronizer] Combat state becomes PlayPhase. Requesting 0 actions and unpausing action queues
+[DEBUG] [ActionQueueSet] Unpausing all player queues
+[DEBUG] [ActionExecutor] Action queue changed, beginning ExecuteActions
+[VERYDEBUG] [ActionQueueSet] Attempting to find ready action
+[VERYDEBUG] [ActionQueueSet] Queue for player 1 is empty
+[VERYDEBUG] [ActionQueueSet] Queue for player 1001 is empty
+[VERYDEBUG] [ActionQueueSet] No action is ready
+ERROR_MP_COMBAT_PASS peer=1001 combat=3 gold=143 maxHp=140
+ERROR_MP_GENERATION peer=1001 owner=1 H004_AfterObtained|E011_EnchantBasicStrikesTezcatarasEmber
+[WARN] Asset not cached: res://images/relics/circlet.png
+ERROR_MP_CIRCLET peer=1001 owner=1 identity=generated:2 pair=H044_EndTurnIfNoAttackRippleBasin/E059_GainStrength2Self
+ERROR_MP_CIRCLET peer=1001 owner=1 identity=generated:3 pair=H011_AfterObtained/E056_DamageAllEnemies20
+ERROR_MP_CIRCLET peer=1001 owner=1 identity=generated:4 pair=H066_AfterObtainedStrawberry/E039_GainEnergy1Nunchaku
+ERROR_MP_CIRCLET peer=1001 owner=1 identity=generated:5 pair=H056_AfterSideTurnStartBrimstone/E097_CallingBellAddCurseOfTheBell
+ERROR_MP_CIRCLET peer=1001 owner=1 identity=generated:6 pair=H081_Every4CardsPersistentIronClub/E013_Upgrade6RandomCards
+ERROR_MP_CIRCLET peer=1001 owner=1 identity=generated:7 pair=H103_AfterObtainedToyBox/E032_Heal5
+ERROR_MP_CIRCLET peer=1001 owner=1 identity=generated:8 pair=H095_FirstTurnBeforeHandDrawRadiantPearl/E081_DaughterOfTheWindGainBlock4
+ERROR_MP_CIRCLET peer=1001 owner=1 identity=generated:9 pair=H037_Every10AttacksPersistentNunchaku/E076_SignetRingGainGold888
+ERROR_MP_GENERATION peer=1001 owner=1001 H015_AfterObtained|E018_AddNeowsFury
+ERROR_MP_CIRCLET peer=1001 owner=1001 identity=generated:2 pair=H017_AfterObtained/E036_DamageAllEnemies5
+ERROR_MP_CIRCLET peer=1001 owner=1001 identity=generated:3 pair=H015_AfterObtained/E018_AddNeowsFury
+ERROR_MP_CIRCLET peer=1001 owner=1001 identity=generated:4 pair=H064_FirstTurnAfterSideTurnStartLantern/E096_SymbioticVirusChannel1Dark
+ERROR_MP_CIRCLET peer=1001 owner=1001 identity=generated:5 pair=H019_AfterObtained/E094_RadiantPearlAdd1LuminesceToHand
+ERROR_MP_CIRCLET peer=1001 owner=1001 identity=generated:6 pair=H058_AfterCombatEndChosenCheese/E034_GainEnergy1GremlinHorn
+ERROR_MP_CIRCLET peer=1001 owner=1001 identity=generated:7 pair=H094_FirstTurnAfterSideTurnStartOrangeDough/E086_BronzeScalesApplyThorns3
+ERROR_MP_CIRCLET peer=1001 owner=1001 identity=generated:8 pair=H096_FirstTurnBeforeSideTurnStartCrackedCore/E104_PunchDaggerEnchant1Momentum5
+ERROR_MP_CIRCLET peer=1001 owner=1001 identity=generated:9 pair=H047_FirstTurnStartLateBloodVial/E006_Add3Apparitions
+ERROR_MP_SMOKE_PASS peer=1001

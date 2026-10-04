@@ -1,0 +1,302 @@
+MegaDot v4.5.1.m.14.mono.custom_build - https://godotengine.org
+D3D12 12_0 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4060 Laptop GPU
+WARNING: PSO caching is not implemented yet in the Direct3D 12 driver.
+   at: pipeline_cache_create (drivers/d3d12/rendering_device_driver_d3d12.cpp:4469)
+
+FMOD Sound System: Successfully initialized
+[INFO] Found release_info.json at: E:\SteamLibrary\steamapps\common\Slay the Spire 2\.errorrelic-multiplayer-tests\release_info.json
+[INFO] [Sentry.NET] Initialized: env=unknown, release=v0.111.0
+[INFO] Steam initialization skipped (editor mode). Use --force-steam to enable.
+[INFO] Registered 22 migrations
+[INFO] Current save versions: PrefsSave v2; ProfileSave v2; SerializableProgress v24; RunHistory v10; SerializableRun v20; SettingsSave v8
+[INFO] Found mod manifest file E:\SteamLibrary\steamapps\common\Slay the Spire 2\.errorrelic-multiplayer-tests\mods\BaseLib\BaseLib.json
+[INFO] Found mod manifest file E:\SteamLibrary\steamapps\common\Slay the Spire 2\.errorrelic-multiplayer-tests\mods\ErrorRelics\ErrorRelics.json
+[INFO] Found mod manifest file E:\SteamLibrary\steamapps\common\Slay the Spire 2\.errorrelic-multiplayer-tests\mods\ErrorRelics.Tests\ErrorRelics.Tests.json
+[INFO] Loading assembly DLL E:\SteamLibrary\steamapps\common\Slay the Spire 2\.errorrelic-multiplayer-tests\mods\BaseLib\BaseLib.dll
+[INFO] Loading Godot PCK E:\SteamLibrary\steamapps\common\Slay the Spire 2\.errorrelic-multiplayer-tests\mods\BaseLib\BaseLib.pck
+[INFO] Calling initializer method of type BaseLib.BaseLibMain for BaseLib, Version=3.4.7.0, Culture=neutral, PublicKeyToken=null
+[INFO] [BaseLib] Created node factory for Control.
+[INFO] [BaseLib] Created node factory for NCreatureVisuals.
+[INFO] [BaseLib] Created node factory for NRestSiteCharacter.
+[INFO] [BaseLib] Created node factory for NMerchantCharacter.
+[INFO] [BaseLib] Created node factory for NEnergyCounter.
+[INFO] [BaseLib] Created node factory for NCustomTreasureRoomChest.
+[INFO] [BaseLib] Registered config for mod BaseLib
+[INFO] [BaseLib] Performing CustomPile Add patch
+[INFO] [BaseLib] Naive game version: v0.111.0
+[INFO] [BaseLib] Starting PatchAll for assembly BaseLib, Version=3.4.7.0, Culture=neutral, PublicKeyToken=null
+[INFO] [BaseLib] Reading state machine type [MegaCrit.Sts2.Core.Nodes.Combat.NCreature+<AnimDie>d__106]
+[INFO] [BaseLib] Adding new state 5 for method CustomAnimationPatch.WaitCustomAnim before Wait with result type None ()
+[INFO] [BaseLib] Reading state machine type [MegaCrit.Sts2.Core.Hooks.Hook+<AfterCardPlayed>d__16]
+[INFO] [BaseLib] Adding new state 2 for method AfterCardPlayedPatch.BeforeAfterPlayHooks before AfterCardPlayed with result type None ()
+[INFO] [BaseLib] Skipping SentryService shutdown patch; no match found.
+[INFO] [BaseLib] Reading state machine type [MegaCrit.Sts2.Core.Models.CardModel+<SpendResources>d__336]
+[INFO] [BaseLib] Adding new state 2 for method CustomResourcePatches.SpendAdditionalCosts after SpendStars with result type None ()
+[INFO] [BaseLib] Reading state machine type [MegaCrit.Sts2.Core.Hooks.Hook+<AfterEnergyReset>d__31]
+[INFO] [BaseLib] Adding new state 2 for method CustomResourcePatches.BeforeEnergyResetHook before AfterEnergyReset with result type None ()
+[INFO] [BaseLib] No valid target found, skipping old ExhaustivePatch
+[INFO] [BaseLib] No valid target found, skipping old PurgePatch
+[INFO] [BaseLib] Applied 282 patches successfully, 0 failed
+[INFO] Finished mod initialization for 'BaseLib' (BaseLib).
+[INFO] Loading assembly DLL E:\SteamLibrary\steamapps\common\Slay the Spire 2\.errorrelic-multiplayer-tests\mods\ErrorRelics\ErrorRelics.dll
+[INFO] Loading Godot PCK E:\SteamLibrary\steamapps\common\Slay the Spire 2\.errorrelic-multiplayer-tests\mods\ErrorRelics\ErrorRelics.pck
+[INFO] Calling initializer method of type ErrorRelics.ErrorRelicsCode.MainFile for ErrorRelics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+[INFO] [BaseLib] Registered config for mod ErrorRelics
+[INFO] Finished mod initialization for 'ErrorRelics' (ErrorRelics).
+[ERROR] Mod manifest for mod ErrorRelics.Tests declares that it should load an assembly, but no assembly at path E:\SteamLibrary\steamapps\common\Slay the Spire 2\.errorrelic-multiplayer-tests\mods\ErrorRelics.Tests\ErrorRelics.Tests.dll was found!
+   at MegaCrit.Sts2.Core.Modding.ModManager.TryLoadMod(Mod mod)
+   at MegaCrit.Sts2.Core.Modding.ModManager.Initialize(IModManagerFileIo fileIo, ModSettings settings, SemanticVersion gameVersion)
+   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start[TStateMachine](TStateMachine& stateMachine)
+   at MegaCrit.Sts2.Core.Modding.ModManager.Initialize(IModManagerFileIo fileIo, ModSettings settings, SemanticVersion gameVersion)
+   at MegaCrit.Sts2.Core.Helpers.OneTimeInitialization.ExecuteVeryEarly()
+   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start[TStateMachine](TStateMachine& stateMachine)
+   at MegaCrit.Sts2.Core.Helpers.OneTimeInitialization.ExecuteVeryEarly()
+   at MegaCrit.Sts2.Core.Nodes.NGame.GameStartup()
+   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start[TStateMachine](TStateMachine& stateMachine)
+   at MegaCrit.Sts2.Core.Nodes.NGame.GameStartup()
+   at MegaCrit.Sts2.Core.Nodes.NGame.GameStartupWrapper()
+   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start[TStateMachine](TStateMachine& stateMachine)
+   at MegaCrit.Sts2.Core.Nodes.NGame.GameStartupWrapper()
+   at MegaCrit.Sts2.Core.Nodes.NGame._EnterTree()
+   at Godot.Node.InvokeGodotClassMethod(godot_string_name& method, NativeVariantPtrArgs args, godot_variant& ret)
+   at Godot.CanvasItem.InvokeGodotClassMethod(godot_string_name& method, NativeVariantPtrArgs args, godot_variant& ret)
+   at Godot.Control.InvokeGodotClassMethod(godot_string_name& method, NativeVariantPtrArgs args, godot_variant& ret)
+   at MegaCrit.Sts2.Core.Nodes.NGame.InvokeGodotClassMethod(godot_string_name& method, NativeVariantPtrArgs args, godot_variant& ret)
+   at Godot.Bridge.CSharpInstanceBridge.Call(IntPtr godotObjectGCHandle, godot_string_name* method, godot_variant** args, Int32 argCount, godot_variant_call_error* refCallError, godot_variant* ret)
+
+[WARN] Neither a DLL nor a PCK was loaded for mod ErrorRelics.Tests, something seems wrong!
+[INFO] Finished mod initialization for 'ERROR multiplayer test driver' (ErrorRelics.Tests).
+[INFO]  --- RUNNING MODDED! --- Loaded 3 mods (3 total)
+[WARN] Asset not cached: res://scenes/debug/dev_console.tscn
+[WARN] Asset not cached: res://scenes/cards/card.tscn
+[WARN] Asset not cached: res://scenes/cards/holders/grid_card_holder.tscn
+[INFO] AtlasManager: Loaded ui_atlas with 102 sprites
+[INFO] AtlasManager: Loaded compressed with 45 sprites
+[INFO] [BaseLib] Performing early post-mod init
+[INFO] [BaseLib] Mod ErrorRelics that modifies gameplay has BaseLib dependency; gameplay modification enabled.
+[INFO] [BaseLib] Patching act types for custom encounters and events | DeprecatedAct | Glory | Hive | Overgrowth | Underdocks
+[INFO] [BaseLib] Generating interop methods and properties
+[INFO] Loading locale path=res://localization/eng
+[INFO] Found loc table from mod: eng ancients.json. Merging with base loc table
+[INFO] Found loc table from mod: eng card_keywords.json. Merging with base loc table
+[INFO] Found loc table from mod: eng card_keywords.json. Merging with base loc table
+[INFO] Found loc table from mod: eng card_selection.json. Merging with base loc table
+[INFO] Found loc table from mod: eng cards.json. Merging with base loc table
+[INFO] Found loc table from mod: eng credits.json. Merging with base loc table
+[INFO] Found loc table from mod: eng gameplay_ui.json. Merging with base loc table
+[INFO] Found loc table from mod: eng main_menu_ui.json. Merging with base loc table
+[INFO] Found loc table from mod: eng powers.json. Merging with base loc table
+[INFO] Found loc table from mod: eng powers.json. Merging with base loc table
+[INFO] Found loc table from mod: eng relics.json. Merging with base loc table
+[INFO] Found loc table from mod: eng rest_site_ui.json. Merging with base loc table
+[INFO] Found loc table from mod: eng settings_ui.json. Merging with base loc table
+[INFO] Found loc table from mod: eng settings_ui.json. Merging with base loc table
+[INFO] Found loc table from mod: eng static_hover_tips.json. Merging with base loc table
+[INFO] Found loc table from mod: eng static_hover_tips.json. Merging with base loc table
+[INFO] Loading locale path=res://localization/zhs
+[INFO] Found loc table from mod: zhs card_keywords.json. Merging with base loc table
+[INFO] Found loc table from mod: zhs card_selection.json. Merging with base loc table
+[INFO] Found loc table from mod: zhs gameplay_ui.json. Merging with base loc table
+[INFO] Found loc table from mod: zhs main_menu_ui.json. Merging with base loc table
+[INFO] Found loc table from mod: zhs powers.json. Merging with base loc table
+[INFO] Found loc table from mod: zhs rest_site_ui.json. Merging with base loc table
+[INFO] Found loc table from mod: zhs settings_ui.json. Merging with base loc table
+[INFO] Found loc table from mod: zhs settings_ui.json. Merging with base loc table
+[INFO] Found loc table from mod: zhs static_hover_tips.json. Merging with base loc table
+[INFO] Found loc table from mod: zhs static_hover_tips.json. Merging with base loc table
+[INFO] [BaseLib] Starting custom enum generation for 1317 modded types
+[INFO] [BaseLib] Generated KeyGenerator for enum MegaCrit.Sts2.Core.Entities.Cards.TargetType with starting value 10 | IsFlag: False | Half-Size: 16
+[INFO] [BaseLib] Generated KeyGenerator for enum MegaCrit.Sts2.Core.Rewards.RewardType with starting value 7 | IsFlag: False | Half-Size: 16
+[INFO] [BaseLib] Registering CustomReward deserializer for BaseLib.Common.Rewards.CardTransformReward
+[INFO] [BaseLib] Registering RewardType CardTransform
+[INFO] [BaseLib] Registering CustomReward deserializer for BaseLib.Common.Rewards.CardUpgradeReward
+[INFO] [BaseLib] Registering RewardType CardUpgrade
+[INFO] [BaseLib] Registering CustomReward deserializer for BaseLib.Common.Rewards.LinkedRewardSet.CustomLinkedRewardSet
+[INFO] [BaseLib] Registering RewardType CustomLinkedRewardType
+[INFO] [BaseLib] Generated KeyGenerator for enum MegaCrit.Sts2.Core.HoverTips.StaticHoverTip with starting value 17 | IsFlag: False | Half-Size: 16
+[INFO] [BaseLib] Generated KeyGenerator for enum MegaCrit.Sts2.Core.Entities.Cards.CardKeyword with starting value 8 | IsFlag: False | Half-Size: 16
+[INFO] [BaseLib] Registering CustomReward deserializer for BaseLib.Common.Rewards.RandomCardUpgradeReward
+[INFO] [BaseLib] Registering RewardType RandomCardUpgrade
+[INFO] ModelIdSerializationCache initialized. Categories: 20 Entries: 1664 Epochs: 57 Properties: 64 Hash: 568948152
+[INFO]   There are mods included that do not affect gameplay. Hash may not include all IDs.
+[INFO] [BaseLib] Performing late post-mod init
+[INFO] [BaseLib] Patching type NRewardButton to add nodes.
+[INFO] [BaseLib] Adding postfix static System.Void BaseLib.Utils.IAddedNodes`1<MegaCrit.Sts2.Core.Nodes.Rewards.NRewardButton>::UnconditionalAdd(MegaCrit.Sts2.Core.Nodes.Rewards.NRewardButton __instance)
+[INFO] [BaseLib] Found 0 SavedSpireFields.
+[INFO] [BaseLib] Adjusting keys of custom message wrappers.
+[INFO] [BaseLib] Using IDs 128 and 129 for custom message wrappers.
+[WARN] Tried to read file at user://default/1/leaderboards.save, but there was no such file
+[INFO] Profile-scoped data path initialized: user://default/1/modded/profile1
+[INFO] [Sentry.NET] Steam not initialized
+[INFO] [Sentry.NET] Shutting down because event reporting is disabled.
+[INFO] [Sentry.NET] Shutting down
+[INFO] [BaseLib] Adding 0 custom acts to act list.
+[INFO] [BaseLib] Result: ACT.OVERGROWTH (50100742),ACT.UNDERDOCKS (48253498),ACT.HIVE (31628298),ACT.GLORY (16219233)
+[INFO] AtlasManager: Loaded controller_atlas with 112 sprites
+[INFO] [ErrorRelics] ERROR audio pools loaded: vanilla=106, custom=0
+[INFO] Applying display settings...
+  FULLSCREEN: False
+  ASPECT_RATIO: (SixteenByNine)
+  TARGET_DISPLAY: (0)
+  WINDOW_SIZE: (881, 446)
+  POSITION: (59, 52)
+[INFO] [Display] Min size: (64, 64) Max size: (16384, 16384)
+[INFO] Window changed! New size: (1920, 1061)
+[INFO] [Display] Attempting WINDOWED mode on Display 1 of 1 at position (59, 52)
+[INFO] [Display] SUCCESS: (881, 446) Windowed mode in Display 0: Position (59, 52) ((59, 52))
+[INFO] Window changed! New size: (881, 446)
+[INFO] [Display] New size: (881, 446) position: (59, 52)
+[INFO] VSync: Adaptive
+[WARN] Cannot initialize Steam Input because Steamworks is not initialized. Falling back to standard input.
+[INFO] === Godot OS Debug Information ===
+Timestamp: 10/04/2026 23:53:40
+OS: Windows
+OS Version: 10.0.26200
+Distribution Name: Windows
+Device Model: JiguangX Series GM6AR50C
+Is Debug Build: False
+Is Sandboxed: False
+Executable Path: E:/SteamLibrary/steamapps/common/Slay the Spire 2/.errorrelic-multiplayer-tests/SlayTheSpire2.exe
+Data Directory: C:/Users/Ciare.DESKTOP-STRM8PB/AppData/Roaming
+User Data Directory: C:/Users/Ciare.DESKTOP-STRM8PB/AppData/Roaming/ErrorRelics-MultiplayerTests
+Command Line Args: --force-steam off -fastmp host_standard
+User Command Line Args: 
+OS Locale: zh_CN
+OS Language: zh
+Game Locale: zh_CN
+Is UserFS Persistent: True
+Is Stdout Verbose: False
+Is Low Processor Usage Mode: False
+Architecture: x86_64
+Engine Version: 4.5.1-m.14 (custom_build)
+Is Editor: False
+Release Version: v0.111.0
+Release Commit: 41cef1ea
+Release Date: 08/14/2026 00:39:18
+Processor Count: 24
+Processor Name: 12th Gen Intel(R) Core(TM) i7-12800HX
+Main assembly hash: 222455745
+Rendering device name: NVIDIA GeForce RTX 4060 Laptop GPU
+  Graphics adapter 0: NVIDIA GeForce RTX 4060 Laptop GPU
+  version: 32.0.16.0
+  Graphics adapter 1: NVIDIA GeForce RTX 4060 Laptop GPU
+  version: 32.0.16.0
+  Graphics adapter 2: NVIDIA GeForce RTX 4060 Laptop GPU
+  version: 32.0.16.0
+  Graphics adapter 3: Microsoft Basic Render Driver
+  version: 10.0.26100.0
+Screen info (primary 0):
+  Index 0: Size: (1920, 1080) Orientation: Landscape Scale: 1 DPI: 96 Refresh Rate: 74.973
+Video Memory Used: 0.0B
+Memory Info:
+  physical: 15.7GB
+  free: 1.6GB
+  available: 35.7GB
+  stack: 8.0MB
+  Static Memory Usage: 0.0B
+  Static Memory Peak Usage: 0.0B
+Disk Info:
+  Index 0: Name: C:\ Type: Fixed Format: NTFS Available: 9.6GB Total Free: 9.6GB Total Size: 200.0GB
+  Index 1: Name: D:\ Type: Fixed Format: NTFS Available: 125.2GB Total Free: 125.2GB Total Size: 275.9GB
+  Index 2: Name: E:\ Type: Fixed Format: NTFS Available: 437.4GB Total Free: 437.4GB Total Size: 0.9TB
+Important Environment Variables:
+  PATH: C:\Program Files (x86)\VMware\VMware Workstation\bin\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\dotnet\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\110\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\120\Tools\Binn\;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;C:\Program Files\Microsoft SQL Server\120\DTS\Binn\;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;D:\LINGO64_12\;C:\Program Files\NVIDIA Corporation\NVIDIA App\NvDLISR;E:\MATLAB\runtime\win64;E:\MATLAB\bin;E:\1;%USERPROFILE%\AppData\Local\Programs\Python\Python313\Scripts\;%USERPROFILE%\AppData\Local\Programs\Python\Python313\;%USERPROFILE%\AppData\Local\Programs\Python\Launcher\;C:\Program Files\MongoDB\Server\8.0\bin;%USERPROFILE%\AppData\Local\Microsoft\WindowsApps;E:\Microsoft VS Code\bin;E:\1;%USERPROFILE%\AppData\Local\GitHubDesktop\bin;D:\Kiro\bin;D:\STS2errorrelic\JetBrains 2025\JetBrains Rider\JetBrains Rider 2025.1\bin;;%USERPROFILE%\.dotnet\tools
+  GODOT_ROOT_DIR: 
+  HOME: 
+  DYLD_LIBRARY_PATH: 
+  LD_LIBRARY_PATH: 
+
+[INFO] Preloading 'MainMenuEssentials' assets... count=7 vfx=0
+[INFO] MuteInBackground: FocusIn received [tween=False, msSinceFocusOut=7905, windowFocused=True]
+[INFO] Preloading 'MainMenuEssentials' Complete: assets=7 time_elapsed=334ms
+[INFO] [Startup] Time to main menu (Godot ticks): 8461ms
+[WARN] Asset not cached: res://scenes/screens/multiplayer_submenu.tscn
+[INFO] [BaseLib] Adding custom save data to SerializableRun.
+[INFO] [BaseLib] Added 1 new properties to SerializableRun
+[INFO] [BaseLib] Adding custom save data to SerializableCard.
+[INFO] [BaseLib] Added 1 new properties to SerializableCard
+[INFO] [BaseLib] Adding custom save data to SerializablePlayer.
+[INFO] [BaseLib] Added 1 new properties to SerializablePlayer
+[INFO] [BaseLib] Adding custom save data to SerializablePotion.
+[INFO] [BaseLib] Added 0 new properties to SerializablePotion
+[INFO] [BaseLib] Adding custom save data to SerializableRelic.
+[INFO] [BaseLib] Added 0 new properties to SerializableRelic
+[INFO] [BaseLib] Adding custom save data to SerializableReward.
+[INFO] [BaseLib] Added 2 new properties to SerializableReward
+[INFO] [ErrorRelics] ERROR load begin: RunState.FromSerializable
+[INFO] [ErrorRelics] ERROR load end: RunState.FromSerializable
+[WARN] Warning: Packet writer is growing from 1024 bytes to 2048 bytes!
+[WARN] Warning: Packet writer is growing from 2048 bytes to 4096 bytes!
+[WARN] Warning: Packet writer is growing from 4096 bytes to 8192 bytes!
+[INFO] [ErrorRelics] ERROR load begin: RunState.FromSerializable
+[INFO] [ErrorRelics] ERROR load end: RunState.FromSerializable
+[WARN] Warning: Packet writer is growing from 1024 bytes to 2048 bytes!
+[WARN] Warning: Packet writer is growing from 2048 bytes to 4096 bytes!
+[WARN] Warning: Packet writer is growing from 4096 bytes to 8192 bytes!
+[INFO] [ErrorRelics] ERROR load begin: RunState.FromSerializable
+[INFO] [ErrorRelics] ERROR load end: RunState.FromSerializable
+[WARN] Warning: Packet writer is growing from 1024 bytes to 2048 bytes!
+[WARN] Warning: Packet writer is growing from 2048 bytes to 4096 bytes!
+[WARN] Warning: Packet writer is growing from 4096 bytes to 8192 bytes!
+[WARN] Asset not cached: res://scenes/screens/multiplayer_host_submenu.tscn
+[INFO] Max ascension changed to 0
+[WARN] Asset not cached: res://scenes/screens/char_select/char_select_bg_ironclad.tscn
+[INFO] AtlasManager: Loaded relic_atlas with 346 sprites
+[INFO] AtlasManager: Loaded relic_outline_atlas with 346 sprites
+[WARN] Asset not cached: res://scenes/screens/char_select/char_select_player_icon.tscn
+[WARN] Asset not cached: res://scenes/ui/remote_lobby_player.tscn
+[WARN] Asset not cached: res://images/ui/top_panel/character_icon_ironclad.png
+[INFO] [Startup] Time to main menu: 8,784ms
+[INFO] [Startup] Resource stats (main menu loaded (essential)): StaticMem=0B, VRAM=394.6MB, Objects=8,829, Resources=663, Nodes=1,769, CachedAssets=16
+[INFO] AtlasManager: Loaded epoch_atlas with 57 sprites
+[INFO] AtlasManager: Loaded power_atlas with 271 sprites
+[INFO] AtlasManager: Loaded card_atlas with 626 sprites
+[INFO] AtlasManager: Loaded potion_atlas with 64 sprites
+[INFO] AtlasManager: Loaded potion_outline_atlas with 64 sprites
+[INFO] AtlasManager: Loaded stats_screen_atlas with 16 sprites
+[INFO] AtlasManager: Loaded intent_atlas with 310 sprites
+[INFO] AtlasManager: Loaded era_atlas with 27 sprites
+[INFO] Unloading 9 missed cache assets
+[INFO] Preloading 'Common' assets... count=698 vfx=94
+[INFO] [Startup] Resource stats (main menu loaded (complete)): StaticMem=0B, VRAM=394.6MB, Objects=8,833, Resources=670, Nodes=1,769, CachedAssets=5
+ERROR: Invalid Task ID
+   at: wait_for_task_completion (core/object/worker_thread_pool.cpp:418)
+ERROR: Invalid Task ID
+   at: wait_for_task_completion (core/object/worker_thread_pool.cpp:418)
+   C# backtrace (most recent call first):
+       [0] void Godot.Bridge.ScriptManagerBridge.GetOrLoadOrCreateScriptForType(System.Type, Godot.NativeInterop.godot_ref*)
+       [1] void Godot.Bridge.ScriptManagerBridge.UpdateScriptClassInfo(nint, Godot.NativeInterop.godot_csharp_type_info*, Godot.NativeInterop.godot_array*, Godot.NativeInterop.godot_dictionary*, Godot.NativeInterop.godot_dictionary*, Godot.NativeInterop.godot_ref*)
+       [2] void Godot.NativeInterop.NativeFuncs.godotsharp_internal_reload_registered_script(nint)
+       [3] void Godot.Bridge.ScriptManagerBridge.GetOrCreateScriptBridgeForType(System.Type, Godot.NativeInterop.godot_ref*)
+       [4] void Godot.Bridge.ScriptManagerBridge.GetOrCreateScriptBridgeForPath(Godot.NativeInterop.godot_string*, Godot.NativeInterop.godot_ref*)
+[INFO] [BaseLib] NGame.Quit(): saving all ModConfigs
+[INFO] NGame.Quit called
+[INFO] [Display] On exit, saving window size: (881, 446) display: 0 position: (657, 320)
+[INFO] Wrote 3687 bytes to path=user://default/1/settings.save save_dir=user://default/1
+[INFO] Wrote 363 bytes to path=user://default/1/modded/profile1/saves/prefs.save save_dir=user://default/1
+[INFO] Wrote 3771 bytes to path=user://default/1/modded/profile1/saves/progress.save save_dir=user://default/1
+[INFO] Wrote 52 bytes to path=user://default/1/modded/profile.save save_dir=user://default/1
+FMOD Sound System: System released
+WARNING: 1080 RIDs of type "CanvasItem" were leaked.
+   at: _free_rids (servers/rendering/renderer_canvas_cull.cpp:2678)
+ERROR: 1 RID allocations of type 'N26RendererEnvironmentStorage11EnvironmentE' were leaked at exit.
+ERROR: 5 shaders of type CanvasShaderRD were never freed
+   at: ~ShaderRD (servers/rendering/renderer_rd/shader_rd.cpp:1044)
+ERROR: 30 RID allocations of type 'N10RendererRD16ParticlesStorage9ParticlesE' were leaked at exit.
+ERROR: 1 shaders of type ParticlesShaderRD were never freed
+   at: ~ShaderRD (servers/rendering/renderer_rd/shader_rd.cpp:1044)
+ERROR: 30 RID allocations of type 'N10RendererRD11MeshStorage4MeshE' were leaked at exit.
+ERROR: 97 RID allocations of type 'N10RendererRD15MaterialStorage8MaterialE' were leaked at exit.
+ERROR: 6 RID allocations of type 'N10RendererRD15MaterialStorage6ShaderE' were leaked at exit.
+ERROR: 27 RID allocations of type 'N10RendererRD14TextureStorage7TextureE' were leaked at exit.
+WARNING: 187 RIDs of type "UniformBuffer" were leaked.
+   at: _free_rids (servers/rendering/rendering_device.cpp:6981)
+WARNING: 50 RIDs of type "Texture" were leaked.
+   at: finalize (servers/rendering/rendering_device.cpp:7191)
+ERROR: 360 RID allocations of type 'PN18TextServerAdvanced22ShapedTextDataAdvancedE' were leaked at exit.
+ERROR: 3 RID allocations of type 'PN18TextServerAdvanced12FontAdvancedE' were leaked at exit.
+ERROR: 4 RID allocations of type 'PN18TextServerAdvanced27FontAdvancedLinkedVariationE' were leaked at exit.
+WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
+   at: cleanup (core/object/object.cpp:2514)
+ERROR: 66 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:795)

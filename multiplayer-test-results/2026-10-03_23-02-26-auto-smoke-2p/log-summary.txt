@@ -1,0 +1,17 @@
+ERROR Relics automatic 2P smoke test
+========================================================================
+Session: D:\STS2errorrelic\ErrorRelics\multiplayer-test-results\2026-10-03_23-02-26-auto-smoke-2p
+
+[client.err.log] suspicious lines: 0
+
+[client.out.log] suspicious lines: 0
+
+[client-godot.log] suspicious lines: 0
+
+[host.err.log] suspicious lines: 0
+
+[host.out.log] suspicious lines: 0
+
+[host-godot.log] suspicious lines: 0
+
+Total suspicious lines shown: 0

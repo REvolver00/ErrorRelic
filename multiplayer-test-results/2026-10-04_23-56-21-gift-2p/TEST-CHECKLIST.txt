@@ -1,0 +1,31 @@
+ERROR Relics Gift Relic 2P session
+
+Runtime:
+E:\SteamLibrary\steamapps\common\Slay the Spire 2\.errorrelic-multiplayer-tests
+
+Host PID:
+31440
+
+Client PID:
+13664
+
+This session uses the isolated user dir configured by prepare-smoke.ps1:
+ErrorRelics-MultiplayerTests
+
+Minimum test path:
+1. Start/ready the co-op run.
+2. Reach a campfire on either peer.
+3. Verify "Gift Relic" appears on both peers at the same rest-site option position.
+4. Host gifts a normal relic to Client; confirm it disappears from Host and appears on Client on BOTH windows.
+5. Client gifts a relic back to Host; confirm both windows agree.
+6. Gift an ERROR relic and verify its H/E identity and description survive transfer.
+7. Verify ERROR PROOF cannot be selected for gifting.
+8. Cancel from the relic picker; then open Gift again and cancel target selection / leave the campfire.
+9. If anything looks wrong, stop the test and send the entire session folder back for analysis.
+
+Important new-feature risks:
+- sender applies locally before broadcast
+- receiver reconstructs from SerializableRelic
+- recipient AfterObtained fires
+- source inventory index must identify the same relic on every peer
+- duplicate execution / inventory divergence must not occur
