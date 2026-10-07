@@ -1,4 +1,6 @@
 {
+  "ERRORRELICS-ALLOW_ANCIENT_SOURCE_EFFECTS.hover.desc": "Co-op uses the host's starting setting for the entire run, including resumed saves. Local preferences are preserved; changes apply to the next new co-op run. Singleplayer uses the current setting. Existing relics are unchanged.",
+  "ERRORRELICS-ALLOW_MULTIPLAYER_IMPACT_EFFECTS.hover.desc": "Co-op uses the host's starting setting for the entire run, including resumed saves. Local preferences are preserved; changes apply to the next new co-op run. Singleplayer uses the current setting. Existing relics are unchanged.",
   "ERRORRELICS-START_WITH_RED_PICKAXE.title": "Start with the red pickaxe (keep Neow choices)",
   "ERRORRELICS-SHOW_FULL_EFFECTS.title": "Show full effects",
   "ERRORRELICS-PICKUP_RANDOM_ROTATION.title": "Randomly rotate visuals when picking up ERROR",

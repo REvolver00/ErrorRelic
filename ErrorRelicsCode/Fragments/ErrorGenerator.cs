@@ -15,17 +15,19 @@ public static class ErrorGenerator
         .Where(e => e != ErrorEffectId.E002_UpgradePlayedCard
                  && e != ErrorEffectId.E007_Choose1Of3ColorlessToHand).ToArray();
 
-    private static ErrorEffectId[] ActiveEffects => AllRandomEffects
-        .Where(e => ErrorRelicsConfig.AllowAncientSourceEffects
+    private static ErrorEffectId[] ActiveEffects(int filters) => AllRandomEffects
+        .Where(e => (filters & 1) != 0
                  || !ErrorEffectSourceMetadata.IsAncientSource(e))
-        .Where(e => ErrorRelicsConfig.AllowMultiplayerImpactEffects
+        .Where(e => (filters & 2) != 0
                  || !ErrorEffectGenerationMetadata.MayAffectMultiplayerFlow(e))
         .ToArray();
 
     // Ownerless generation is reserved for debug callers.
-    public static ErrorDefinition Generate() => new(
-        Hooks[Random.Shared.Next(Hooks.Length)],
-        ActiveEffects[Random.Shared.Next(ActiveEffects.Length)]);
+    public static ErrorDefinition Generate()
+    {
+        ErrorEffectId[] effects = ActiveEffects(ErrorGenerationSettings.LocalFilters);
+        return new ErrorDefinition(Hooks[Random.Shared.Next(Hooks.Length)], effects[Random.Shared.Next(effects.Length)]);
+    }
 
     public static ErrorDefinition Generate(Player owner, ModelId sourceId, string sourceKey, string generationIdentity = "")
     {
@@ -35,12 +37,14 @@ public static class ErrorGenerator
         string key = FormattableString.Invariant($"ErrorRelics|{owner.RunState.TotalFloor}|{sourceKey}");
         if (generationIdentity.Length != 0) key += "|" + generationIdentity;
         var rng = new Rng(owner, sourceId, StringHelper.GetDeterministicHashCode(key));
-        return Generate(rng);
+        return Generate(rng, ErrorGenerationSettings.ForRun(owner.RunState));
     }
 
-    public static ErrorDefinition Generate(Rng rng)
+    public static ErrorDefinition Generate(Rng rng) => Generate(rng, ErrorGenerationSettings.LocalFilters);
+
+    private static ErrorDefinition Generate(Rng rng, int filters)
     {
-        ErrorEffectId[] effects = ActiveEffects;
+        ErrorEffectId[] effects = ActiveEffects(filters);
         return new ErrorDefinition(
             Hooks[rng.NextInt(Hooks.Length)],
             effects[rng.NextInt(effects.Length)]);

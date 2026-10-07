@@ -21,6 +21,8 @@ func _init():
         return
     var files: Array[String] = []
     collect(repository.path_join("ErrorRelics"), files)
+    # RestSiteOption.Icon uses this fixed native path, outside the mod namespace.
+    collect(repository.path_join("images/ui/rest_site"), files)
     var custom_audio_names: Array[String] = []
     for candidate in files:
         var candidate_relative = candidate.trim_prefix(repository + "/")

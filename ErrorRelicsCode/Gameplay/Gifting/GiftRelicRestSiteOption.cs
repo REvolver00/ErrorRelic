@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Godot;
 using MegaCrit.Sts2.Core.Context;
@@ -7,7 +9,6 @@ using MegaCrit.Sts2.Core.Entities.RestSite;
 using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
-using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Screens.Capstones;
 using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
@@ -29,45 +30,51 @@ public sealed class GiftRelicRestSiteOption : RestSiteOption
 
     public override async Task<bool> OnSelect()
     {
-        uint choiceId = RunManager.Instance.PlayerChoiceSynchronizer.ReserveChoiceId(Owner);
-        if (!LocalContext.IsMe(Owner))
+        var choices = RunManager.Instance.PlayerChoiceSynchronizer;
+        uint choiceId = choices.ReserveChoiceId(Owner);
+        PlayerChoiceResult choice;
+        if (LocalContext.IsMe(Owner))
         {
-            var remote = await RunManager.Instance.PlayerChoiceSynchronizer.WaitForRemoteChoice(Owner, choiceId);
-            // The actual inventory mutation arrives through GiftRelicMessage. This result only
-            // keeps the native rest-site choice counters symmetrical on every machine.
-            // The owner machine is responsible for ending its own rest-site action.
-            // Remote peers only mirror the successful option result; completion is
-            // propagated by the native RestSiteSynchronizer.
-            return remote.AsPlayerId().HasValue;
+            // One native choice contains the whole selection. An empty selection is
+            // cancellation, including failure/teardown of the local picker.
+            choice = PlayerChoiceResult.FromIndexes(new List<int>());
+            try
+            {
+                int? relicIndex = await NGiftRelicPicker.Pick(Owner);
+                if (relicIndex.HasValue && GiftRelicSynchronizer.CanGiftIndex(Owner, relicIndex.Value))
+                {
+                    var relic = Owner.Relics[relicIndex.Value];
+                    Player? target = await SelectTarget();
+                    int currentIndex = Owner.Relics.ToList().IndexOf(relic);
+                    if (target != null && currentIndex >= 0)
+                    {
+                        choice = PlayerChoiceResult.FromIndexes(new List<int>
+                        {
+                            currentIndex, Owner.RunState.GetPlayerSlotIndex(target)
+                        });
+                    }
+                }
+            }
+            finally
+            {
+                choices.SyncLocalChoice(Owner, choiceId, choice);
+            }
+        }
+        else
+        {
+            choice = await choices.WaitForRemoteChoice(Owner, choiceId);
         }
 
-        int? relicIndex = await NGiftRelicPicker.Pick(Owner);
-        if (!relicIndex.HasValue)
-        {
-            RunManager.Instance.PlayerChoiceSynchronizer.SyncLocalChoice(Owner, choiceId, PlayerChoiceResult.FromPlayerId(null));
-            return false;
-        }
+        var selection = choice.AsIndexes();
+        if (selection.Count != 2) return false;
+        int targetSlot = selection[1];
+        if (targetSlot < 0 || targetSlot >= Owner.RunState.Players.Count) return false;
 
-        Player? target = await SelectTarget();
-        if (target == null)
-        {
-            RunManager.Instance.PlayerChoiceSynchronizer.SyncLocalChoice(Owner, choiceId, PlayerChoiceResult.FromPlayerId(null));
-            return false;
-        }
-
-        RunManager.Instance.PlayerChoiceSynchronizer.SyncLocalChoice(Owner, choiceId, PlayerChoiceResult.FromPlayerId(target.NetId));
-        var sync = GiftRelicSynchronizer.Instance;
-        if (sync == null) return false;
-        bool succeeded = await sync.SendGift(Owner, relicIndex.Value, target);
-        if (!succeeded) return false;
-
-        // Gift is a real campfire action, not an extra menu. End the local player's
-        // rest-site action through the game's native completion path, exactly the path
-        // used when leaving a rest site with options remaining. This clears the local
-        // options and synchronizes completion to every peer, so Gift cannot be followed
-        // by another Gift/Smith/Rest in the same campfire visit.
-        RunManager.Instance.RestSiteSynchronizer.BeforeLocalRestSiteExited();
-        return true;
+        // Like Mend/Smith, every peer awaits the same commands inside OnSelect.
+        // Returning success lets ChooseOption notify the UI, consume this player's
+        // options and complete their rest site in the native order. Never skip/exit
+        // the room here: the button still awaits ChooseOption to start its cleanup.
+        return await GiftRelicSynchronizer.ApplyGift(Owner, Owner.RunState.Players[targetSlot], selection[0]);
     }
 
     private bool HasGiftableRelic()

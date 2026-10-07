@@ -1,4 +1,5 @@
 {
+  "OPTION_ERRORRELICS_GIFT_RELIC.name": "Gift Relic",
   "ERRORRELICS_OPTION_GIFT_RELIC.description": "Gift one of your relics directly to another player. They do not need to accept.",
   "ERRORRELICS_OPTION_GIFT_RELIC.descriptionDisabled": "No relic can be gifted right now."
 }

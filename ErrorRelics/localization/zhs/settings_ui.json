@@ -1,4 +1,6 @@
 {
+  "ERRORRELICS-ALLOW_ANCIENT_SOURCE_EFFECTS.hover.desc": "联机时整局使用房主开局时的设置，读档继续沿用本局规则。本地设置不会被覆盖；局内修改将在下次新联机局生效。单人游戏按当前设置生成，已有遗物不变。",
+  "ERRORRELICS-ALLOW_MULTIPLAYER_IMPACT_EFFECTS.hover.desc": "联机时整局使用房主开局时的设置，读档继续沿用本局规则。本地设置不会被覆盖；局内修改将在下次新联机局生效。单人游戏按当前设置生成，已有遗物不变。",
   "ERRORRELICS-START_WITH_RED_PICKAXE.title": "开局直接获得红镐子（保留涅奥选项）",
   "ERRORRELICS-SHOW_FULL_EFFECTS.title": "显示完整效果",
   "ERRORRELICS-PICKUP_RANDOM_ROTATION.title": "拾取 ERROR 时随机旋转贴图",

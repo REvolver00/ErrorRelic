@@ -3,6 +3,7 @@ using System.Linq;
 using BaseLib.Patches.Saves;
 using BaseLib.Utils;
 using ErrorRelics.ErrorRelicsCode.Relics;
+using ErrorRelics.ErrorRelicsCode.Config;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
@@ -29,6 +30,9 @@ public static class ErrorRunState
             (value, writer) => writer.WriteBool(value), reader => reader.ReadBool());
         ExtendedSaveTypes.RegisterSavedValue<Player, int>(
             "ErrorRelics.GenerationCount", GenerationCount.Get, GenerationCount.Set,
+            (value, writer) => writer.WriteInt(value), reader => reader.ReadInt());
+        ExtendedSaveTypes.RegisterSavedValue<IRunState, int>(
+            "ErrorRelics.GenerationFilters", ErrorGenerationSettings.GetSavedFilters, ErrorGenerationSettings.SetSavedFilters,
             (value, writer) => writer.WriteInt(value), reader => reader.ReadInt());
         // Extra combat rewards may already be populated when their room is saved.
         // Preserve the whole chosen model rather than assigning a new identity on load.

@@ -13,12 +13,16 @@ public partial class NGiftRelicPicker : Control
 
     public static async System.Threading.Tasks.Task<int?> Pick(Player player)
     {
-        var picker = new NGiftRelicPicker { _player = player, _result = new TaskCompletionSource<int?>() };
+        var picker = new NGiftRelicPicker { _player = player, _result = new TaskCompletionSource<int?>(TaskCreationOptions.RunContinuationsAsynchronously) };
         Node? parent = (Node?)MegaCrit.Sts2.Core.Nodes.NRun.Instance?.GlobalUi ?? MegaCrit.Sts2.Core.Nodes.Rooms.NRestSiteRoom.Instance;
         if (parent == null) return null;
         parent.AddChild(picker);
         int? result = await picker._result.Task;
-        if (GodotObject.IsInstanceValid(picker)) picker.QueueFree();
+        if (GodotObject.IsInstanceValid(picker))
+        {
+            if (picker.IsInsideTree()) picker.GetParent()?.RemoveChild(picker);
+            picker.QueueFree();
+        }
         return result;
     }
 
@@ -64,6 +68,8 @@ public partial class NGiftRelicPicker : Control
         var cancel = new Button { Text = "取消", CustomMinimumSize = new Vector2(180, 42) };
         cancel.Pressed += () => _result.TrySetResult(null); box.AddChild(cancel);
     }
+
+    public override void _ExitTree() => _result.TrySetResult(null);
 
     public override void _Input(InputEvent e)
     {
