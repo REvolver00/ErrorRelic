@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.Helpers;
@@ -1990,6 +1991,609 @@ public static class ErrorEffectRegistry
                 return;
             }
 
+            // =====================================================
+            // E110
+            // 来源遗物：Tingsha（Uncommon）
+            //
+            // Effect：
+            // 对随机一个可命中敌人造成 3 点伤害（不受力量加成），
+            // 并播放原版钝击特效。
+            //
+            // 反编译：Tingsha.cs —— DamageVar(3m, ValueProp.Unpowered)
+            //        VfxCmd.PlayOnCreatureCenter(target, "vfx/vfx_attack_blunt")
+            // =====================================================
+
+            case ErrorEffectId.E110_DiscardDamageRandomEnemy3Tingsha:
+            {
+                var target = context.Owner.RunState.Rng.CombatTargets
+                    .NextItem(context.Owner.Creature.CombatState.HittableEnemies);
+
+                if (target is null)
+                    return;
+
+                VfxCmd.PlayOnCreatureCenter(target, "vfx/vfx_attack_blunt");
+
+                await CreatureCmd.Damage(
+                    context.ChoiceContext,
+                    target,
+                    new DamageVar(3M, ValueProp.Unpowered),
+                    context.Owner.Creature);
+
+                return;
+            }
+
+            // =====================================================
+            // E111
+            // 来源遗物：Tough Bandages（Rare）
+            //
+            // Effect：
+            // 获得 3 点格挡（不受敏捷加成）。
+            //
+            // 反编译：ToughBandages.cs —— BlockVar(3m, ValueProp.Unpowered)
+            // =====================================================
+
+            case ErrorEffectId.E111_DiscardGainBlock3ToughBandages:
+                await CreatureCmd.GainBlock(
+                    context.Owner.Creature,
+                    new BlockVar(3M, ValueProp.Unpowered),
+                    null);
+                return;
+
+            // =====================================================
+            // E112
+            // 来源遗物：Hand Drill（Event）
+            //
+            // Effect：
+            // 给予随机一个可命中敌人 2 层易伤。
+            //
+            // 反编译：HandDrill.cs —— PowerVar<VulnerablePower>(2m)，
+            // 原版目标是“被击破格挡的那个敌人”。ERROR 的 H/E 是两个
+            // 独立片段、任意组合，E 片段必须自带目标，因此这里把
+            // 目标泛化为“随机一个可命中敌人”，数值保持原版 2。
+            // =====================================================
+
+            case ErrorEffectId.E112_BreakBlockApplyVulnerable2HandDrill:
+            {
+                var target = context.Owner.RunState.Rng.CombatTargets
+                    .NextItem(context.Owner.Creature.CombatState.HittableEnemies);
+
+                if (target is null)
+                    return;
+
+                await PowerCmd.Apply<VulnerablePower>(
+                    context.ChoiceContext,
+                    target,
+                    2M,
+                    context.Owner.Creature,
+                    null);
+
+                return;
+            }
+
+            // =====================================================
+            // E113
+            // 来源遗物：Lucky Fysh（Uncommon）
+            //
+            // Effect：
+            // 获得 15 金币。
+            //
+            // 反编译：LuckyFysh.cs —— GoldVar(15)
+            // =====================================================
+
+            case ErrorEffectId.E113_GainGold15LuckyFysh:
+                await PlayerCmd.GainGold(15M, context.Owner);
+                return;
+
+            // =====================================================
+            // E114
+            // 来源遗物：Galactic Dust（Uncommon）
+            //
+            // Effect：
+            // 获得 10 点格挡（不受敏捷加成）。
+            // 阈值计数在 H108 里维护，这里只结算一次数值。
+            //
+            // 反编译：GalacticDust.cs —— BlockVar(10m, ValueProp.Unpowered)
+            // =====================================================
+
+            case ErrorEffectId.E114_GalacticDustGainBlock10:
+                await CreatureCmd.GainBlock(
+                    context.Owner.Creature,
+                    new BlockVar(10M, ValueProp.Unpowered),
+                    null);
+                return;
+
+            // =====================================================
+            // E115
+            // 来源遗物：Bellows（Rare）
+            //
+            // Effect：
+            // 升级当前手牌中的所有牌。
+            //
+            // 反编译：Bellows.cs ——
+            // CardCmd.Upgrade(PileType.Hand.GetPile(Owner).Cards,
+            //                 CardPreviewStyle.HorizontalLayout)
+            // =====================================================
+
+            case ErrorEffectId.E115_BellowsUpgradeAllHandCards:
+                CardCmd.Upgrade(
+                    PileType.Hand.GetPile(context.Owner).Cards,
+                    CardPreviewStyle.HorizontalLayout);
+                return;
+
+            // =====================================================
+            // E116
+            // 来源遗物：Divine Destiny（Starter）
+            //
+            // Effect：
+            // 获得 7 点星辰。
+            //
+            // 反编译：DivineDestiny.cs —— StarsVar(7)
+            // =====================================================
+
+            case ErrorEffectId.E116_DivineDestinyGainStars7:
+                await PlayerCmd.GainStars(7M, context.Owner);
+                return;
+
+            // =====================================================
+            // E117
+            // 来源遗物：Runic Capacitor（Shop）
+            //
+            // Effect：
+            // 获得 3 个充能球槽位。
+            //
+            // 反编译：RunicCapacitor.cs —— RepeatVar(3)
+            //        OrbCmd.AddSlots(Owner, DynamicVars.Repeat.IntValue)
+            // =====================================================
+
+            case ErrorEffectId.E117_RunicCapacitorAddOrbSlots3:
+                await OrbCmd.AddSlots(context.Owner, 3);
+                return;
+
+            // =====================================================
+            // E118
+            // 来源遗物：Fencing Manual（Common）
+            //
+            // Effect：
+            // 铸造 10 点 Sovereign Blade。
+            //
+            // 反编译：FencingManual.cs —— ForgeVar(10)
+            //        ForgeCmd.Forge(DynamicVars.Forge.BaseValue, Owner, this)
+            // =====================================================
+
+            case ErrorEffectId.E118_FencingManualForge10:
+                await ForgeCmd.Forge(10M, context.Owner, null);
+                return;
+
+            // =====================================================
+            // E119
+            // 来源遗物：Diamond Diadem（Ancient）
+            //
+            // Effect：
+            // 获得 20 点格挡（不受敏捷加成），并获得 1 层模糊。
+            //
+            // 反编译：DiamondDiadem.cs —— BlockVar(20m, ValueProp.Unpowered)
+            //        PowerCmd.Apply<BlurPower>(new ThrowingPlayerChoiceContext(),
+            //                                  Owner.Creature, 1m, Owner.Creature, null)
+            // =====================================================
+
+            case ErrorEffectId.E119_DiamondDiademGainBlock20AndBlur1:
+                await CreatureCmd.GainBlock(
+                    context.Owner.Creature,
+                    new BlockVar(20M, ValueProp.Unpowered),
+                    null);
+
+                await PowerCmd.Apply<BlurPower>(
+                    new ThrowingPlayerChoiceContext(),
+                    context.Owner.Creature,
+                    1M,
+                    context.Owner.Creature,
+                    null);
+
+                return;
+
+            // =====================================================
+            // E120
+            // 来源遗物：Darkstone Periapt（Event）
+            //
+            // Effect：
+            // 最大生命值提升 6。
+            //
+            // 反编译：DarkstonePeriapt.cs —— MaxHpVar(6m)
+            // =====================================================
+
+            case ErrorEffectId.E120_DarkstonePeriaptGainMaxHp6:
+                await CreatureCmd.GainMaxHp(context.Owner.Creature, 6M);
+                return;
+
+            // =====================================================
+            // E121
+            // 来源遗物：Tea of Discourtesy（Event）
+            //
+            // Effect：
+            // 将 2 张晕眩以随机位置加入抽牌堆。
+            //
+            // 反编译：TeaOfDiscourtesy.cs —— DynamicVar("DazedCount", 2m)
+            //        CardPileCmd.AddToCombatAndPreview<Dazed>(
+            //            Owner.Creature, PileType.Draw, 2, Owner,
+            //            CardPilePosition.Random)
+            // =====================================================
+
+            case ErrorEffectId.E121_TeaOfDiscourtesyAdd2DazedToDraw:
+                await CardPileCmd.AddToCombatAndPreview<Dazed>(
+                    context.Owner.Creature,
+                    PileType.Draw,
+                    2,
+                    context.Owner,
+                    CardPilePosition.Random);
+                return;
+
+            // =====================================================
+            // E122
+            // 来源遗物：Seal of Gold（Ancient）
+            //
+            // Effect：
+            // 获得 1 点能量，失去 3 金币。
+            // 金币不足 3 时原版是整条不触发，条件在 H117 判定。
+            //
+            // 反编译：SealOfGold.cs:25
+            //        EnergyVar(1) + GoldVar(3)
+            // =====================================================
+
+            case ErrorEffectId.E122_SealOfGoldGainEnergy1LoseGold3:
+                await PlayerCmd.GainEnergy(1M, context.Owner);
+                await PlayerCmd.LoseGold(3M, context.Owner);
+                return;
+
+            // =====================================================
+            // E123
+            // 来源遗物：Power Cell（Rare）
+            //
+            // Effect：
+            // 从抽牌堆取 2 张 0 费牌加入手牌（原版顺序：
+            // 过滤 -> 稳定洗牌 -> 取前 2 张）。
+            //
+            // 反编译：PowerCell.cs:21
+            // =====================================================
+
+            case ErrorEffectId.E123_PowerCellDraw2ZeroCostCards:
+            {
+                IEnumerable<CardModel> cards = PileType.Draw
+                    .GetPile(context.Owner)
+                    .Cards
+                    .Where(card =>
+                        !card.EnergyCost.CostsX
+                        && card.EnergyCost.GetWithModifiers(CostModifiers.Local) == 0)
+                    .ToList()
+                    .StableShuffle(context.Owner.RunState.Rng.CombatCardSelection)
+                    .Take(2);
+
+                await CardPileCmd.Add(cards, PileType.Hand);
+                return;
+            }
+
+            // =====================================================
+            // E124
+            // 来源遗物：Delicate Frond（Ancient）
+            //
+            // Effect：
+            // 用随机药水填满所有空药水槽（每个槽位独立随机）。
+            //
+            // 反编译：DelicateFrond.cs:12
+            // =====================================================
+
+            case ErrorEffectId.E124_DelicateFrondFillPotionSlots:
+            {
+                while (context.Owner.HasOpenPotionSlots)
+                {
+                    PotionModel potion = PotionFactory
+                        .CreateRandomPotionOutOfCombat(
+                            context.Owner,
+                            context.Owner.RunState.Rng.CombatPotionGeneration)
+                        .ToMutable();
+
+                    if (!(await PotionCmd.TryToProcure(potion, context.Owner)).success)
+                        break;
+                }
+
+                return;
+            }
+
+            // =====================================================
+            // E125
+            // 来源遗物：Art of War（Rare）
+            //
+            // Effect：
+            // 获得 1 点能量。
+            //
+            // 反编译：ArtOfWar.cs:89 —— EnergyVar(1)
+            // =====================================================
+
+            case ErrorEffectId.E125_ArtOfWarGainEnergy1:
+                await PlayerCmd.GainEnergy(1M, context.Owner);
+                return;
+
+            // =====================================================
+            // E126
+            // 来源遗物：Self-Forming Clay（Uncommon）
+            //
+            // Effect：
+            // 给自己施加 SelfFormingClayPower 3（下回合开始时获得 3 格挡）。
+            //
+            // 反编译：SelfFormingClay.cs:25
+            //        DynamicVar("BlockNextTurn", 3)
+            // =====================================================
+
+            case ErrorEffectId.E126_SelfFormingClayBlockNextTurn3:
+                await PowerCmd.Apply<SelfFormingClayPower>(
+                    context.ChoiceContext,
+                    context.Owner.Creature,
+                    3M,
+                    context.Owner.Creature,
+                    null);
+                return;
+
+            // =====================================================
+            // E127
+            // 来源遗物：Emotion Chip（Rare）
+            //
+            // Effect：
+            // 依次触发所有充能球的被动，每个之间等待 0.25 秒。
+            //
+            // 反编译：EmotionChip.cs:40
+            // =====================================================
+
+            case ErrorEffectId.E127_EmotionChipTriggerAllOrbPassives:
+            {
+                var combatState = context.Owner.Creature.CombatState;
+
+                if (combatState is null)
+                    return;
+
+                foreach (OrbModel orb in context.Owner.PlayerCombatState.OrbQueue.Orbs.ToList())
+                {
+                    await OrbCmd.Passive(context.ChoiceContext, orb, null, countAffectedByHooks: true);
+                    await Cmd.Wait(0.25f);
+                }
+
+                return;
+            }
+
+            // =====================================================
+            // E128
+            // 来源遗物：Crossbow（Ancient）
+            //
+            // Effect：
+            // 从角色卡池随机取 1 张攻击牌，本回合费用为 0，加入手牌。
+            //
+            // 反编译：Crossbow.cs:17
+            // =====================================================
+
+            case ErrorEffectId.E128_CrossbowAdd1FreeAttack:
+            {
+                Player crossbowOwner = context.Owner;
+
+                IReadOnlyList<CardModel> attackPool = crossbowOwner
+                    .Character
+                    .CardPool
+                    .GetUnlockedCards(
+                        crossbowOwner.UnlockState,
+                        crossbowOwner.RunState.CardMultiplayerConstraint)
+                    .Where(card => card.Type == CardType.Attack)
+                    .ToList();
+
+                if (attackPool.Count == 0)
+                    return;
+
+                List<CardModel> generated = CardFactory
+                    .GetDistinctForCombat(
+                        crossbowOwner,
+                        attackPool,
+                        1,
+                        crossbowOwner.RunState.Rng.CombatCardGeneration)
+                    .ToList();
+
+                foreach (CardModel card in generated)
+                    card.SetToFreeThisTurn();
+
+                await CardPileCmd.AddGeneratedCardsToCombat(
+                    generated,
+                    PileType.Hand,
+                    crossbowOwner);
+
+                return;
+            }
+
+            // =====================================================
+            // E129
+            // 来源遗物：War Hammer（Ancient）
+            //
+            // Effect：
+            // 升级牌组中 4 张随机可升级牌（Rng.Niche）。
+            //
+            // 反编译：WarHammer.cs:15（CardsVar(4)）
+            // =====================================================
+
+            case ErrorEffectId.E129_WarHammerUpgrade4RandomDeckCards:
+            {
+                Player hammerOwner = context.Owner;
+
+                List<CardModel> upgradable = PileType.Deck
+                    .GetPile(hammerOwner)
+                    .Cards
+                    .Where(card => card.IsUpgradable)
+                    .ToList()
+                    .StableShuffle(hammerOwner.RunState.Rng.Niche)
+                    .Take(4)
+                    .ToList();
+
+                if (upgradable.Count > 0)
+                    CardCmd.Upgrade(upgradable, CardPreviewStyle.HorizontalLayout);
+
+                return;
+            }
+
+            // =====================================================
+            // E130 / E131
+            // 来源遗物：Burning Blood / Black Blood（Starter）
+            //
+            // Effect：分别回复 6 / 12 点生命。
+            // 反编译：BurningBlood.cs:13（HealVar(6)）
+            //        BlackBlood.cs:16（HealVar(12)）
+            // =====================================================
+
+            case ErrorEffectId.E130_BurningBloodHeal6:
+                await CreatureCmd.Heal(context.Owner.Creature, 6M);
+                return;
+
+            case ErrorEffectId.E131_BlackBloodHeal12:
+                await CreatureCmd.Heal(context.Owner.Creature, 12M);
+                return;
+
+            // =====================================================
+            // E132
+            // 来源遗物：Lunar Pastry（Rare）
+            //
+            // Effect：获得 1 点星辰。
+            // 反编译：LunarPastry.cs:15（StarsVar(1)）
+            // =====================================================
+
+            case ErrorEffectId.E132_LunarPastryGain1Star:
+                await PlayerCmd.GainStars(1M, context.Owner);
+                return;
+
+            // =====================================================
+            // E133
+            // 来源遗物：Regalite（Uncommon）
+            //
+            // Effect：获得 4 点格挡。
+            // 反编译：Regalite.cs:26（BlockVar(4, Unpowered)，fast: true）
+            // =====================================================
+
+            case ErrorEffectId.E133_RegaliteGainBlock4:
+                await CreatureCmd.GainBlock(
+                    context.Owner.Creature,
+                    new BlockVar(4M, ValueProp.Unpowered),
+                    null,
+                    fast: true);
+                return;
+
+            case ErrorEffectId.E134_CloakClaspGainBlockPerHandCard:
+            {
+                // 反编译：CloakClasp.cs:22
+                // int num = (int)(cards.Count * DynamicVars.Block.BaseValue)，
+                // BlockVar 为 1，所以等价于"每张手牌 1 点格挡"。
+                int handCards =
+                    PileType.Hand.GetPile(context.Owner).Cards.Count;
+
+                await CreatureCmd.GainBlock(
+                    context.Owner.Creature,
+                    new BlockVar(handCards, ValueProp.Unpowered),
+                    null);
+                return;
+            }
+
+            case ErrorEffectId.E135_DivineRightGainStars3:
+                if (context.Owner.Creature.CombatState is null)
+                    return;
+
+                await PlayerCmd.GainStars(3M, context.Owner);
+                return;
+
+            case ErrorEffectId.E136_EmberTeaGainStrength2:
+                if (context.Owner.Creature.CombatState is null)
+                    return;
+
+                await PowerCmd.Apply<StrengthPower>(
+                    new ThrowingPlayerChoiceContext(),
+                    context.Owner.Creature,
+                    2M,
+                    context.Owner.Creature,
+                    null);
+                return;
+
+            case ErrorEffectId.E137_PaelsTearsGainEnergy2:
+                await PlayerCmd.GainEnergy(2, context.Owner);
+                return;
+
+            case ErrorEffectId.E138_InfusedCoreChannel3Lightning:
+                for (int i = 0; i < 3; i++)
+                {
+                    await OrbCmd.Channel<LightningOrb>(
+                        new BlockingPlayerChoiceContext(),
+                        context.Owner);
+                }
+                return;
+
+            case ErrorEffectId.E139_BreadLoseEnergy2:
+                await PlayerCmd.LoseEnergy(2M, context.Owner);
+                return;
+
+            case ErrorEffectId.E140_BoomingConchGainEnergy1:
+                await PlayerCmd.GainEnergy(1, context.Owner);
+                return;
+
+            case ErrorEffectId.E141_BlessedAntlerAdd3DazedToDraw:
+            {
+                // 反编译：BlessedAntler.cs:48
+                // combatState.CreateCard<Dazed>(Owner) × CardsVar(3)，
+                // 再以随机位置加入抽牌堆。
+                var antlerCombatState =
+                    context.Owner.Creature.CombatState;
+
+                if (antlerCombatState is null)
+                    return;
+
+                var dazedCards = new List<CardModel>();
+
+                for (int i = 0; i < 3; i++)
+                {
+                    dazedCards.Add(
+                        antlerCombatState.CreateCard<Dazed>(context.Owner));
+                }
+
+                await CardPileCmd.AddGeneratedCardsToCombat(
+                    dazedCards,
+                    PileType.Draw,
+                    context.Owner,
+                    CardPilePosition.Random);
+                return;
+            }
+
+            case ErrorEffectId.E142_GainGold12MawBank:
+            {
+                // 反编译：MawBank.cs:CanonicalVars GoldVar(12)
+                await PlayerCmd.GainGold(12M, context.Owner);
+                return;
+            }
+
+            case ErrorEffectId.E143_GainBlock2BoneFlute:
+            {
+                // 反编译：BoneFlute.cs:29 BlockVar(2, Unpowered)
+                if (context.Owner.Creature.CombatState is null)
+                    return;
+
+                await CreatureCmd.GainBlock(
+                    context.Owner.Creature,
+                    new BlockVar(2M, ValueProp.Unpowered),
+                    null);
+
+                return;
+            }
+
+            case ErrorEffectId.E144_Draw2BagOfPreparation:
+            {
+                // 反编译：BagOfPreparation.cs CardsVar(2)
+                if (context.Owner.Creature.CombatState is null)
+                    return;
+
+                await CardPileCmd.Draw(
+                    context.ChoiceContext,
+                    2M,
+                    context.Owner);
+
+                return;
+            }
+
             default:
                 break;
         }
@@ -2199,6 +2803,41 @@ public static class ErrorEffectRegistry
             ErrorEffectId.E107_GlassEyeOffer5RarityCardRewards => "offer 5 card rewards: 2 Common, 2 Uncommon, and 1 Rare.",
             ErrorEffectId.E108_SmallCapsuleOffer1RelicReward => "offer 1 random relic reward.",
             ErrorEffectId.E109_ChoicesParadoxChoose1Of5RetainToHand => "generate 5 random character cards with Retain, choose 1, and add it to your hand.",
+            ErrorEffectId.E110_DiscardDamageRandomEnemy3Tingsha => "deal 3 damage to a random enemy.",
+            ErrorEffectId.E111_DiscardGainBlock3ToughBandages => "gain 3 Block.",
+            ErrorEffectId.E112_BreakBlockApplyVulnerable2HandDrill => "apply 2 Vulnerable to a random enemy.",
+            ErrorEffectId.E113_GainGold15LuckyFysh => "gain 15 Gold.",
+            ErrorEffectId.E114_GalacticDustGainBlock10 => "gain 10 Block.",
+            ErrorEffectId.E115_BellowsUpgradeAllHandCards => "upgrade all cards in your hand.",
+            ErrorEffectId.E116_DivineDestinyGainStars7 => "gain 7 Stars.",
+            ErrorEffectId.E117_RunicCapacitorAddOrbSlots3 => "gain 3 Orb slots.",
+            ErrorEffectId.E118_FencingManualForge10 => "Forge 10.",
+            ErrorEffectId.E119_DiamondDiademGainBlock20AndBlur1 => "gain 20 Block and 1 Blur.",
+            ErrorEffectId.E120_DarkstonePeriaptGainMaxHp6 => "gain 6 Max HP.",
+            ErrorEffectId.E121_TeaOfDiscourtesyAdd2DazedToDraw => "shuffle 2 Dazed into your draw pile.",
+            ErrorEffectId.E122_SealOfGoldGainEnergy1LoseGold3 => "gain 1 Energy and lose 3 Gold.",
+            ErrorEffectId.E123_PowerCellDraw2ZeroCostCards => "put 2 zero-cost cards from your draw pile into your hand.",
+            ErrorEffectId.E124_DelicateFrondFillPotionSlots => "fill all empty potion slots with random potions.",
+            ErrorEffectId.E125_ArtOfWarGainEnergy1 => "gain 1 Energy.",
+            ErrorEffectId.E126_SelfFormingClayBlockNextTurn3 => "gain 3 Block next turn.",
+            ErrorEffectId.E127_EmotionChipTriggerAllOrbPassives => "trigger the passive of every Orb.",
+            ErrorEffectId.E128_CrossbowAdd1FreeAttack => "add 1 random Attack to your hand. It costs 0 this turn.",
+            ErrorEffectId.E129_WarHammerUpgrade4RandomDeckCards => "upgrade 4 random upgradable cards in your deck.",
+            ErrorEffectId.E130_BurningBloodHeal6 => "heal 6 HP.",
+            ErrorEffectId.E131_BlackBloodHeal12 => "heal 12 HP.",
+            ErrorEffectId.E132_LunarPastryGain1Star => "gain 1 Star.",
+            ErrorEffectId.E133_RegaliteGainBlock4 => "gain 4 Block.",
+            ErrorEffectId.E134_CloakClaspGainBlockPerHandCard => "gain 1 Block for each card in your hand.",
+            ErrorEffectId.E135_DivineRightGainStars3 => "gain 3 Stars.",
+            ErrorEffectId.E136_EmberTeaGainStrength2 => "gain 2 Strength.",
+            ErrorEffectId.E137_PaelsTearsGainEnergy2 => "gain 2 Energy.",
+            ErrorEffectId.E138_InfusedCoreChannel3Lightning => "channel 3 Lightning.",
+            ErrorEffectId.E139_BreadLoseEnergy2 => "lose 2 Energy.",
+            ErrorEffectId.E140_BoomingConchGainEnergy1 => "gain 1 Energy.",
+            ErrorEffectId.E141_BlessedAntlerAdd3DazedToDraw => "shuffle 3 Dazed into your draw pile.",
+            ErrorEffectId.E142_GainGold12MawBank => "gain 12 Gold.",
+            ErrorEffectId.E143_GainBlock2BoneFlute => "gain 2 Block.",
+            ErrorEffectId.E144_Draw2BagOfPreparation => "draw 2 cards.",
             _ => "do nothing."
         };
     }

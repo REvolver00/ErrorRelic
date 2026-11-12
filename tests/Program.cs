@@ -46,9 +46,52 @@ internal static class Program
                   && left.EffectId != ErrorEffectId.E007_Choose1Of3ColorlessToHand, "Disabled effects must stay excluded");
             seenH.Add(left.HookId); seenE.Add(left.EffectId);
         }
-        Check(seenH.Count == 104 && seenE.Count == 107, "All 104 hooks and 107 active effects remain reachable");
+        Check(seenH.Count == 149 && seenE.Count == 142, "All 149 active hooks and 142 active effects remain reachable");
+        Check(!seenH.Contains(ErrorHookId.H144_ReservedCardEnteredCombat),
+            "The removed card-entered-combat hook must never be generated");
+        Check((int)ErrorHookId.H144_ReservedCardEnteredCombat == 143
+              && (int)ErrorHookId.H145_AfterCreatureAddedToCombat == 144,
+            "Removing H144 must not shift later hook values");
         Check((int)ErrorEffectId.E010_Add2RandomCurses == 8 && (int)ErrorEffectId.E009_Enchant1CardRoyallyApproved == 9,
             "Historical enum storage order must not change");
+
+        // H141 is fed by block gain itself, so any block-granting effect would loop forever.
+        ErrorEffectId[] blockFeedback =
+        {
+            ErrorEffectId.E027_GainBlock14, ErrorEffectId.E045_GainBlock6Orichalcum, ErrorEffectId.E050_GainBlock10,
+            ErrorEffectId.E111_DiscardGainBlock3ToughBandages, ErrorEffectId.E114_GalacticDustGainBlock10,
+            ErrorEffectId.E133_RegaliteGainBlock4, ErrorEffectId.E134_CloakClaspGainBlockPerHandCard,
+            ErrorEffectId.E143_GainBlock2BoneFlute,
+        };
+        foreach (var e in blockFeedback)
+        {
+            Check(ErrorFragmentBlacklist.IsBlocked(ErrorHookId.H141_AfterBlockGained, e),
+                "Block-granting effects must stay blocked on H141");
+            Check(!ErrorFragmentBlacklist.IsBlocked(ErrorHookId.H142_AfterDamageGiven, e),
+                "Block-granting effects must stay allowed on unrelated hooks");
+        }
+
+        // H150 is fed by HP changes itself, so healing and max-HP effects would loop forever.
+        ErrorEffectId[] healFeedback =
+        {
+            ErrorEffectId.E030_Heal15, ErrorEffectId.E032_Heal5, ErrorEffectId.E033_GainMaxHp20,
+            ErrorEffectId.E048_Heal25, ErrorEffectId.E049_Heal2, ErrorEffectId.E063_Heal12,
+            ErrorEffectId.E120_DarkstonePeriaptGainMaxHp6, ErrorEffectId.E130_BurningBloodHeal6,
+            ErrorEffectId.E131_BlackBloodHeal12,
+        };
+        foreach (var e in healFeedback)
+        {
+            Check(ErrorFragmentBlacklist.IsBlocked(ErrorHookId.H150_AfterCurrentHpChanged, e),
+                "Healing effects must stay blocked on H150");
+        }
+
+        // The removed hook keeps its slot but must stay inert: no blacklist entry is
+        // needed once the trigger itself is gone.
+        Check(!ErrorFragmentBlacklist.IsBlocked(ErrorHookId.H144_ReservedCardEnteredCombat,
+                ErrorEffectId.E109_ChoicesParadoxChoose1Of5RetainToHand),
+            "The removed hook should no longer need a combination blacklist entry");
+        Check(ErrorDescriptionText.DescribeHookOnly(ErrorHookId.H144_ReservedCardEnteredCombat).Contains("已取消"),
+            "The removed hook must describe itself as cancelled");
         foreach (var h in Enum.GetValues<ErrorHookId>())
         foreach (var e in Enum.GetValues<ErrorEffectId>())
         {

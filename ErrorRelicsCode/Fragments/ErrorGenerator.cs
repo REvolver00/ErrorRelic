@@ -10,7 +10,10 @@ namespace ErrorRelics.ErrorRelicsCode.Fragments;
 
 public static class ErrorGenerator
 {
-    private static readonly ErrorHookId[] Hooks = Enum.GetValues<ErrorHookId>();
+    // H144（H144_ReservedCardEnteredCombat）已取消：枚举位保留是为了不让
+    // 后续 Hook 的数值前移，但它不参与任何生成。
+    private static readonly ErrorHookId[] Hooks = Enum.GetValues<ErrorHookId>()
+        .Where(h => h != ErrorHookId.H144_ReservedCardEnteredCombat).ToArray();
     private static readonly ErrorEffectId[] AllRandomEffects = Enum.GetValues<ErrorEffectId>()
         .Where(e => e != ErrorEffectId.E002_UpgradePlayedCard
                  && e != ErrorEffectId.E007_Choose1Of3ColorlessToHand).ToArray();

@@ -26,7 +26,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace ErrorRelics.ErrorRelicsCode.Relics;
 
-public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
+public abstract partial class ErrorGeneratedRelic : ErrorRelicsRelic
 {
     protected abstract ErrorDefinition Definition { get; }
 
@@ -353,6 +353,7 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     private bool _centennialPuzzleUsedThisCombat;
     private bool _orichalcumShouldTrigger;
     private bool _rippleBasinAttackPlayedThisTurn;
+    private bool _paelsTearsLeftoverEnergy;
 
     [SavedProperty]
     public int NunchakuAttacksPlayed
@@ -1306,6 +1307,28 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
                 await ExecuteExpandedEffect(choiceContext);
                 return;
             }
+
+            if (HookId == ErrorHookId.H130_BeforeSideTurnEndCloakClasp)
+            {
+                // 原版 Cloak Clasp：回合结束时每张手牌给 1 点格挡，空手不触发。
+                if (!PileType.Hand.GetPile(owner).IsEmpty)
+                {
+                    Flash();
+                    await ExecuteExpandedEffect(choiceContext);
+                }
+
+                return;
+            }
+
+            if (HookId == ErrorHookId.H133_AfterSideTurnStartLeftoverEnergyPaelsTears)
+            {
+                // 原版 Pael's Tears：回合结束时记录是否有剩余能量，
+                // 下一回合开始再据此给能量。
+                _paelsTearsLeftoverEnergy =
+                    owner.PlayerCombatState.Energy > 0;
+
+                return;
+            }
         }
 
         if (!ErrorHookRegistry.MatchesStoneCalendarSide(
@@ -1531,6 +1554,13 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
                 await ExecuteExpandedEffect(choiceContext);
                 return;
             }
+
+            if (HookId == ErrorHookId.H128_AfterSideTurnEndLunarPastry)
+            {
+                // 原版 Lunar Pastry 没有 Flash，只在回合结束给 1 点星辰。
+                await ExecuteExpandedEffect(new ThrowingPlayerChoiceContext());
+                return;
+            }
         }
 
         if (!ErrorHookRegistry.MatchesJossPaperSideTurnEnd(
@@ -1749,6 +1779,14 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
         var owner = Owner;
         if (owner is null) return;
 
+        if (HookId == ErrorHookId.H119_BeforeCombatStartDelicateFrond)
+        {
+            // 原版 Delicate Frond 在 BeforeCombatStart 用随机药水填满空槽位。
+            Flash();
+            await ExecuteExpandedEffect(new ThrowingPlayerChoiceContext());
+            return;
+        }
+
         if (HookId == ErrorHookId.H048_BeforeCombatStartAnchor)
         {
             Flash();
@@ -1843,10 +1881,30 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
     {
         var owner = Owner;
         if (owner is null
-            || HookId != ErrorHookId.H042_FirstUnblockedDamageEachCombatCentennialPuzzle
             || !CombatManager.Instance.IsInProgress
-            || target != owner.Creature
-            || result.UnblockedDamage <= 0
+            || target != owner.Creature)
+            return;
+
+        if (HookId == ErrorHookId.H123_AfterPlayerTurnStartLostHpEmotionChip)
+        {
+            // 原版 Emotion Chip 的半段：只要这一回合真的掉过血就记一笔，
+            // 真正触发放在下一个己方回合开始。
+            if (!result.WasFullyBlocked)
+                _emotionChipLostHp = true;
+
+            return;
+        }
+
+        if (result.UnblockedDamage <= 0)
+            return;
+
+        if (HookId == ErrorHookId.H122_AfterDamageReceivedUnblockedSelfFormingClay)
+        {
+            await ExecuteExpandedEffect(choiceContext);
+            return;
+        }
+
+        if (HookId != ErrorHookId.H042_FirstUnblockedDamageEachCombatCentennialPuzzle
             || _centennialPuzzleUsedThisCombat)
             return;
 
@@ -1965,6 +2023,15 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
 
         if (cardPlay.Card.Owner != owner)
             return IsAfterCardPlayedFragment(HookId);
+
+        if (HookId == ErrorHookId.H121_AfterEnergyResetNoAttackArtOfWar)
+        {
+            // 原版 Art of War 的 AfterCardPlayed 只记录“本回合打过攻击”。
+            if (cardPlay.Card.Type == CardType.Attack)
+                _artOfWarAttackThisTurn = true;
+
+            return true;
+        }
 
         switch (HookId)
         {
@@ -2119,17 +2186,21 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
             return true;
         }
 
-        if (HookId != ErrorHookId.H076_EnterCombatSwordOfJade
-            && HookId != ErrorHookId.H082_EnterCombatBronzeScales
-            && HookId != ErrorHookId.H083_EnterCombatGorget)
-            return false;
+        if (HookId == ErrorHookId.H076_EnterCombatSwordOfJade
+            || HookId == ErrorHookId.H082_EnterCombatBronzeScales
+            || HookId == ErrorHookId.H083_EnterCombatGorget
+            || HookId == ErrorHookId.H131_EnterCombatDivineRight
+            || HookId == ErrorHookId.H132_EnterCombatEmberTea)
+        {
+            if (room is not CombatRoom)
+                return true;
 
-        if (room is not CombatRoom)
+            Flash();
+            await ExecuteExpandedEffect(new ThrowingPlayerChoiceContext());
             return true;
+        }
 
-        Flash();
-        await ExecuteExpandedEffect(new ThrowingPlayerChoiceContext());
-        return true;
+        return false;
     }
 
     private async Task<bool> TryHandleAfterSideTurnStartFragments(
@@ -2140,6 +2211,43 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
             return false;
 
         bool ownsSide = participants.Contains(owner.Creature);
+
+        if (HookId == ErrorHookId.H133_AfterSideTurnStartLeftoverEnergyPaelsTears)
+        {
+            if (ownsSide && _paelsTearsLeftoverEnergy)
+            {
+                _paelsTearsLeftoverEnergy = false;
+                Flash();
+                await ExecuteExpandedEffect(new ThrowingPlayerChoiceContext());
+            }
+
+            return true;
+        }
+
+        if (HookId == ErrorHookId.H124_AfterSideTurnStartCrossbow)
+        {
+            // 原版 Crossbow：己方回合开始就给一张本回合免费的随机攻击牌。
+            if (ownsSide)
+            {
+                Flash();
+                await ExecuteExpandedEffect(new ThrowingPlayerChoiceContext());
+            }
+
+            return true;
+        }
+
+        if (HookId == ErrorHookId.H117_AfterSideTurnStartSealOfGold)
+        {
+            // 原版 Seal of Gold：己方回合开始且金币不少于 GoldVar(3) 时，
+            // 得 1 能量、失 3 金币。没有回合数限制。
+            if (ownsSide && owner.Gold >= 3)
+            {
+                Flash();
+                await ExecuteExpandedEffect(new ThrowingPlayerChoiceContext());
+            }
+
+            return true;
+        }
 
         switch (HookId)
         {
@@ -2173,6 +2281,32 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
                 }
                 return true;
 
+            case ErrorHookId.H134_FirstTurnAfterSideTurnStartInfusedCore:
+                if (ownsSide && owner.PlayerCombatState.TurnNumber <= 1)
+                {
+                    Flash();
+                    await ExecuteExpandedEffect(new ThrowingPlayerChoiceContext());
+                }
+                return true;
+
+            case ErrorHookId.H135_FirstTurnAfterSideTurnStartBread:
+                if (ownsSide && owner.PlayerCombatState.TurnNumber == 1)
+                {
+                    Flash();
+                    await ExecuteExpandedEffect(new ThrowingPlayerChoiceContext());
+                }
+                return true;
+
+            case ErrorHookId.H136_EliteFirstTurnAfterSideTurnStartBoomingConch:
+                if (ownsSide
+                    && owner.PlayerCombatState.TurnNumber <= 1
+                    && owner.RunState.CurrentRoom?.RoomType == RoomType.Elite)
+                {
+                    Flash();
+                    await ExecuteExpandedEffect(new ThrowingPlayerChoiceContext());
+                }
+                return true;
+
             default:
                 return false;
         }
@@ -2187,6 +2321,32 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
             return false;
 
         bool ownsSide = participants.Contains(owner.Creature);
+
+        if (HookId == ErrorHookId.H121_AfterEnergyResetNoAttackArtOfWar)
+        {
+            // 原版在 AfterSideTurnEnd 里把“本回合是否打过攻击”结转成
+            // “上一回合是否打过攻击”。ERROR 没有独占的 side-turn-end，
+            // 因此在下一个己方回合开始、能量重置之前完成同一次结转。
+            if (ownsSide)
+            {
+                _artOfWarAttackLastTurn = _artOfWarAttackThisTurn;
+                _artOfWarAttackThisTurn = false;
+                InvokeDisplayAmountChanged();
+            }
+
+            return false;
+        }
+
+        if (HookId == ErrorHookId.H118_BeforeSideTurnStartPowerCell)
+        {
+            if (ownsSide && owner.PlayerCombatState.TurnNumber <= 1)
+            {
+                Flash();
+                await ExecuteExpandedEffect(choiceContext);
+            }
+
+            return true;
+        }
 
         if (HookId == ErrorHookId.H062_Every3AttacksThisTurnShuriken)
         {
@@ -2225,7 +2385,8 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
         Player player,
         PlayerChoiceContext choiceContext)
     {
-        if (HookId != ErrorHookId.H095_FirstTurnBeforeHandDrawRadiantPearl)
+        if (HookId != ErrorHookId.H095_FirstTurnBeforeHandDrawRadiantPearl
+            && HookId != ErrorHookId.H137_FirstTurnBeforeHandDrawBlessedAntler)
             return false;
 
         var owner = Owner;
@@ -2244,6 +2405,35 @@ public abstract class ErrorGeneratedRelic : ErrorRelicsRelic
         PlayerChoiceContext choiceContext,
         Player player)
     {
+        if (HookId == ErrorHookId.H123_AfterPlayerTurnStartLostHpEmotionChip)
+        {
+            var chipOwner = Owner;
+            if (chipOwner is not null
+                && player == chipOwner
+                && _emotionChipLostHp)
+            {
+                _emotionChipLostHp = false;
+                Flash();
+                await ExecuteExpandedEffect(choiceContext);
+            }
+
+            return true;
+        }
+
+        if (HookId == ErrorHookId.H120_FirstTurnAfterPlayerTurnStartBoneTea)
+        {
+            var boneTeaOwner = Owner;
+            if (boneTeaOwner is not null
+                && player == boneTeaOwner
+                && boneTeaOwner.PlayerCombatState.TurnNumber <= 1)
+            {
+                Flash();
+                await ExecuteExpandedEffect(choiceContext);
+            }
+
+            return true;
+        }
+
         if (HookId != ErrorHookId.H101_FirstTurnAfterPlayerTurnStartChoicesParadox)
             return false;
 

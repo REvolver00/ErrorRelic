@@ -38,6 +38,11 @@ public static class ErrorEffectSourceMetadata
         ErrorEffectId.E107_GlassEyeOffer5RarityCardRewards => true, // Glass Eye
         ErrorEffectId.E108_SmallCapsuleOffer1RelicReward => true,   // Small Capsule
         ErrorEffectId.E109_ChoicesParadoxChoose1Of5RetainToHand => true, // Choices Paradox
+        ErrorEffectId.E119_DiamondDiademGainBlock20AndBlur1 => true, // Diamond Diadem (Ancient)
+        ErrorEffectId.E122_SealOfGoldGainEnergy1LoseGold3 => true,  // Seal of Gold (Ancient)
+        ErrorEffectId.E124_DelicateFrondFillPotionSlots => true,    // Delicate Frond (Ancient)
+        ErrorEffectId.E128_CrossbowAdd1FreeAttack => true,          // Crossbow (Ancient)
+        ErrorEffectId.E137_PaelsTearsGainEnergy2 => true,           // Pael's Tears (Ancient)
         _ => false
     };
 }

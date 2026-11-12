@@ -403,5 +403,167 @@ public enum ErrorEffectId
     E106_OrreryOffer5CardRewards,
     E107_GlassEyeOffer5RarityCardRewards,
     E108_SmallCapsuleOffer1RelicReward,
-    E109_ChoicesParadoxChoose1Of5RetainToHand
+    E109_ChoicesParadoxChoose1Of5RetainToHand,
+
+    // =========================================================
+    // E110-E121：v0.111.0 反编译同批次补录。
+    // 每条数值与原版 RelicModel 的 CanonicalVars 完全一致，
+    // 不做任何“平衡性调整”。
+    // =========================================================
+
+    // 来源遗物：Tingsha（Uncommon）
+    // DamageVar(3, Unpowered)，随机攻击一个可命中敌人。
+    E110_DiscardDamageRandomEnemy3Tingsha,
+
+    // 来源遗物：Tough Bandages（Rare）
+    // BlockVar(3, Unpowered)。
+    E111_DiscardGainBlock3ToughBandages,
+
+    // 来源遗物：Hand Drill（Event）
+    // PowerVar<VulnerablePower>(2)。
+    E112_BreakBlockApplyVulnerable2HandDrill,
+
+    // 来源遗物：Lucky Fysh（Uncommon）
+    // GoldVar(15)。
+    E113_GainGold15LuckyFysh,
+
+    // 来源遗物：Galactic Dust（Uncommon）
+    // BlockVar(10, Unpowered)。
+    E114_GalacticDustGainBlock10,
+
+    // 来源遗物：Bellows（Rare）
+    // 升级当前手牌（原版 CardCmd.Upgrade(hand, HorizontalLayout)）。
+    E115_BellowsUpgradeAllHandCards,
+
+    // 来源遗物：Divine Destiny（Starter）
+    // StarsVar(7)。
+    E116_DivineDestinyGainStars7,
+
+    // 来源遗物：Runic Capacitor（Shop）
+    // RepeatVar(3)。
+    E117_RunicCapacitorAddOrbSlots3,
+
+    // 来源遗物：Fencing Manual（Common）
+    // ForgeVar(10)。
+    E118_FencingManualForge10,
+
+    // 来源遗物：Diamond Diadem（Ancient）
+    // BlockVar(20, Unpowered) + Blur 1。
+    E119_DiamondDiademGainBlock20AndBlur1,
+
+    // 来源遗物：Darkstone Periapt（Event）
+    // MaxHpVar(6)。
+    E120_DarkstonePeriaptGainMaxHp6,
+
+    // 来源遗物：Tea of Discourtesy（Event）
+    // DazedCount 2，加入抽牌堆。
+    E121_TeaOfDiscourtesyAdd2DazedToDraw,
+
+    // =========================================================
+    // E122-E125：同一批次第二批。
+    // =========================================================
+
+    // 来源遗物：Seal of Gold（Ancient）
+    // EnergyVar(1) + GoldVar(3)，金币不足 3 时整条效果不触发
+    // （条件在 H117 里判定）。
+    E122_SealOfGoldGainEnergy1LoseGold3,
+
+    // 来源遗物：Power Cell（Rare）
+    // CardsVar(2)：从抽牌堆取 2 张 0 费牌加入手牌。
+    E123_PowerCellDraw2ZeroCostCards,
+
+    // 来源遗物：Delicate Frond（Ancient）
+    // 用随机药水填满所有空药水槽。
+    E124_DelicateFrondFillPotionSlots,
+
+    // 来源遗物：Art of War（Rare）
+    // EnergyVar(1)。
+    E125_ArtOfWarGainEnergy1,
+
+    // 来源遗物：Self-Forming Clay（Uncommon）
+    // DynamicVar("BlockNextTurn", 3)：给自身施加 SelfFormingClayPower 3。
+    E126_SelfFormingClayBlockNextTurn3,
+
+    // 来源遗物：Emotion Chip（Rare）
+    // 依次触发所有充能球的被动，每个之间等待 0.25 秒。
+    E127_EmotionChipTriggerAllOrbPassives,
+
+    // 来源遗物：Crossbow（Ancient）
+    // 从角色卡池随机取 1 张攻击牌，本回合免费，加入手牌。
+    E128_CrossbowAdd1FreeAttack,
+
+    // 来源遗物：War Hammer（Ancient）
+    // CardsVar(4)：升级牌组中 4 张随机可升级牌。
+    E129_WarHammerUpgrade4RandomDeckCards,
+
+    // 来源遗物：Burning Blood（Starter）
+    // HealVar(6)。
+    E130_BurningBloodHeal6,
+
+    // 来源遗物：Black Blood（Starter）
+    // HealVar(12)。
+    E131_BlackBloodHeal12,
+
+    // 来源遗物：Lunar Pastry（Rare）
+    // StarsVar(1)。
+    E132_LunarPastryGain1Star,
+
+    // 来源遗物：Regalite（Uncommon）
+    // BlockVar(4, Unpowered)。
+    E133_RegaliteGainBlock4,
+
+    // 来源遗物：Cloak Clasp（Rare）
+    // BlockVar(1, Unpowered)：每张手牌换 1 点格挡。
+    // 原版：int num = (int)(cards.Count * DynamicVars.Block.BaseValue)。
+    E134_CloakClaspGainBlockPerHandCard,
+
+    // 来源遗物：Divine Right（Starter）
+    // StarsVar(3)。
+    E135_DivineRightGainStars3,
+
+    // 来源遗物：Ember Tea（Event）
+    // PowerVar<StrengthPower>(2)。
+    E136_EmberTeaGainStrength2,
+
+    // 来源遗物：Pael's Tears（Ancient）
+    // EnergyVar(2)。
+    E137_PaelsTearsGainEnergy2,
+
+    // 来源遗物：Infused Core（Starter）
+    // DynamicVar("Lightning", 3)。
+    E138_InfusedCoreChannel3Lightning,
+
+    // 来源遗物：Bread（Shop）
+    // EnergyVar("LoseEnergy", 2)。
+    E139_BreadLoseEnergy2,
+
+    // 来源遗物：Booming Conch（Ancient）
+    // EnergyVar(1)。
+    E140_BoomingConchGainEnergy1,
+
+    // 来源遗物：Blessed Antler（Ancient）
+    // CardsVar(3) 张 Dazed，随机位置加入抽牌堆。
+    E141_BlessedAntlerAdd3DazedToDraw,
+
+    // =========================================================
+    // E142
+    // 来源遗物：Maw Bank（MawBank.cs:CanonicalVars）
+    // 原版数值：GoldVar(12)，进入房间时获得 12 金币
+    // =========================================================
+    E142_GainGold12MawBank,
+
+    // =========================================================
+    // E143
+    // 来源遗物：Bone Flute（BoneFlute.cs:29）
+    // 原版数值：BlockVar(2, Unpowered)，宠物 Osty 攻击后获得 2 格挡
+    // =========================================================
+    E143_GainBlock2BoneFlute,
+
+    // =========================================================
+    // E144
+    // 来源遗物：Bag of Preparation（BagOfPreparation.cs:ModifyHandDraw）
+    // 原版数值：CardsVar(2)，第一回合多抽 2 张
+    // 这里做成一次性"抽 2 张"的离散效果
+    // =========================================================
+    E144_Draw2BagOfPreparation
 }

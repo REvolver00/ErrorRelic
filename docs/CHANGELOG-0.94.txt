@@ -1,0 +1,150 @@
+ERROR Relics 0.94.0
+
+Fragment pool expansion, waves 1-7 (v0.111.0 decompile audit)
+- 46 new Hooks (H105-H150) and 35 new Effects (E110-E144).
+- Pool grows from 104x109 to 150x144 (150x142 random); theoretical
+  combinations 11,336 -> 21,600.
+- Every new fragment is transcribed from the v0.111.0 decompiled relic
+  source; values, trigger conditions and call order are unchanged.
+- Source trail: docs/FRAGMENTS-0.94-AUDIT.md (relic, file and line per
+  fragment).
+
+New Hooks
+- H105_AfterCardDiscarded (Tingsha / Tough Bandages)
+- H106_AfterBlockBroken (Hand Drill)
+- H107_AfterGoldGained (Dragon Fruit)
+- H108_Every10StarsGalacticDust (Galactic Dust)
+- H109_Every7OrbsMetronome (Metronome)
+- H110_AfterHandEmptied (Unceasing Top)
+- H111_CardEnteredDeck (Bing Bong / Lucky Fysh / Darkstone Periapt)
+- H112_AfterAttackBoneFlute (Bone Flute)
+- H113_AfterItemPurchasedMawBank (Maw Bank)
+- H114_BeforeCombatStartLatePetrifiedToad (Petrified Toad)
+- H115_AfterFlushBookmark (Bookmark)
+- H116_AfterRestSiteHealRegalPillow (Regal Pillow / Stone Humidifier)
+- H117_AfterSideTurnStartSealOfGold (Seal of Gold)
+- H118_BeforeSideTurnStartPowerCell (Power Cell)
+- H119_BeforeCombatStartDelicateFrond (Delicate Frond)
+- H120_FirstTurnAfterPlayerTurnStartBoneTea (Bone Tea)
+- H121_AfterEnergyResetNoAttackArtOfWar (Art of War)
+- H122_AfterDamageReceivedUnblockedSelfFormingClay (Self-Forming Clay)
+- H123_AfterPlayerTurnStartLostHpEmotionChip (Emotion Chip)
+- H124_AfterSideTurnStartCrossbow (Crossbow)
+- H125_AfterCombatVictoryEliteWarHammer (War Hammer)
+- H126_AfterCombatVictoryBurningBlood (Burning Blood)
+- H127_AfterCombatVictoryBlackBlood (Black Blood)
+- H128_AfterSideTurnEndLunarPastry (Lunar Pastry)
+- H129_AfterCardGeneratedForCombatRegalite (Regalite)
+- H130_BeforeSideTurnEndCloakClasp (Cloak Clasp)
+- H131_EnterCombatDivineRight (Divine Right)
+- H132_EnterCombatEmberTea (Ember Tea)
+- H133_AfterSideTurnStartLeftoverEnergyPaelsTears (Pael's Tears)
+- H134_FirstTurnAfterSideTurnStartInfusedCore (Infused Core)
+- H135_FirstTurnAfterSideTurnStartBread (Bread)
+- H136_EliteFirstTurnAfterSideTurnStartBoomingConch (Booming Conch)
+- H137_FirstTurnBeforeHandDrawBlessedAntler (Blessed Antler)
+- H138_AfterRewardTaken (original timing, no vanilla user)
+- H139_AfterRestSiteSmith (original timing, no vanilla user)
+- H140_AfterActEntered (original timing, no vanilla user)
+- H141_AfterBlockGained (original timing, no vanilla user)
+- H142_AfterDamageGiven (original timing, no vanilla user)
+- H143_AfterPotionProcured (Belt Buckle)
+- H144_AfterCardEnteredCombat (Ghost Seed)
+- H145_AfterCreatureAddedToCombat (Philosophers Stone / Fur Coat)
+- H146_AfterPreventingDeath (Lizard Tail)
+- H147_AfterTakingExtraTurn (Pael's Eye)
+- H148_AfterPotionDiscarded (Belt Buckle)
+- H149_BeforeCombatRewardOffered (Lasting Candy)
+- H150_AfterCurrentHpChanged (Meat on the Bone / Red Skull)
+
+New Effects
+- E110_DiscardDamageRandomEnemy3Tingsha
+- E111_DiscardGainBlock3ToughBandages
+- E112_BreakBlockApplyVulnerable2HandDrill
+- E113_GainGold15LuckyFysh
+- E114_GalacticDustGainBlock10
+- E115_BellowsUpgradeAllHandCards
+- E116_DivineDestinyGainStars7
+- E117_RunicCapacitorAddOrbSlots3
+- E118_FencingManualForge10
+- E119_DiamondDiademGainBlock20AndBlur1
+- E120_DarkstonePeriaptGainMaxHp6
+- E121_TeaOfDiscourtesyAdd2DazedToDraw
+- E122_SealOfGoldGainEnergy1LoseGold3
+- E123_PowerCellDraw2ZeroCostCards
+- E124_DelicateFrondFillPotionSlots
+- E125_ArtOfWarGainEnergy1
+- E126_SelfFormingClayBlockNextTurn3
+- E127_EmotionChipTriggerAllOrbPassives
+- E128_CrossbowAdd1FreeAttack
+- E129_WarHammerUpgrade4RandomDeckCards
+- E130_BurningBloodHeal6
+- E131_BlackBloodHeal12
+- E132_LunarPastryGain1Star
+- E133_RegaliteGainBlock4
+- E134_CloakClaspGainBlockPerHandCard
+- E135_DivineRightGainStars3
+- E136_EmberTeaGainStrength2
+- E137_PaelsTearsGainEnergy2
+- E138_InfusedCoreChannel3Lightning
+- E139_BreadLoseEnergy2
+- E140_BoomingConchGainEnergy1
+- E141_BlessedAntlerAdd3DazedToDraw
+- E142_GainGold12MawBank
+- E143_GainBlock2BoneFlute
+- E144_Draw2BagOfPreparation
+
+Implementation notes
+- New overrides live in separate partial files:
+  ErrorRelicsCode/Relics/ErrorGeneratedRelic.Hooks105.cs (H105-H137) and
+  ErrorGeneratedRelic.Hooks138.cs / .Hooks143.cs / .Hooks148.cs (H138-H150). The main
+  relic file only changed its class declaration to partial.
+- Every override early-returns unless the relic's own HookId matches,
+  so one relic never claims another fragment's hook.
+- Galactic Dust keeps a saved star counter and preserves the remainder;
+  a single spend can cross several thresholds.
+- Metronome's orb counter is cleared in BeforeCombatStartLate, matching
+  the vanilla reset points.
+- E112 generalizes the vulnerable target to a random enemy because H and
+  E are independent fragments; the amount stays at the vanilla 2.
+- E129/E130/E131 are deliberately NOT listed in the crash blacklist:
+  AfterCombatVictory fires after the combat is over, so gating them on
+  CombatManager.IsInProgress would silently disable them.
+- RequiresActiveCombat was renamed to WouldCrashOutsideCombat and reduced
+  to a blacklist: only effects that provably read a null CombatState or
+  an empty combat pile outside combat are listed. A NOOP result is
+  correct behaviour; the only hard rule is that the game must not crash.
+- No deferred replay was added: combat-only effects still silently skip
+  when triggered outside combat.
+- Combination blacklist (ErrorRelicsCode/Fragments/ErrorFragmentBlacklist.cs):
+  checked per hook+effect pair before execution, so a dangerous pairing is
+  skipped without touching the effect itself. Live testing showed that
+  H141_AfterBlockGained combined with any block-granting effect, and
+  H150_AfterCurrentHpChanged combined with any heal/max-HP effect, feed
+  themselves forever and soft-lock the run; those 17 pairs are blocked.
+- H144_AfterCardEnteredCombat was removed entirely (user decision): the
+  trigger fires while combat is still initialising, which players cannot
+  read, and it produced a crash with E109 when the selector was not ready
+  yet. The enum slot is kept as H144_ReservedCardEnteredCombat so later
+  hook values do not shift under existing saves; it is excluded from
+  generation, has no override, and its combination-blacklist entry and the
+  E109 isolation entry are gone with it.
+- H142_AfterDamageGiven x damage effects is still under observation: it
+  chains hard enough to nearly wipe an encounter, but no unbounded loop has
+  been confirmed yet, so it stays out of the blacklist.
+
+Text and bookkeeping
+- Hooks[]/Effects[] in ErrorDescriptionText are extended in Chinese with
+  indices kept strictly aligned to the enum values; the removed slot now
+  reads as a cancelled fragment.
+- English hook/effect text in ErrorHookRegistry and ErrorEffectRegistry.
+- Error Proof description and the test reachability assertion now use
+  149 active hooks and 142 active effects (E002 and E007 stay excluded from
+  the random pool).
+
+Verification
+- dotnet build: 0 errors.
+- Console suite: PASS, 83,259 checks (all 150 enum slots x 144 pairs have
+  full text, plus blacklist regression checks: 17 soft-lock pairs blocked,
+  unrelated hooks still allowed, the removed hook never generated).
+- Multiplayer smoke: PASS (multiplayer-test-results, auto-smoke-2p).

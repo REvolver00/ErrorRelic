@@ -72,9 +72,9 @@ public sealed class ErrorProofRelic : ErrorRelicsRelic
         get
         {
             string description =
-                "[ERROR · 0.93.1]\n" +
+                "[ERROR · 0.94.0]\n" +
                 "红镐子是本局 ERROR 的启动凭证。ERROR 会把原版遗物的触发条件与效果重新接线。\n" +
-                "当前核心池：104 Hooks × 109 Effects = 11,336 个理论 H/E 组合。\n" +
+                "当前核心池：149 Hooks × 144 Effects = 21,456 个理论 H/E 组合。\n" +
                 "任意玩家获得红镐子后，本局 ERROR 永久开启；之后失去红镐子也不会关闭。\n";
 
             if (ErrorDataCrackService.IsDiscoveryActive)

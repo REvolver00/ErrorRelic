@@ -1,0 +1,8 @@
+ERROR: Attempting to initialize the wrong RID
+   at: get_or_null (./core/templates/rid_owner.h:250)
+ERROR: Parameter "mem" is null.
+   at: initialize_rid (./core/templates/rid_owner.h:294)
+ERROR: Attempting to use an uninitialized RID
+   at: get_or_null (./core/templates/rid_owner.h:257)
+ERROR: Parameter "shader" is null.
+   at: shader_set_code (servers/rendering/dummy/storage/material_storage.cpp:163)

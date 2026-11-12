@@ -81,26 +81,39 @@ public static class ErrorExecutionCompatibility
         // =====================================================
 
         // =====================================================
-        // 非战斗 Hook -> 战斗专用 Effect 的兼容边界
+        // 黑名单：只拦"会崩"的组合，不拦"没效果"的组合。
         //
-        // 例如：
-        // H029（来源遗物：Meal Ticket，进入商店）
-        // +
-        // E023（来源遗物：Stone Calendar，对所有敌人造成 52 伤害）
+        // 设计原则（用户定死）：
+        // - 唯一底线是"游戏不崩"。
+        // - 片段跑出 NOOP 是允许的，视为正确行为。
         //
-        // 商店房没有有效 CombatState / HittableEnemies。
-        // 如果仍直接执行 E023，会访问不存在的战斗状态并报错。
-        //
-        // ERROR 遗物允许任意 H + E，因此这里统一处理：
-        //
-        // - 战斗进行中：完全保留原 Effect，不削弱、不改数值。
-        // - 非战斗状态：仅对“必须依赖当前战斗”的 Effect 安全跳过。
-        // - 不 Pending，不延迟到下一场战斗，不跨房间补发。
+        // 所以这里只登记"离开战斗就会读到 null CombatState /
+        // 不存在的战斗堆栈，从而把空引用抛进 Hook 链"的 Effect。
+        // 其余 Effect 一律放行：能生效就生效，不能生效就无事发生，
+        // 既不做额外前置判断，也不要求每个新 Effect 都来登记。
         // =====================================================
 
         if (!CombatManager.Instance.IsInProgress
-            && RequiresActiveCombat(effectId))
+            && WouldCrashOutsideCombat(effectId))
         {
+            return;
+        }
+
+        // =====================================================
+        // 组合黑名单：只拦「Hook 会被自己的 Effect 再次喂出来」的组合。
+        //
+        // 这类组合不会崩，但会软锁：一次触发后无限循环。
+        // 明细与判定口径见 ErrorFragmentBlacklist。
+        // 命中即跳过，不报错、不弹窗。
+        // =====================================================
+
+        if (ErrorFragmentBlacklist.IsBlocked(hookId, effectId))
+        {
+            if (ErrorRelicsCode.Debug.ErrorLoadDiagnostics.IsLoading)
+            {
+                MainFile.Logger.Info($"ERROR blocked combination: {hookId}/{effectId}");
+            }
+
             return;
         }
 
@@ -129,11 +142,16 @@ public static class ErrorExecutionCompatibility
 
 
     // =========================================================
-    // 必须依赖当前战斗状态的 Effect。
-    // 每一项保留来源遗物，后续新增 Effect 时继续扩表。
+    // 崩溃黑名单（不是白名单）。
+    //
+    // 只有"战斗外执行一定会读到 null CombatState / 不存在的战斗
+    // 堆栈并抛异常"的 Effect 才登记在这里。
+    // 未登记的 Effect 默认放行；它跑出 NOOP 也算正确，
+    // 因此新增 Effect 时不需要为了"完整性"来补表，
+    // 只有真的验证过会崩才加。
     // =========================================================
 
-    private static bool RequiresActiveCombat(
+    private static bool WouldCrashOutsideCombat(
         ErrorEffectId effectId)
     {
         return effectId switch
@@ -234,6 +252,56 @@ public static class ErrorExecutionCompatibility
             // allowed both in and out of combat, matching their self-contained
             // vanilla flows.
             ErrorEffectId.E109_ChoicesParadoxChoose1Of5RetainToHand => true,
+
+            // E110-E121 target the same v0.111.0 audit batch.
+            //
+            // 这里只登记“离开战斗就会读到 null CombatState / 空手牌堆”
+            // 的效果，保证任意 H × E 组合都不会把空引用抛进游戏的
+            // Hook 链。E113（金币）与 E120（最大生命）是永久型资源，
+            // 在商店/事件里本来就该生效，因此不设限。
+            ErrorEffectId.E110_DiscardDamageRandomEnemy3Tingsha => true,
+            ErrorEffectId.E111_DiscardGainBlock3ToughBandages => true,
+            ErrorEffectId.E112_BreakBlockApplyVulnerable2HandDrill => true,
+            ErrorEffectId.E114_GalacticDustGainBlock10 => true,
+            ErrorEffectId.E115_BellowsUpgradeAllHandCards => true,
+            ErrorEffectId.E116_DivineDestinyGainStars7 => true,
+            ErrorEffectId.E117_RunicCapacitorAddOrbSlots3 => true,
+            ErrorEffectId.E118_FencingManualForge10 => true,
+            ErrorEffectId.E119_DiamondDiademGainBlock20AndBlur1 => true,
+            ErrorEffectId.E121_TeaOfDiscourtesyAdd2DazedToDraw => true,
+
+            // E122-E125：同为 v0.111.0 同批次。
+            // E124 填药水槽是战斗外也合法的一次性准备行为，因此不设限。
+            ErrorEffectId.E122_SealOfGoldGainEnergy1LoseGold3 => true,
+            ErrorEffectId.E123_PowerCellDraw2ZeroCostCards => true,
+            ErrorEffectId.E125_ArtOfWarGainEnergy1 => true,
+
+            // E126-E128：都必须在战斗内执行（Power / 充能球 / 手牌生成）。
+            ErrorEffectId.E126_SelfFormingClayBlockNextTurn3 => true,
+            ErrorEffectId.E127_EmotionChipTriggerAllOrbPassives => true,
+            ErrorEffectId.E128_CrossbowAdd1FreeAttack => true,
+
+            // E132 / E133：星辰与格挡都依赖战斗内的 PlayerCombatState。
+            // E129（升级牌组）、E130/E131（回血）在战斗胜利后才触发，
+            // 触发时 IsInProgress 可能已经是 false，因此绝对不能登记在这里。
+            ErrorEffectId.E132_LunarPastryGain1Star => true,
+            ErrorEffectId.E133_RegaliteGainBlock4 => true,
+
+            // E134 / E137：手牌堆与能量都只在战斗内存在。
+            // E135（星辰）、E136（力量）在"进入战斗房间"时触发，
+            // 那一刻 IsInProgress 未必已为 true，登记了反而会被跳过，
+            // 所以这两个只在 effect 内部判空自保。
+            ErrorEffectId.E134_CloakClaspGainBlockPerHandCard => true,
+            ErrorEffectId.E137_PaelsTearsGainEnergy2 => true,
+
+            // E138-E141：充能球队列、能量、战斗内造卡，
+            // 任何一项离开战斗都会读到 null 的 PlayerCombatState。
+            ErrorEffectId.E138_InfusedCoreChannel3Lightning => true,
+            ErrorEffectId.E139_BreadLoseEnergy2 => true,
+            ErrorEffectId.E140_BoomingConchGainEnergy1 => true,
+            ErrorEffectId.E141_BlessedAntlerAdd3DazedToDraw => true,
+            ErrorEffectId.E143_GainBlock2BoneFlute => true,
+            ErrorEffectId.E144_Draw2BagOfPreparation => true,
 
             _ => false
         };
